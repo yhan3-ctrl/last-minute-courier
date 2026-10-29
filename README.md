@@ -4,12 +4,16 @@ Project 3: a small 3D delivery game in Unreal Engine. Theme: Time.
 
 ## Current state
 
-Design, bilingual game copy and the native Unreal C++ first-order prototype source are prepared. Epic launcher is installed, updated and signed in by the user. Unreal Engine, Xcode and a playable build are not yet installed/validated. Nothing here should be described as a tested game.
+Unreal Engine 5.8.4, Xcode 27.1 and Metal Toolchain are installed. The first-order prototype builds and runs on this Mac. It includes an initial campus scene, bespoke Slate menus, camera comfort controls and a language selector: English (default), Simplified Chinese, Japanese, Korean, Spanish, French and German. Agent-operated runtime checks covered the opening, tutorial, pickup, successful delivery, retry, pause and keyboard settings. This is an early playable preview, not a finished or packaged release.
 
 - [Design and production plan](Documentation/Design.zh.md)
 - [Playable copy](DesignData/game_content.json)
 - [Rubric and evidence checklist](Documentation/Acceptance.zh.md)
 - [Prototype source status and setup](Documentation/Prototype.zh.md)
+- [Visual direction and camera comfort](Documentation/VisualDirection.zh.md)
+- [Third-party font credits](Documentation/ASSET_CREDITS.md)
+
+To preview the current build on the development Mac, double-click `Scripts/play_prototype.command`. Enter advances the story, WASD moves, Space jumps, Q slows marked devices, E collects/delivers, Esc pauses, and L switches language. Camera settings are in the pause menu.
 
 ## Working arrangement
 
@@ -23,8 +27,8 @@ Compile the native third-person greybox, generate its map with Scripts/bootstrap
 
 ## Pending dependencies
 
-1. Any required Unreal/Xcode license acceptance by the user; Epic sign-in is complete.
-2. Verify engine/Xcode compatibility and actual storage requirements before engine download.
-3. Read lecture decks 3 and 4; previous attempts timed out on cloud-backed files.
-4. Confirm graduate requirements and intended release architectures.
-5. Windows and Linux releases require suitable build/test environments; a Mac build alone does not satisfy the assignment.
+1. Finish orders two and three, the final scene, level pacing, audio and the complete gameplay checks.
+2. Read lecture decks 3 and 4; previous attempts timed out on cloud-backed files.
+3. Confirm graduate requirements and intended release architectures.
+4. Conduct real first-time player tests and record feedback-driven revisions. Agent-operated checks do not meet that requirement.
+5. Windows and Linux releases require suitable build/test environments; a Mac Editor preview alone does not satisfy the assignment.

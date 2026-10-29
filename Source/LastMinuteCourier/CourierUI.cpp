@@ -145,6 +145,7 @@ private:
                 [SNew(SBox).WidthOverride(300)
                     [SNew(SComboBox<TSharedPtr<FString>>).OptionsSource(&LanguageOptions).InitiallySelectedItem(Selected)
                         .ButtonStyle(&QuietStyle).ItemStyle(&LanguageRowStyle).ForegroundColor(CourierPalette::Ink)
+                        .Method(EPopupMethod::UseCurrentWindow)
                         .MaxListHeight(400).EnableGamepadNavigationMode(true)
                         .OnGenerateWidget_Lambda([this](TSharedPtr<FString> Code)->TSharedRef<SWidget>
                         {

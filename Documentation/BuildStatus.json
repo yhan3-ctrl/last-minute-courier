@@ -1,0 +1,63 @@
+{
+  "engine": "5.8.4",
+  "xcode": "27.1",
+  "mac_sdk": "27.0",
+  "editor_build": "succeeded",
+  "metal_toolchain": "installed_and_version_command_passed",
+  "map_generation": "succeeded",
+  "visual_material_generation": "succeeded_zero_errors_zero_warnings",
+  "runtime_playtest": "agent_operated_smoke_checks_only",
+  "verified_in_runtime": [
+    "default_english_opening",
+    "optional_chinese_glyphs",
+    "opening_navigation",
+    "movement",
+    "jump",
+    "slowdown_recharge_feedback",
+    "package_pickup_starts_timer",
+    "pause_resume",
+    "keyboard_slider_adjustment",
+    "camera_lock_checkbox_keyboard",
+    "campus_scene_rendering",
+    "first_order_successful_delivery",
+    "retry_returns_to_pickup"
+  ],
+  "human_playtests": 0,
+  "full_delivery_flow": "first_order_passed_orders_two_and_three_unimplemented",
+  "failure_timeout_and_pause_edge_cases": "pending",
+  "comfort_validation": "requires_human_playtest",
+  "platform_builds": {
+    "mac": "not_packaged",
+    "windows": "not_built",
+    "linux": "not_built"
+  },
+  "default_language": "en",
+  "languages": [
+    "en",
+    "zh",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
+  ],
+  "translation_coverage": {
+    "runtime_strings": 46,
+    "optional_languages": 6,
+    "check": "passed"
+  },
+  "language_selector": "dropdown_selection_confirmed_with_keyboard",
+  "opening_language_layout_checks": [
+    "en",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
+  ],
+  "pause_language_layout_checks": [
+    "zh",
+    "de"
+  ],
+  "native_speaker_review": "not_completed"
+}

@@ -2,6 +2,7 @@
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Misc/Paths.h"
 #include "Brushes/SlateColorBrush.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
@@ -94,11 +95,12 @@ private:
         return FText::FromString(Mode->Copy(En,Zh));
     }
 
-    FSlateFontInfo Typeface(int32 Size,bool Title=false,bool ForceChinese=false) const
+    FSlateFontInfo Typeface(int32 Size,bool Title=false,const FString& FontLanguage=FString()) const
     {
-        const bool Chinese=ForceChinese || (Mode.IsValid() && Mode->UsesCjkFont());
+        const FString Locale=FontLanguage.IsEmpty()?Mode->Language:FontLanguage;
+        const bool Chinese=Locale==TEXT("zh") || Locale==TEXT("ja") || Locale==TEXT("ko");
         const TCHAR* Name=Chinese?
-            (Mode->Language==TEXT("ja")?TEXT("NotoSansJP-Regular.otf"):(Mode->Language==TEXT("ko")?TEXT("NotoSansKR-Regular.otf"):TEXT("NotoSansSC-Regular.otf"))):
+            (Locale==TEXT("ja")?TEXT("NotoSansJP-Regular.otf"):(Locale==TEXT("ko")?TEXT("NotoSansKR-Regular.otf"):TEXT("NotoSansSC-Regular.otf"))):
             (Title?TEXT("BreeSerif-Regular.ttf"):TEXT("AtkinsonHyperlegible-Regular.ttf"));
         static TMap<FString,TSharedPtr<const FCompositeFont>> Fonts;
         const FString Path=FPaths::ProjectContentDir()/TEXT("Fonts")/Name;
@@ -113,9 +115,9 @@ private:
             .SimpleTextMode(WrapWidth<=0).WrapTextAt(WrapWidth).LineHeightPercentage(1.25f);
     }
 
-    TSharedRef<SWidget> Action(const FText& Caption,int32 Id,bool Primary=false,bool ChineseLabel=false)
+    TSharedRef<SWidget> Action(const FText& Caption,int32 Id,bool Primary=false)
     {
-        return SNew(SButton).ButtonStyle(Primary?&PrimaryStyle:&QuietStyle).IsFocusable(false)
+        return SNew(SButton).ButtonStyle(Primary?&PrimaryStyle:&QuietStyle).IsFocusable(true)
             .IsEnabled(Id!=4 || Mode->Phase!=ECourierPhase::Paused || Mode->BeforePause!=ECourierPhase::Practice)
             .OnClicked_Lambda([this,Id]()
             {
@@ -127,10 +129,12 @@ private:
                     case 2:Mode->TogglePause();break;
                     case 3:Mode->ToggleHelp();break;
                     case 4:Mode->Retry();break;
+                    case 7:UKismetSystemLibrary::QuitGame(Mode.Get(),UGameplayStatics::GetPlayerController(Mode.Get(),0),EQuitPreference::Quit,false);break;
+                    case 8:Mode->RecenterCamera();break;
                 }
                 return FReply::Handled();
             })
-            [SNew(STextBlock).Text(Caption).Font(Typeface(18,false,ChineseLabel))
+            [SNew(STextBlock).Text(Caption).Font(Typeface(18))
                 .ColorAndOpacity(Primary?CourierPalette::Paper:CourierPalette::Ink)];
     }
 
@@ -149,10 +153,9 @@ private:
                         .MaxListHeight(400).EnableGamepadNavigationMode(true)
                         .OnGenerateWidget_Lambda([this](TSharedPtr<FString> Code)->TSharedRef<SWidget>
                         {
-                            const bool Cjk=*Code==TEXT("zh") || *Code==TEXT("ja") || *Code==TEXT("ko");
                             return SNew(SBox).Padding(FMargin(14,8))
                                 [SNew(STextBlock).Text(FText::FromString(ACourierGameMode::LanguageName(*Code)))
-                                    .Font(Typeface(18,false,Cjk)).ColorAndOpacity(CourierPalette::Ink).SimpleTextMode(true)];
+                                    .Font(Typeface(18,false,*Code)).ColorAndOpacity(CourierPalette::Ink).SimpleTextMode(true)];
                         })
                         .OnSelectionChanged_Lambda([this](TSharedPtr<FString> Code,ESelectInfo::Type)
                         {if(Mode.IsValid() && Code.IsValid())Mode->SetLanguage(*Code);})
@@ -180,7 +183,13 @@ private:
         if(Comfort) Column->AddSlot().AutoHeight().Padding(0,0,0,22)[CameraSettings()];
         Column->AddSlot().AutoHeight().Padding(0,0,0,24)[Actions];
         Column->AddSlot().AutoHeight().Padding(0,0,0,16)[Rule()];
-        Column->AddSlot().AutoHeight()[Languages()];
+        Column->AddSlot().AutoHeight()
+            [SNew(SHorizontalBox)
+                +SHorizontalBox::Slot().FillWidth(1)[Languages()]
+                +SHorizontalBox::Slot().AutoWidth()[Action(Copy(TEXT("Quit game"),TEXT("退出游戏")),7)]];
+        if(Mode->Phase==ECourierPhase::Opening)
+            Column->AddSlot().AutoHeight().Padding(0,12,0,0)
+                [Text(Copy(TEXT("Preview: first delivery. More routes are in development."),TEXT("预览版：当前包含第一单，后续路线仍在制作中。")),14,false,CourierPalette::Muted,820)];
         Column->AddSlot().AutoHeight().Padding(0,15,0,0)
             [Text(Copy(TEXT("Enter to continue  /  Backspace to go back  /  L to switch language"),TEXT("Enter 继续 / Backspace 返回 / L 切换语言")),14,false,CourierPalette::Muted,820)];
         return SNew(SOverlay)
@@ -196,6 +205,8 @@ private:
         return SNew(SVerticalBox)
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,8)
                 [Text(Copy(TEXT("Camera comfort"),TEXT("镜头舒适度")),20,true)]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10).HAlign(HAlign_Left)
+                [Action(Copy(TEXT("Recenter camera (C)"),TEXT("镜头回正（C）")),8)]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)
                 [SNew(SCheckBox)
                     .IsChecked_Lambda([this](){return Mode->bLockCamera?ECheckBoxState::Checked:ECheckBoxState::Unchecked;})
@@ -237,7 +248,8 @@ private:
                 [CardBox(SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight()[Text(Copy(TEXT("DELIVERY / 01"),TEXT("配送 / 01")),14,false,CourierPalette::Orange)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
-                        [Text(Mode->Phase==ECourierPhase::Delivery?Copy(TEXT("A little warmth"),TEXT("把暖意送到")):Copy(TEXT("Practice yard"),TEXT("练习区")),27,true)]
+                        [Text(Mode->Phase==ECourierPhase::Delivery?Copy(TEXT("A little warmth"),TEXT("把暖意送到")):
+                            (Mode->Phase==ECourierPhase::AwaitPickup?Copy(TEXT("Ready for pickup"),TEXT("准备取件")):Copy(TEXT("Practice yard"),TEXT("练习区"))),27,true)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
                         [SNew(STextBlock).Text(Mode->Phase==ECourierPhase::Delivery?Copy(TEXT("Destination: Coffee Stand"),TEXT("目的地：咖啡摊")):Copy(TEXT("Follow the marked path to the parcel desk."),TEXT("沿标记路线前往取件台。")))
                             .Font(Typeface(17)).ColorAndOpacity(CourierPalette::Ink).WrapTextAt(310).LineHeightPercentage(1.25f)])]];
@@ -279,6 +291,8 @@ private:
                     .WrapTextAt(650).LineHeightPercentage(1.2f)
                     .Text_Lambda([this]()
                     {
+                        const FString Notice=Mode->StatusNotice();
+                        if(!Notice.IsEmpty())return FText::FromString(Notice);
                         const FString Prompt=Mode->InteractionPrompt();
                         if(!Prompt.IsEmpty())return FText::FromString(Prompt);
                         if(Mode->Phase==ECourierPhase::Practice)
@@ -300,7 +314,8 @@ private:
         LastPhase=Mode->Phase;LastCard=Mode->Card;LastLanguage=Mode->Language;LastHelp=Mode->bHelp;
         if(Mode->CanMove())
         {
-            Root->SetContent(Gameplay());
+            Root->SetContent(SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)
+                [SNew(SBox).WidthOverride(1280).HeightOverride(800)[Gameplay()]]);
             return;
         }
         auto Actions=SNew(SHorizontalBox);

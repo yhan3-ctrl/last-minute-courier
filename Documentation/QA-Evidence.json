@@ -1,0 +1,86 @@
+{
+  "kind": "agent_operated_engine_regression_not_human_playtest",
+  "engine": "5.8.4",
+  "runs": [
+    {
+      "name": "BeforeFix",
+      "created_utc": "2026.10.29-21.32.44",
+      "succeeded_suites": 0,
+      "failed_suites": 1,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Fail",
+          "errors": 5,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Error",
+              "message": "Expected 'Crossing without jumping does not pass jump lesson' to be 1, but it was 2."
+            },
+            {
+              "type": "Error",
+              "message": "Expected 'Distant Q press cannot satisfy cart lesson' to be false."
+            },
+            {
+              "type": "Error",
+              "message": "Expected 'Cannot collect a package from under the ground' to be true."
+            },
+            {
+              "type": "Error",
+              "message": "Expected 'Cannot collect high above the desk' to be true."
+            },
+            {
+              "type": "Error",
+              "message": "Expected 'Cannot deliver high above destination' to be true."
+            },
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AfterFix",
+      "created_utc": "2026.10.29-21.36.24",
+      "succeeded_suites": 1,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FinalAudit",
+      "created_utc": "2026.10.29-21.45.58",
+      "succeeded_suites": 1,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

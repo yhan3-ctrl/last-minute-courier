@@ -17,7 +17,7 @@ for english, translations in strings.items():
 required = set()
 for path in (root / "Source/LastMinuteCourier").glob("*.cpp"):
     source = path.read_text()
-    required.update(re.findall(r'Copy\(\s*TEXT\("((?:[^"\\]|\\.)*)"\),', source))
+    required.update(re.findall(r'(?:Copy|Notify)\(\s*TEXT\("((?:[^"\\]|\\.)*)"\),', source))
     tutorial = re.search(r'TutorialText\s*=\s*\{(.*?)\};', source, re.S)
     if tutorial:
         required.update(re.findall(r'TEXT\("((?:[^"\\]|\\.)*)"\)', tutorial.group(1)))

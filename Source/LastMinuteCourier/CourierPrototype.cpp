@@ -85,12 +85,15 @@ namespace
 
     void Sign(UWorld* World, const FVector& Location, const FString& Text)
     {
+        // Keep cream lettering readable against the sky and pale buildings.
+        Box(World,Location+FVector(6,0,8),FVector(8,Text.Len()*13.f+30.f,46),Swatch(TEXT("243D43")),false);
         auto* Actor = World->SpawnActor<AActor>(Location, FRotator(0, 180, 0));
         auto* Label = NewObject<UTextRenderComponent>(Actor);
         Actor->SetRootComponent(Label);
         Label->RegisterComponent();
         Label->SetWorldLocationAndRotation(Location, FRotator(0, 180, 0));
         Label->SetText(FText::FromString(Text));
+        Label->SetTextMaterial(LoadObject<UMaterialInterface>(nullptr,TEXT("/Engine/EngineMaterials/UnlitText.UnlitText")));
         Label->SetWorldSize(22.f);
         Label->SetHorizontalAlignment(EHTA_Center);
         Label->SetTextRenderColor(FColor(245, 235, 207));
@@ -205,6 +208,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
     if (!Player) return;
     CollisionProtection = FMath::Max(0.f, CollisionProtection - DeltaSeconds);
+    NoticeSeconds=FMath::Max(0.f,NoticeSeconds-DeltaSeconds);
     if (bSlowing)
     {
         SlowRemaining = FMath::Max(0.f, SlowRemaining - DeltaSeconds);
@@ -225,11 +229,28 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         }
         if (Tutorial == 1 && Position.X > 1100.f)
         {
-            Tutorial = 2;
-            Checkpoint = FVector(1200, 0, 120);
+            if(bTrainingJumped)
+            {
+                Tutorial = 2;
+                Checkpoint = FVector(1200, 0, 120);
+            }
+            else
+            {
+                Notify(TEXT("Try a jump here: press Space, then cross the step."),TEXT("在这里试着跳跃：按空格，再越过台阶。"));
+                RestoreCheckpoint();
+                return;
+            }
         }
-        if (Tutorial == 2 && Position.X > 1900.f && Carts.Num() > 0 && Carts[0]->bSlowedOnce)
-            Tutorial = 3;
+        if (Tutorial == 2 && Position.X > 1900.f)
+        {
+            if(Carts.Num()>0 && Carts[0]->bSlowedOnce)Tutorial=3;
+            else
+            {
+                Notify(TEXT("Use Q near the blue cart before crossing its lane."),TEXT("先在蓝色运输车附近按住 Q，再通过车道。"));
+                RestoreCheckpoint();
+                return;
+            }
+        }
         if (Tutorial == 3 && FVector::Dist2D(Position, Pickup) < 240.f)
         {
             Phase = ECourierPhase::AwaitPickup;
@@ -253,6 +274,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     }
     if (Position.Z < -200.f || FMath::Abs(Position.Y) > 650.f)
     {
+        Notify(TEXT("Back on the path. Your checkpoint is safe."),TEXT("回到路上了。已恢复到检查点。"));
         RestoreCheckpoint();
         return;
     }
@@ -262,6 +284,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         {
             if (Cart && Cart->Touching(Position))
             {
+                Notify(TEXT("Cart ahead! Back at your checkpoint. Wait for a gap or hold Q."),TEXT("注意运输车！已回到检查点，等待空隙或按住 Q。"));
                 RestoreCheckpoint();
                 break;
             }
@@ -294,7 +317,7 @@ void ACourierGameMode::Interact()
 {
     auto* Player = Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
     if (!Player) return;
-    if (Phase == ECourierPhase::AwaitPickup && FVector::Dist2D(Player->GetActorLocation(), Pickup) < 240.f)
+    if (Phase == ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
     {
         Phase = ECourierPhase::Delivery;
         Remaining = 140.f;
@@ -304,7 +327,7 @@ void ACourierGameMode::Interact()
         Cooldown = 0.f;
         Player->Bag->SetVisibility(true);
     }
-    else if (Phase == ECourierPhase::Delivery && FVector::Dist2D(Player->GetActorLocation(), Destination) < 240.f)
+    else if (Phase == ECourierPhase::Delivery && CanInteractAt(Destination))
     {
         EndSlow();
         Phase = ECourierPhase::Delivered;
@@ -362,11 +385,24 @@ void ACourierGameMode::ToggleLanguage()
     SetLanguage(Codes[(Codes.Find(Language)+1)%Codes.Num()]);
 }
 
+void ACourierGameMode::RecenterCamera()
+{
+    if(!CanMove() && Phase!=ECourierPhase::Paused)return;
+    if(auto* PC=UGameplayStatics::GetPlayerController(this,0))
+    {
+        // This preview's route runs along +X. Recenter is explicit, including
+        // when direction lock is enabled; never turn the camera automatically.
+        PC->SetControlRotation(FRotator(-12.f,0.f,0.f));
+    }
+}
+
 void ACourierGameMode::RestoreCheckpoint()
 {
     if (auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0))
     {
         Player->GetCharacterMovement()->StopMovementImmediately();
+        Player->StopJumping();
+        Player->ConsumeMovementInputVector();
         Player->SetActorLocation(Checkpoint, false, nullptr, ETeleportType::TeleportPhysics);
         if (auto* PC=UGameplayStatics::GetPlayerController(this,0); PC && PC->PlayerCameraManager)
             PC->PlayerCameraManager->StartCameraFade(1.f,0.f,.3f,FLinearColor::Black,false,false);
@@ -390,6 +426,7 @@ void ACourierGameMode::Retry()
         if (auto* PC = UGameplayStatics::GetPlayerController(this, 0)) PC->SetPause(false);
     Phase = ECourierPhase::AwaitPickup;
     bHelp = false;
+    NoticeSeconds=0;
     ++Retries;
     Remaining = 140.f;
     OrderElapsed = 0.f;
@@ -406,11 +443,29 @@ FString ACourierGameMode::InteractionPrompt() const
 {
     const auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
     if (!Player) return FString();
-    if (Phase == ECourierPhase::AwaitPickup && FVector::Dist2D(Player->GetActorLocation(), Pickup) < 240.f)
+    if (Phase == ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
         return Copy(TEXT("E  Collect coffee box - 140 second delivery"), TEXT("E 领取咖啡保温箱 · 限时 140 秒"));
-    if (Phase == ECourierPhase::Delivery && FVector::Dist2D(Player->GetActorLocation(), Destination) < 240.f)
+    if (Phase == ECourierPhase::Delivery && CanInteractAt(Destination))
         return Copy(TEXT("E  Deliver the coffee box"), TEXT("E 交付咖啡保温箱"));
     return FString();
+}
+
+bool ACourierGameMode::CanInteractAt(const FVector& Target) const
+{
+    const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
+    return Player && Player->GetCharacterMovement()->IsMovingOnGround() &&
+        FVector::Dist2D(Player->GetActorLocation(),Target)<240.f &&
+        FMath::Abs(Player->GetActorLocation().Z-Target.Z)<110.f;
+}
+
+void ACourierGameMode::Notify(const TCHAR* English,const TCHAR* Chinese)
+{
+    NoticeEn=English;NoticeZh=Chinese;NoticeSeconds=3.5f;
+}
+
+FString ACourierGameMode::StatusNotice() const
+{
+    return NoticeSeconds>0?Copy(*NoticeEn,*NoticeZh):FString();
 }
 
 void ACourierGameMode::RefreshInput()
@@ -583,7 +638,6 @@ void ACourierGameMode::BuildPracticeRoute()
     }
     SkyMesh->SetCastShadow(false);
     auto* Sun = World->SpawnActor<ADirectionalLight>(FVector(0,0,1200), FRotator(-48,-25,0));
-    Sun->SetActorRotation(FRotator(-48,-25,0));
     if (auto* Light = Sun->FindComponentByClass<UDirectionalLightComponent>())
     {
         Light->SetIntensity(2.5f);
@@ -689,6 +743,16 @@ void ACourierCharacter::Tick(float DeltaSeconds)
         Limbs[I]->SetRelativeRotation(FRotator(FMath::Sin(WalkCycle+I*PI)*12.f*FMath::Clamp(Speed/500.f,0.f,1.f),0,0));
 }
 
+void ACourierCharacter::OnJumped_Implementation()
+{
+    Super::OnJumped_Implementation();
+    if(auto* Mode=Game(this);Mode && Mode->Phase==ECourierPhase::Practice && Mode->Tutorial==1)
+    {
+        const FVector Position=GetActorLocation();
+        if(Position.X>600 && Position.X<1100 && FMath::Abs(Position.Y)<550)Mode->bTrainingJumped=true;
+    }
+}
+
 void ACourierCharacter::SetupPlayerInputComponent(UInputComponent* Input)
 {
     Super::SetupPlayerInputComponent(Input);
@@ -749,6 +813,7 @@ void ACourierController::SetupInputComponent()
     InputComponent->BindAction(TEXT("Retry"),IE_Pressed,this,&ACourierController::RetryPressed).bExecuteWhenPaused=true;
     InputComponent->BindAction(TEXT("Help"),IE_Pressed,this,&ACourierController::HelpPressed).bExecuteWhenPaused=true;
     InputComponent->BindAction(TEXT("Language"),IE_Pressed,this,&ACourierController::LanguagePressed).bExecuteWhenPaused=true;
+    InputComponent->BindAction(TEXT("Recenter"),IE_Pressed,this,&ACourierController::RecenterPressed).bExecuteWhenPaused=true;
     InputComponent->BindAction(TEXT("Interact"),IE_Pressed,this,&ACourierController::Interact);
     InputComponent->BindAction(TEXT("Slow"),IE_Pressed,this,&ACourierController::SlowPressed);
     InputComponent->BindAction(TEXT("Slow"),IE_Released,this,&ACourierController::SlowReleased).bExecuteWhenPaused=true;
@@ -762,6 +827,7 @@ void ACourierController::PausePressed() { if(Game(this))Game(this)->TogglePause(
 void ACourierController::RetryPressed() { if(Game(this))Game(this)->Retry(); }
 void ACourierController::HelpPressed() { if(Game(this))Game(this)->ToggleHelp(); }
 void ACourierController::LanguagePressed() { if(Game(this))Game(this)->ToggleLanguage(); }
+void ACourierController::RecenterPressed() { if(Game(this))Game(this)->RecenterCamera(); }
 
 ACourierCart::ACourierCart()
 {
@@ -805,7 +871,9 @@ void ACourierCart::Tick(float DeltaSeconds)
     if(!Material) Material=Paint(Mesh,FLinearColor(.02f,.42f,.75f));
     if(!bEnabled) return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
-    if(Mode->bSlowing) bSlowedOnce=true;
+    if(Mode->bSlowing)
+        if(const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0))
+            if(FMath::Abs(Player->GetActorLocation().X-Origin.X)<600.f)bSlowedOnce=true;
     SetActorLocation(Origin+FVector(0,FMath::Sin(Clock*2.f*PI/Period+InitialPhase)*Amplitude,0));
     Material->SetVectorParameterValue(TEXT("Color"),Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
 }

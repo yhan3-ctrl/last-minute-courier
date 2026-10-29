@@ -1,0 +1,140 @@
+#include "../CourierPrototype.h"
+
+#if WITH_DEV_AUTOMATION_TESTS
+#include "Misc/AutomationTest.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCourierFlowRegression,"Courier.Regression.FirstOrderBoundaries",
+    EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+bool FCourierFlowRegression::RunTest(const FString&)
+{
+    UWorld* World=nullptr;
+    for(const auto& Context:GEngine->GetWorldContexts())
+        if(Context.World() && Context.World()->GetAuthGameMode<ACourierGameMode>())World=Context.World();
+    if(!TestNotNull(TEXT("Run with the courier map in -game mode"),World))return false;
+    auto* Mode=World->GetAuthGameMode<ACourierGameMode>();
+    auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(World,0));
+    auto* PC=UGameplayStatics::GetPlayerController(World,0);
+    if(!TestNotNull(TEXT("Player spawned"),Player) || !TestNotNull(TEXT("Controller spawned"),PC))return false;
+    ACourierCart* Training=nullptr;
+    ACourierCart* DeliveryCart=nullptr;
+    for(TActorIterator<ACourierCart> It(World);It;++It)
+        if(It->bTraining)Training=*It;else DeliveryCart=*It;
+    if(!TestNotNull(TEXT("Training cart exists"),Training) || !TestNotNull(TEXT("Delivery cart exists"),DeliveryCart))return false;
+
+    auto Place=[Player](const FVector& Position,bool Grounded=true)
+    {
+        Player->StopJumping();
+        Player->GetCharacterMovement()->StopMovementImmediately();
+        Player->SetActorLocation(Position,false,nullptr,ETeleportType::TeleportPhysics);
+        Player->GetCharacterMovement()->SetMovementMode(Grounded?MOVE_Walking:MOVE_Falling);
+    };
+    TestEqual(TEXT("Fresh run defaults to English"),Mode->Language,FString(TEXT("en")));
+    TestEqual(TEXT("Exactly three opening cards"),Mode->CardTitles.Num(),3);
+    Mode->Back();TestEqual(TEXT("Back on first card stays at zero"),Mode->Card,0);
+    Mode->StartSlow();Mode->Interact();Mode->Tick(2.f);
+    TestFalse(TEXT("Ability cannot start during opening"),Mode->bSlowing);
+    TestTrue(TEXT("Opening does not start clock"),FMath::IsNearlyEqual(Mode->Remaining,140.f));
+    Mode->Continue();Mode->Continue();Mode->Back();
+    TestEqual(TEXT("Card back navigation"),Mode->Card,1);
+    for(const FString& Code:Mode->Languages())
+    {
+        Mode->SetLanguage(Code);
+        const FString Title=Mode->Copy(*Mode->CardTitles[0],*Mode->CardTitlesZh[0]);
+        TestFalse(*FString::Printf(TEXT("Nonempty opening translation: %s"),*Code),Title.IsEmpty());
+        if(Code!=TEXT("en"))TestTrue(*FString::Printf(TEXT("Localized title: %s"),*Code),Title!=Mode->CardTitles[0]);
+    }
+    Mode->SetLanguage(TEXT("unsupported"));TestEqual(TEXT("Invalid locale rejected"),Mode->Language,FString(TEXT("de")));
+    Mode->SetLanguage(TEXT("en"));
+    Mode->Continue();Mode->Continue();
+    TestTrue(TEXT("Opening enters practice"),Mode->Phase==ECourierPhase::Practice);
+    Mode->Retry();TestTrue(TEXT("Retry cannot skip practice"),Mode->Phase==ECourierPhase::Practice);
+    Mode->TogglePause();Mode->Retry();
+    TestTrue(TEXT("Paused practice retry cannot skip practice"),Mode->Phase==ECourierPhase::Paused && Mode->BeforePause==ECourierPhase::Practice);
+    Mode->TogglePause();
+    Place(FVector(600,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Move marker advances tutorial"),Mode->Tutorial,1);
+    Place(FVector(1200,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Crossing without jumping does not pass jump lesson"),Mode->Tutorial,1);
+    // Complete the real Character jump callback near the lesson, then cross.
+    Place(FVector(850,0,88));Player->OnJumped_Implementation();
+    Place(FVector(1200,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Learned jump advances tutorial"),Mode->Tutorial,2);
+    Place(FVector(100,0,88));Mode->StartSlow();Training->Tick(.1f);Mode->EndSlow();
+    TestFalse(TEXT("Distant Q press cannot satisfy cart lesson"),Training->bSlowedOnce);
+    Mode->Cooldown=0;Mode->SlowRemaining=3;
+    Place(FVector(1300,0,88));Mode->StartSlow();Training->Tick(.1f);
+    TestTrue(TEXT("Using Q near training cart teaches slowdown"),Training->bSlowedOnce);
+    Mode->EndSlow();Place(FVector(2000,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Crossed trained lane advances tutorial"),Mode->Tutorial,3);
+    Place(FVector(2400,0,88));Mode->Tick(.01f);
+    TestTrue(TEXT("Practice reaches pickup"),Mode->Phase==ECourierPhase::AwaitPickup);
+    Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,140.f));
+    Place(FVector(2400,0,-100),false);Mode->Interact();
+    TestTrue(TEXT("Cannot collect a package from under the ground"),Mode->Phase==ECourierPhase::AwaitPickup);
+    // Restore a valid pickup state even when running this test against an old build.
+    if(Mode->Phase!=ECourierPhase::AwaitPickup)Mode->Retry();
+    Place(FVector(2400,0,330),false);Mode->Interact();
+    TestTrue(TEXT("Cannot collect high above the desk"),Mode->Phase==ECourierPhase::AwaitPickup);
+    if(Mode->Phase!=ECourierPhase::AwaitPickup)Mode->Retry();
+    Place(FVector(2400,0,88));Mode->Interact();
+    TestTrue(TEXT("Grounded collection starts order"),Mode->Phase==ECourierPhase::Delivery);
+    TestTrue(TEXT("Collection reveals package"),Player->Bag->IsVisible());
+    Place(FVector(2600,0,88));
+    const float ClockBefore=Mode->Remaining;
+    Mode->StartSlow();const float CartBefore=DeliveryCart->Clock;
+    DeliveryCart->Tick(1.f);Mode->Tick(1.f);
+    TestTrue(TEXT("Slowdown affects device by one quarter"),FMath::IsNearlyEqual(DeliveryCart->Clock-CartBefore,.25f,.001f));
+    TestTrue(TEXT("Slowdown does not slow delivery timer"),FMath::IsNearlyEqual(ClockBefore-Mode->Remaining,1.f,.001f));
+    TestTrue(TEXT("Ability consumes charge"),FMath::IsNearlyEqual(Mode->SlowRemaining,2.f,.001f));
+    Mode->TogglePause();
+    TestTrue(TEXT("Pause really pauses Unreal world"),World->IsPaused());
+    Mode->bLockCamera=true;
+    PC->SetControlRotation(FRotator(20,75,0));Mode->RecenterCamera();
+    TestTrue(TEXT("Explicit recenter works while paused and camera locked"),PC->GetControlRotation().Equals(FRotator(-12,0,0),.01f));
+    TestTrue(TEXT("Recenter preserves pause and camera lock"),World->IsPaused() && Mode->bLockCamera);
+    Mode->bLockCamera=false;
+    const float PausedClock=Mode->Remaining,PausedCharge=Mode->SlowRemaining,PausedCart=DeliveryCart->Clock;
+    Mode->Tick(1.f);DeliveryCart->Tick(1.f);
+    TestTrue(TEXT("Pause freezes countdown"),Mode->Remaining==PausedClock);
+    TestTrue(TEXT("Pause freezes ability charge"),Mode->SlowRemaining==PausedCharge);
+    TestTrue(TEXT("Pause freezes cart"),DeliveryCart->Clock==PausedCart);
+    Mode->TogglePause();
+    TestFalse(TEXT("Resume unpauses world"),World->IsPaused());
+    TestFalse(TEXT("Released Q during pause ends ability on resume"),Mode->bSlowing);
+    TestTrue(TEXT("Resume enters full cooldown"),FMath::IsNearlyEqual(Mode->Cooldown,4.f));
+    Mode->StartSlow();TestFalse(TEXT("Ability cannot restart during cooldown"),Mode->bSlowing);
+    Mode->Tick(4.f);TestTrue(TEXT("Cooldown restores full charge"),Mode->Cooldown==0 && Mode->SlowRemaining==3.f);
+    Mode->StartSlow();Mode->Tick(3.f);
+    TestTrue(TEXT("Exhausted ability ends with cooldown"),!Mode->bSlowing && FMath::IsNearlyEqual(Mode->Cooldown,4.f));
+
+    Mode->Checkpoint=FVector(4500,0,120);Place(FVector(4500,900,88));Mode->Tick(.1f);
+    TestTrue(TEXT("Off-road recovery uses checkpoint"),FVector::Dist2D(Player->GetActorLocation(),Mode->Checkpoint)<1.f);
+    TestTrue(TEXT("Recovery grants collision protection"),Mode->CollisionProtection>0);
+    Place(FVector(2400,0,88));Mode->Remaining=.01f;Mode->Tick(.02f);
+    TestTrue(TEXT("Timeout reaches failure state"),Mode->Phase==ECourierPhase::Failed);
+    TestFalse(TEXT("Failure blocks player movement"),Mode->CanMove());
+    const int32 RetriesBefore=Mode->Retries;Mode->Retry();
+    TestTrue(TEXT("Retry restores pickup without starting timer"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Remaining==140.f);
+    TestEqual(TEXT("Retry increments count once"),Mode->Retries,RetriesBefore+1);
+    TestFalse(TEXT("Retry hides package"),Player->Bag->IsVisible());
+    TestTrue(TEXT("Retry resets ability and all cooldown"),!Mode->bSlowing && Mode->Cooldown==0 && Mode->SlowRemaining==3.f);
+    Place(FVector(2400,0,88));Mode->Interact();
+    Place(FVector(8000,0,330),false);Mode->Interact();
+    TestTrue(TEXT("Cannot deliver high above destination"),Mode->Phase==ECourierPhase::Delivery);
+    Place(FVector(8000,0,88));Mode->Interact();
+    TestTrue(TEXT("Grounded delivery reaches success"),Mode->Phase==ECourierPhase::Delivered);
+    TestFalse(TEXT("Success hides package"),Player->Bag->IsVisible());
+    const float FinishedClock=Mode->Remaining;Mode->Tick(5.f);
+    TestTrue(TEXT("Success stops delivery countdown"),Mode->Remaining==FinishedClock);
+    Mode->Retry();TestTrue(TEXT("Can replay after success"),Mode->Phase==ECourierPhase::AwaitPickup);
+    AddInfo(TEXT("State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."));
+    return true;
+}
+#endif

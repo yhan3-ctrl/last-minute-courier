@@ -49,3 +49,22 @@ This is agent-operated technical validation and user-requested refinement, not a
 ### Still unverified or unfinished
 
 Human playtests and feedback-driven revisions; camera comfort; frame-time stability; timeout and pause edge cases; pointer clicks (native automation reports noWindowsAvailable); smaller window layouts; complete per-language playthroughs; orders two/three, full level pacing, audio and final ending; standalone Mac/Windows/Linux releases; lecture-specific document structures and graduate requirements.
+
+
+## v0.3 — First-order boundary audit — 2026-10-29
+
+Source baseline: `f97bdbf`. Implementation is the commit titled `Fix courier tutorial and interaction boundaries; audit first-order flow`.
+
+This remains developer/agent technical validation, not human playtest feedback.
+
+- Wrote and ran a native Unreal regression against the real map, game mode, character and carts. Before fixing behavior it reported five failures: jump-lesson bypass, distant-Q lesson credit, underground pickup, airborne pickup and airborne delivery.
+- Required an actual jump near the lesson, and Q use near the training cart. Shared grounded/height/distance validation between interaction hints and interaction execution. The same suite then passed; a final run including paused/locked camera recenter also passed with zero errors and zero test warnings.
+- Checked normal-clock versus quarter-speed device updates, charge/cooldown, pause freeze, releasing Q during pause, checkpoint protection, timeout, retry resets, grounded success and success-clock freeze through controlled locations and explicit engine ticks. This does not certify real input combinations, physics, pacing or performance.
+- Added contextual recovery messages, cleared residual motion on checkpoint restore, labeled pickup-ready state correctly, made menu buttons keyboard-focusable, added a Quit button, and made each language-menu row use its own regional font. Runtime copy validation now covers 54 strings and six optional translations.
+- Added explicit C / menu recenter after observing how a turned-away camera could be locked in an unhelpful direction. Recenter points along this preview's +X route; future curved routes must replace that assumption. Added dark world-sign backgrounds and fitted the gameplay HUD to a design canvas.
+- In the actual 1024×640 window, checked opening → movement/jump/Q tutorials → E pickup → pause/resume → cart collision/recovery → successful E delivery → R retry. During a substantial pause, displayed time remained approximately 02:04 and resumed at 02:03. Menu controls and HUD fit within the window. This is evidence of this test run only.
+- Also let the full 140-second countdown expire naturally in the graphical build, observed the failure menu, and pressed R to restore pickup-ready state with no running clock. The encouraging failure heading could still state the timeout cause more clearly.
+- Keyboard focus and Space on Quit closed the prior graphically running preview normally; log confirmed shutdown. Pointer automation remains blocked by noWindowsAvailable, so mouse-click testing is still open.
+- Preserved sanitized before/after/final report summaries in `Documentation/QA-Evidence.json`, detailed findings and remaining scope in `Documentation/QA.zh.md`, and updated the stale rubric checklist. Raw logs/reports remain ignored in Saved.
+
+Open: full three-order level, new uses for all abilities, 5–10 minute first-time-player timing, human comfort and feedback-driven revisions, performance, all-language full playthroughs, standalone platform releases and assignment publication. Local iCloud cache reads sometimes time out; no global storage settings were changed.

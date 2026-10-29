@@ -20,11 +20,18 @@
     "camera_lock_checkbox_keyboard",
     "campus_scene_rendering",
     "first_order_successful_delivery",
-    "retry_returns_to_pickup"
+    "retry_returns_to_pickup",
+    "keyboard_quit_button",
+    "recenter_camera_while_paused_locked",
+    "tutorial_requires_actual_jump",
+    "checkpoint_notice",
+    "natural_140_second_timeout",
+    "retry_after_timeout",
+    "delivery_pause_clock_freeze_comparison"
   ],
   "human_playtests": 0,
   "full_delivery_flow": "first_order_passed_orders_two_and_three_unimplemented",
-  "failure_timeout_and_pause_edge_cases": "pending",
+  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
   "comfort_validation": "requires_human_playtest",
   "platform_builds": {
     "mac": "not_packaged",
@@ -42,7 +49,7 @@
     "de"
   ],
   "translation_coverage": {
-    "runtime_strings": 46,
+    "runtime_strings": 54,
     "optional_languages": 6,
     "check": "passed"
   },
@@ -59,5 +66,18 @@
     "zh",
     "de"
   ],
-  "native_speaker_review": "not_completed"
+  "native_speaker_review": "not_completed",
+  "audit_date": "2026-10-29",
+  "automated_regression": {
+    "suite": "Courier.Regression.FirstOrderBoundaries",
+    "before_fix_errors": 5,
+    "final_state": "Success",
+    "final_errors": 0,
+    "final_test_warnings": 0,
+    "evidence": "Documentation/QA-Evidence.json",
+    "method": "Controlled actor positions, explicit engine ticks; not a real-input/performance/human playtest."
+  },
+  "small_window": "1024x640_pause_and_gameplay_visually_checked",
+  "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
+  "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed"
 }

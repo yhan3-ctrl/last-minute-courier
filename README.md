@@ -9,11 +9,14 @@ Unreal Engine 5.8.4, Xcode 27.1 and Metal Toolchain are installed. The first-ord
 - [Design and production plan](Documentation/Design.zh.md)
 - [Playable copy](DesignData/game_content.json)
 - [Rubric and evidence checklist](Documentation/Acceptance.zh.md)
+- [Full prototype audit and remaining gaps](Documentation/QA.zh.md)
 - [Prototype source status and setup](Documentation/Prototype.zh.md)
 - [Visual direction and camera comfort](Documentation/VisualDirection.zh.md)
 - [Third-party font credits](Documentation/ASSET_CREDITS.md)
 
-To preview the current build on the development Mac, double-click `Scripts/play_prototype.command`. Enter advances the story, WASD moves, Space jumps, Q slows marked devices, E collects/delivers, Esc pauses, and L switches language. Camera settings are in the pause menu.
+To preview the current build on the development Mac, double-click `Scripts/play_prototype.command`. Enter advances the story, WASD moves, Space jumps, Q slows marked devices, E collects/delivers, Esc pauses, C recenters the camera, and L switches language. Camera settings are in the pause menu. Use this script so Xcode is selected for this process without changing the Mac's global developer directory.
+
+For a smaller-window check: `./Scripts/play_prototype.command '/Users/Shared/Epic Games/UE_5.8' 1024 640`. After building, `./Scripts/audit_game.command` runs the first-order boundary regression and writes the Unreal report under `Saved/QA/Regression`. This deliberately controls actor positions and clock ticks; it does not measure level play time or replace player feedback.
 
 ## Working arrangement
 

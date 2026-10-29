@@ -35,6 +35,7 @@ public:
     bool bHelp = false;
     bool bSlowing = false;
     bool bLockCamera = false;
+    bool bTrainingJumped = false;
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 140.f;
@@ -60,6 +61,9 @@ public:
     static const TArray<FString>& Languages();
     static FString LanguageName(const FString& Code);
     FString InteractionPrompt() const;
+    bool CanInteractAt(const FVector& Target) const;
+    FString StatusNotice() const;
+    void Notify(const TCHAR* English,const TCHAR* Chinese);
     void Continue();
     void Back();
     void Interact();
@@ -68,6 +72,7 @@ public:
     void TogglePause();
     void ToggleHelp();
     void ToggleLanguage();
+    void RecenterCamera();
     void Retry();
 private:
     UPROPERTY() TArray<TObjectPtr<class ACourierCart>> Carts;
@@ -76,6 +81,8 @@ private:
     void LoadCopy();
     void LoadTranslations();
     TMap<FString,TMap<FString,FString>> Translations;
+    FString NoticeEn,NoticeZh;
+    float NoticeSeconds = 0.f;
     void RefreshInput();
     void RestoreCheckpoint();
     void ResetDevices();
@@ -90,6 +97,7 @@ public:
     ACourierCharacter();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void OnJumped_Implementation() override;
     virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
     void SetCameraFov(float Value);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Bag;
@@ -125,6 +133,7 @@ private:
     void RetryPressed();
     void HelpPressed();
     void LanguagePressed();
+    void RecenterPressed();
 };
 
 UCLASS()

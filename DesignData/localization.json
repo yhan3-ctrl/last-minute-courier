@@ -377,6 +377,70 @@
       "es": "Idioma",
       "fr": "Langue",
       "de": "Sprache"
+    },
+    "Try a jump here: press Space, then cross the step.": {
+      "zh": "在这里试着跳跃：按空格，再越过台阶。",
+      "ja": "ここでジャンプしよう。Space を押して段差を越えよう。",
+      "ko": "여기서 Space로 점프해 턱을 넘으세요.",
+      "es": "Prueba a saltar aquí: pulsa Space y supera el escalón.",
+      "fr": "Essayez un saut ici : appuyez sur Space et franchissez la marche.",
+      "de": "Springe hier mit Space über die Stufe."
+    },
+    "Use Q near the blue cart before crossing its lane.": {
+      "zh": "先在蓝色运输车附近按住 Q，再通过车道。",
+      "ja": "青いカートの近くで Q を使ってから車線を渡ろう。",
+      "ko": "파란 카트 근처에서 Q를 사용한 뒤 통과하세요.",
+      "es": "Usa Q cerca del carro azul antes de cruzar su carril.",
+      "fr": "Utilisez Q près du chariot bleu avant de traverser sa voie.",
+      "de": "Benutze Q nahe am blauen Wagen, bevor du seine Spur überquerst."
+    },
+    "Back on the path. Your checkpoint is safe.": {
+      "zh": "回到路上了。已恢复到检查点。",
+      "ja": "道に戻りました。チェックポイントから再開できます。",
+      "ko": "길로 돌아왔습니다. 체크포인트에서 계속하세요.",
+      "es": "De vuelta al camino, en tu punto de control.",
+      "fr": "De retour sur le chemin, à votre point de contrôle.",
+      "de": "Zurück auf dem Weg, an deinem Kontrollpunkt."
+    },
+    "Cart ahead! Back at your checkpoint. Wait for a gap or hold Q.": {
+      "zh": "注意运输车！已回到检查点，等待空隙或按住 Q。",
+      "ja": "カートに注意！チェックポイントに戻りました。隙間を待つか Q を長押ししよう。",
+      "ko": "카트 주의! 체크포인트로 돌아왔습니다. 빈틈을 기다리거나 Q를 누르세요.",
+      "es": "¡Cuidado con el carro! Vuelves al punto de control. Espera un hueco o mantén Q.",
+      "fr": "Attention au chariot ! Retour au point de contrôle. Attendez un passage ou maintenez Q.",
+      "de": "Achtung, Wagen! Zurück am Kontrollpunkt. Warte auf eine Lücke oder halte Q."
+    },
+    "Quit game": {
+      "zh": "退出游戏",
+      "ja": "ゲームを終了",
+      "ko": "게임 종료",
+      "es": "Salir",
+      "fr": "Quitter",
+      "de": "Beenden"
+    },
+    "Preview: first delivery. More routes are in development.": {
+      "zh": "预览版：当前包含第一单，后续路线仍在制作中。",
+      "ja": "プレビュー：最初の配達のみ。続きのルートは制作中です。",
+      "ko": "미리보기: 첫 배달만 포함되어 있습니다. 나머지 경로는 제작 중입니다.",
+      "es": "Vista previa: primera entrega. Las demás rutas siguen en desarrollo.",
+      "fr": "Aperçu : première livraison. Les autres parcours sont en préparation.",
+      "de": "Vorschau: erste Lieferung. Weitere Strecken sind in Arbeit."
+    },
+    "Ready for pickup": {
+      "zh": "准备取件",
+      "ja": "受取の準備完了",
+      "ko": "수령 준비 완료",
+      "es": "Recoge el paquete",
+      "fr": "Colis à récupérer",
+      "de": "Paket abholen"
+    },
+    "Recenter camera (C)": {
+      "zh": "镜头回正（C）",
+      "ja": "カメラを正面に戻す（C）",
+      "ko": "카메라 정면으로 (C)",
+      "es": "Centrar cámara (C)",
+      "fr": "Recentrer la caméra (C)",
+      "de": "Kamera ausrichten (C)"
     }
   }
 }

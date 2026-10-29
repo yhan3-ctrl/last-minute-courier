@@ -13,6 +13,10 @@ if [[ ! -f "$COURIER_BUILD_SCRIPT" ]]; then
     print -u2 "Missing Unreal build script: $COURIER_BUILD_SCRIPT"
     exit 2
 fi
+# Select the full toolchain for this process without changing the machine-wide xcode-select setting.
+if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
+    export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+fi
 mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/DerivedDataCache"
 env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/DerivedDataCache" \
     /bin/bash "$COURIER_BUILD_SCRIPT" LastMinuteCourierEditor Mac Development \

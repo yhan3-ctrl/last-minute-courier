@@ -31,14 +31,17 @@ public:
     int32 Card = 0;
     int32 Tutorial = 0;
     int32 Retries = 0;
-    bool bChinese = false;
+    FString Language = TEXT("en"); // Always English on a new run, independent of OS language.
     bool bHelp = false;
     bool bSlowing = false;
+    bool bLockCamera = false;
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 140.f;
     float OrderElapsed = 0.f;
     float CollisionProtection = 0.f;
+    float MouseSensitivity = .6f;
+    float CameraFov = 90.f;
     FVector Checkpoint = FVector(100, 0, 120);
     const FVector Pickup = FVector(2400, 0, 100);
     const FVector Destination = FVector(8000, 0, 100);
@@ -52,6 +55,10 @@ public:
     bool CanMove() const;
     float DeviceRate() const;
     FString Copy(const TCHAR* English, const TCHAR* Chinese) const;
+    void SetLanguage(const FString& Code);
+    bool UsesCjkFont() const;
+    static const TArray<FString>& Languages();
+    static FString LanguageName(const FString& Code);
     FString InteractionPrompt() const;
     void Continue();
     void Back();
@@ -67,6 +74,8 @@ private:
     UPROPERTY() TObjectPtr<AActor> CoffeeLamp;
     void BuildPracticeRoute();
     void LoadCopy();
+    void LoadTranslations();
+    TMap<FString,TMap<FString,FString>> Translations;
     void RefreshInput();
     void RestoreCheckpoint();
     void ResetDevices();
@@ -79,9 +88,16 @@ class LASTMINUTECOURIER_API ACourierCharacter : public ACharacter
     GENERATED_BODY()
 public:
     ACourierCharacter();
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
+    void SetCameraFov(float Value);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Bag;
 private:
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Body;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Head;
+    UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Limbs;
+    float WalkCycle = 0.f;
     UPROPERTY() TObjectPtr<USpringArmComponent> Arm;
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
     void Forward(float Value);
@@ -97,6 +113,7 @@ class LASTMINUTECOURIER_API ACourierController : public APlayerController
 {
     GENERATED_BODY()
 public:
+    virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
 private:
     void Next();
@@ -116,6 +133,7 @@ class LASTMINUTECOURIER_API ACourierCart : public AActor
     GENERATED_BODY()
 public:
     ACourierCart();
+    virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> Material;
@@ -135,14 +153,8 @@ class LASTMINUTECOURIER_API ACourierHUD : public AHUD
 {
     GENERATED_BODY()
 public:
-    virtual void DrawHUD() override;
-    virtual void NotifyHitBoxClick(FName BoxName) override;
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:
-    float S = 1.f;
-    float OX = 0.f;
-    float OY = 0.f;
-    void Rect(float X, float Y, float W, float H, FLinearColor Color);
-    void Label(const FString& Text, float X, float Y, float Size, FLinearColor Color);
-    void Paragraph(const FString& Text, float X, float Y, float Width, float Size);
-    void Button(FName Id, const FString& Text, float X, float Y, float Width);
+    TSharedPtr<class SWidget> Interface;
 };

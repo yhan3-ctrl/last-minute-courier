@@ -12,3 +12,6 @@ Saved/
 *.sln
 Builds/
 LocalEvidence/
+Tools/
+__pycache__/
+*.pyc

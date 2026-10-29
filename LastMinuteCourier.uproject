@@ -1,0 +1,8 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "",
+  "Category": "Games",
+  "Description": "Last Minute Courier - Project 3 prototype",
+  "Modules": [{"Name": "LastMinuteCourier", "Type": "Runtime", "LoadingPhase": "Default"}],
+  "Plugins": [{"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]}]
+}

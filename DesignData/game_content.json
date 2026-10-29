@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "status": "design_not_playtested",
+  "title": {
+    "en": "Last Minute Courier",
+    "zh": "最后一刻快递员"
+  },
+  "opening_cards": [
+    {
+      "id": "movie_night",
+      "title": {
+        "en": "Tonight: Movie Night",
+        "zh": "今晚，电影夜"
+      },
+      "body": {
+        "en": "The campus screening starts soon. Coffee, a projector lens, and the final film reel are still on the way. You are the last courier on shift.",
+        "zh": "钟楼广场马上开场。咖啡、镜头和胶片还在路上。你是今晚最后一位快递员。"
+      }
+    },
+    {
+      "id": "borrowed_seconds",
+      "title": {
+        "en": "Three Borrowed Seconds",
+        "zh": "借来的三秒"
+      },
+      "body": {
+        "en": "The lab lent you a Borrower. Hold Q to slow devices with blue time tags. You move normally. Your delivery clock keeps ticking.",
+        "zh": "实验室借给你一枚借秒器。按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"
+      }
+    },
+    {
+      "id": "three_deliveries",
+      "title": {
+        "en": "Three Deliveries. One Evening.",
+        "zh": "三份急件，一个晚上"
+      },
+      "body": {
+        "en": "Follow the package and destination markers. Collect your next order where you finish the last. If something goes wrong, retry the current order.",
+        "zh": "沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。"
+      }
+    }
+  ],
+  "tutorial": [
+    {
+      "id": "move",
+      "completion": "reach_movement_marker",
+      "text": {
+        "en": "WASD to move. Move the mouse to look around. Reach the marked spot.",
+        "zh": "WASD 移动，鼠标转动视角。走到标记位置。"
+      }
+    },
+    {
+      "id": "jump",
+      "completion": "cross_training_step",
+      "text": {
+        "en": "Press Space to jump over the low step.",
+        "zh": "按空格跳过低台阶。"
+      }
+    },
+    {
+      "id": "slow",
+      "completion": "activate_slow_and_cross_training_lane",
+      "text": {
+        "en": "Hold Q to slow the blue-tagged cart. Cross while it moves slowly.",
+        "zh": "按住 Q 让蓝色标签运输车减速，趁它变慢时通过。"
+      }
+    },
+    {
+      "id": "ready",
+      "completion": "acknowledge_then_collect_first_order",
+      "text": {
+        "en": "Ready! Your delivery clock starts when you collect an order.",
+        "zh": "准备好了！领取订单后才开始计时。"
+      }
+    }
+  ],
+  "orders": [
+    {
+      "id": "coffee",
+      "number": 1,
+      "seconds": 140,
+      "title": {
+        "en": "A Little Warmth",
+        "zh": "把暖意送到"
+      },
+      "package": {
+        "en": "Insulated Coffee Box",
+        "zh": "咖啡保温箱"
+      },
+      "destination": {
+        "en": "Coffee Stand",
+        "zh": "咖啡摊"
+      },
+      "brief": {
+        "en": "Bring the coffee box to the stand before the screening. Watch for delivery carts crossing the square.",
+        "zh": "把保温箱送到咖啡摊。广场上的运输车正在穿行，留意空隙。"
+      },
+      "label": {
+        "en": "Serve warm.",
+        "zh": "趁热。"
+      },
+      "delivered": {
+        "en": "Coffee is ready. Next up: the projector lens.",
+        "zh": "咖啡准备好了。下一单：投影镜头。"
+      }
+    },
+    {
+      "id": "lens",
+      "number": 2,
+      "seconds": 170,
+      "title": {
+        "en": "Light Up the Screen",
+        "zh": "让银幕亮起来"
+      },
+      "package": {
+        "en": "Projector Lens Case",
+        "zh": "投影镜头盒"
+      },
+      "destination": {
+        "en": "Projection Booth",
+        "zh": "投影台"
+      },
+      "brief": {
+        "en": "Take the lens through the garden. Slow the lift to give yourself more time to board, or follow the longer ramp.",
+        "zh": "把镜头送过花园。减慢升降台可延长登台时机，也可以走较长的坡道。"
+      },
+      "label": {
+        "en": "Handle with care.",
+        "zh": "轻放。"
+      },
+      "delivered": {
+        "en": "The projector is ready. One last reel to deliver.",
+        "zh": "投影机准备好了。还差最后一卷胶片。"
+      }
+    },
+    {
+      "id": "reel",
+      "number": 3,
+      "seconds": 200,
+      "title": {
+        "en": "The Final Reel",
+        "zh": "最后一卷"
+      },
+      "package": {
+        "en": "Opening Film Reel",
+        "zh": "开场胶片"
+      },
+      "destination": {
+        "en": "Clocktower Console",
+        "zh": "钟楼控制台"
+      },
+      "brief": {
+        "en": "The whole square is waiting for this reel. Choose your route, cross the cart lanes, and save a charge for the lift.",
+        "zh": "全场都在等这一卷。选择路线、穿过车道，并为升降台安排好借秒器的使用时机。"
+      },
+      "label": {
+        "en": "The whole square is waiting.",
+        "zh": "全场都在等这一卷。"
+      },
+      "delivered": {
+        "en": "All three deliveries made. Time to take your seat.",
+        "zh": "三份急件全部送达。现在，轮到你入座了。"
+      }
+    }
+  ],
+  "rules": {
+    "slow_factor": 0.25,
+    "slow_max_seconds": 3.0,
+    "cooldown_seconds": 4.0,
+    "collision_protection_seconds": 1.0,
+    "respawn_fade_seconds": 0.5,
+    "timer_slowed_by_ability": false,
+    "pause_stops_timer": true,
+    "intro_starts_timer": false,
+    "progress_persistence": "current_run_only"
+  },
+  "ui": {
+    "continue": {
+      "en": "Continue",
+      "zh": "继续"
+    },
+    "back": {
+      "en": "Back",
+      "zh": "返回"
+    },
+    "enter_practice": {
+      "en": "Enter Practice Yard",
+      "zh": "进入练习区"
+    },
+    "collect": {
+      "en": "E · Collect order",
+      "zh": "E · 领取订单"
+    },
+    "deliver": {
+      "en": "E · Deliver package",
+      "zh": "E · 交付包裹"
+    },
+    "ready": {
+      "en": "READY · Hold Q",
+      "zh": "就绪 · 按住 Q"
+    },
+    "cooldown": {
+      "en": "RECHARGING",
+      "zh": "充能中"
+    },
+    "timeout": {
+      "en": "Almost! Try this delivery again.",
+      "zh": "差一点，再送一次。"
+    },
+    "retry": {
+      "en": "Retry this order",
+      "zh": "重试这一单"
+    },
+    "route_help": {
+      "en": "Show route hint",
+      "zh": "查看路线提示"
+    },
+    "pause": {
+      "en": "Paused",
+      "zh": "已暂停"
+    },
+    "help": {
+      "en": "Story & Controls",
+      "zh": "故事与操作"
+    },
+    "run_only": {
+      "en": "Progress lasts for this session. Quitting starts a new run.",
+      "zh": "进度在本次运行中保留，退出后重新开始。"
+    },
+    "ending_title": {
+      "en": "A Seat for You",
+      "zh": "也有你的座位"
+    },
+    "ending_body": {
+      "en": "The film begins. Your three delivery stamps make one ticket. Tonight, there is a seat for you too.",
+      "zh": "放映开始。三枚配送邮戳，拼成了你的电影票。今晚，也有一个座位属于你。"
+    },
+    "poster_joke": {
+      "en": "Do not use the Borrower to extend exams.",
+      "zh": "请勿用借秒器延长考试。"
+    }
+  }
+}

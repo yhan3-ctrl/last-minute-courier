@@ -1,0 +1,14 @@
+Installers/
+cache-cleanup-*.json
+cleanup-*.json
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.DS_Store
+*.xcodeproj/
+*.xcworkspace/
+*.sln
+Builds/
+LocalEvidence/

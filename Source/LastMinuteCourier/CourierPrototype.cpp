@@ -2,6 +2,8 @@
 #include "Camera/CameraComponent.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 #include "Components/InputComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/PointLightComponent.h"
@@ -120,7 +122,13 @@ void ACourierGameMode::BeginPlay()
     Super::BeginPlay();
     LoadTranslations();
     LoadCopy();
+    ConfigureOrder(0);
+    Checkpoint=FVector(100,0,120);
     BuildPracticeRoute();
+    BuildDeliveryDistricts();
+    UpdateCelebration();
+    if(auto* Track=LoadObject<USoundBase>(nullptr,TEXT("/Game/Audio/CampusLoop.CampusLoop")))
+        Music=UGameplayStatics::SpawnSound2D(this,Track,.35f);
     if (auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0))
     {
         Player->SetActorLocation(Checkpoint);
@@ -142,7 +150,7 @@ bool ACourierGameMode::CanMove() const
 
 float ACourierGameMode::DeviceRate() const
 {
-    return IsPlaying() ? (bSlowing ? .25f : 1.f) : 0.f;
+    return IsPlaying() && RecoverySeconds<=0.f ? (bSlowing ? .25f : 1.f) : 0.f;
 }
 
 FString ACourierGameMode::Copy(const TCHAR* English, const TCHAR* Chinese) const
@@ -209,6 +217,12 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     if (!Player) return;
     CollisionProtection = FMath::Max(0.f, CollisionProtection - DeltaSeconds);
     NoticeSeconds=FMath::Max(0.f,NoticeSeconds-DeltaSeconds);
+    SessionSeconds+=DeltaSeconds;
+    if(RecoverySeconds>0.f)
+    {
+        RecoverySeconds=FMath::Max(0.f,RecoverySeconds-DeltaSeconds);
+        return;
+    }
     if (bSlowing)
     {
         SlowRemaining = FMath::Max(0.f, SlowRemaining - DeltaSeconds);
@@ -262,8 +276,14 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     {
         Remaining = FMath::Max(0.f, Remaining - DeltaSeconds);
         OrderElapsed += DeltaSeconds;
-        if (Position.X > 4500.f && Checkpoint.X < 4000.f) Checkpoint = FVector(4500, 0, 120);
-        if (Position.X > 6500.f && Checkpoint.X < 6000.f) Checkpoint = FVector(6500, 0, 120);
+        while(Route.IsValidIndex(RouteNode) && (Position.X>Route[RouteNode].X+120.f ||
+            (FVector::Dist2D(Position,Route[RouteNode])<280.f && FMath::Abs(Position.Z-Route[RouteNode].Z)<140.f)))++RouteNode;
+        if(Player->GetCharacterMovement()->IsMovingOnGround())
+        {
+            for(const FVector& Node:Route)
+                if(FVector::Dist2D(Position,Node)<420.f && FMath::Abs(Position.Z-Node.Z)<130.f && Node.X>Checkpoint.X)
+                    Checkpoint=Node+FVector(0,0,20);
+        }
         if (Remaining <= 0.f)
         {
             EndSlow();
@@ -272,7 +292,10 @@ void ACourierGameMode::Tick(float DeltaSeconds)
             return;
         }
     }
-    if (Position.Z < -200.f || FMath::Abs(Position.Y) > 650.f)
+    const bool UnderRaisedRoute=(CurrentOrder==1 && ((Position.X>12900 && Position.X<16400 && Position.Z<140) ||
+        (Position.X>23700 && Position.Z<220))) || (CurrentOrder==2 && ((Position.X<27400 && Position.Z<220) ||
+        (Position.X>40850 && Position.Z<240)));
+    if (Position.Z < -180.f || UnderRaisedRoute || FMath::Abs(Position.Y) > (CurrentOrder==0?1200.f:3400.f) || Position.X>(CurrentOrder==0?8650.f:(CurrentOrder==1?26800.f:47000.f)) || Position.X<(CurrentOrder==0?-250.f:(CurrentOrder==1?7600.f:25500.f)))
     {
         Notify(TEXT("Back on the path. Your checkpoint is safe."),TEXT("回到路上了。已恢复到检查点。"));
         RestoreCheckpoint();
@@ -294,52 +317,85 @@ void ACourierGameMode::Tick(float DeltaSeconds)
 
 void ACourierGameMode::Continue()
 {
-    if (Phase == ECourierPhase::Opening)
+    if(Phase==ECourierPhase::Opening)
     {
-        if (++Card >= CardTitles.Num())
-        {
-            Phase = ECourierPhase::Practice;
-            Card = 0;
-        }
+        if(++Card>=CardTitles.Num()){Phase=ECourierPhase::Practice;Card=0;}
     }
-    else if (Phase == ECourierPhase::Failed || Phase == ECourierPhase::Delivered) Retry();
-    else if (Phase == ECourierPhase::Paused) TogglePause();
+    else if(Phase==ECourierPhase::Briefing)AcceptOrder();
+    else if(Phase==ECourierPhase::Delivered)NextOrder();
+    else if(Phase==ECourierPhase::Complete)RestartRun();
+    else if(Phase==ECourierPhase::Failed)Retry();
+    else if(Phase==ECourierPhase::Paused)TogglePause();
     RefreshInput();
 }
 
 void ACourierGameMode::Back()
 {
     if (Phase == ECourierPhase::Opening) Card = FMath::Max(0, Card - 1);
+    else if(Phase==ECourierPhase::Briefing){Phase=ECourierPhase::AwaitPickup;RefreshInput();}
     else if (Phase == ECourierPhase::Paused) TogglePause();
 }
 
 void ACourierGameMode::Interact()
 {
-    auto* Player = Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
-    if (!Player) return;
-    if (Phase == ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
+    auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
+    if(!Player)return;
+    if(Phase==ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
     {
-        Phase = ECourierPhase::Delivery;
-        Remaining = 140.f;
-        OrderElapsed = 0.f;
-        Checkpoint = FVector(2400, 0, 120);
-        SlowRemaining = 3.f;
-        Cooldown = 0.f;
-        Player->Bag->SetVisibility(true);
+        Phase=ECourierPhase::Briefing;
+        Sound(TEXT("Paper"),.22f);
     }
-    else if (Phase == ECourierPhase::Delivery && CanInteractAt(Destination))
+    else if(Phase==ECourierPhase::Delivery && CanInteractAt(Destination))
     {
         EndSlow();
-        Phase = ECourierPhase::Delivered;
-        Player->Bag->SetVisibility(false);
-        SetCoffeeLit(true);
+        DeliveryTimes[CurrentOrder]=OrderElapsed;
+        CompletedOrders=FMath::Max(CompletedOrders,CurrentOrder+1);
+        Player->ShowPackage(false);
+        Phase=CurrentOrder==2?ECourierPhase::Complete:ECourierPhase::Delivered;
+        UpdateCelebration();
+        Sound(CurrentOrder==2?TEXT("Finale"):TEXT("Stamp"),.4f);
     }
+    RefreshInput();
+}
+
+void ACourierGameMode::AcceptOrder()
+{
+    if(Phase!=ECourierPhase::Briefing || !CanInteractAt(Pickup))return;
+    Phase=ECourierPhase::Delivery;
+    Remaining=OrderBudget();OrderElapsed=0.f;RecoverySeconds=0.f;
+    Checkpoint=Pickup+FVector(0,0,20);
+    ResetDevices();
+    if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->ShowPackage(true);
+    Sound(TEXT("Pickup"),.28f);
+}
+
+void ACourierGameMode::NextOrder()
+{
+    if(Phase!=ECourierPhase::Delivered || CurrentOrder>=2)return;
+    ConfigureOrder(CurrentOrder+1);
+    Phase=ECourierPhase::AwaitPickup;
+    ResetDevices();NoticeSeconds=0.f;
+    RefreshInput();
+}
+
+void ACourierGameMode::RestartRun()
+{
+    if(Phase!=ECourierPhase::Complete)return;
+    CurrentOrder=0;CompletedOrders=0;Retries=0;Tutorial=0;Card=0;SessionSeconds=0.f;
+    DeliveryTimes={0.f,0.f,0.f};bTrainingJumped=false;
+    ConfigureOrder(0);Checkpoint=FVector(100,0,120);
+    Phase=ECourierPhase::Opening;NoticeSeconds=0.f;
+    ResetDevices();RestoreCheckpoint();RecoverySeconds=0.f;
+    if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->ShowPackage(false);
+    UpdateCelebration();RecenterCamera();
+    if(auto* PC=UGameplayStatics::GetPlayerController(this,0))PC->SetControlRotation(FRotator(-12,0,0));
     RefreshInput();
 }
 
 void ACourierGameMode::StartSlow()
 {
-    if (IsPlaying() && Cooldown <= 0.f && SlowRemaining > 0.f) bSlowing = true;
+    if (IsPlaying() && RecoverySeconds<=0.f && Cooldown <= 0.f && SlowRemaining > 0.f && !bSlowing)
+    {bSlowing=true;Sound(TEXT("Borrow"),.18f);}
 }
 
 void ACourierGameMode::EndSlow()
@@ -354,7 +410,7 @@ void ACourierGameMode::EndSlow()
 void ACourierGameMode::TogglePause()
 {
     auto* Controller = UGameplayStatics::GetPlayerController(this, 0);
-    if (!Controller || Phase == ECourierPhase::Opening) return;
+    if (!Controller || Phase==ECourierPhase::Opening || Phase==ECourierPhase::Briefing || Phase==ECourierPhase::Complete || Phase==ECourierPhase::Delivered || Phase==ECourierPhase::Failed)return;
     if (Phase == ECourierPhase::Paused)
     {
         Controller->SetPause(false);
@@ -375,6 +431,7 @@ void ACourierGameMode::TogglePause()
 
 void ACourierGameMode::ToggleHelp()
 {
+    if(Phase==ECourierPhase::Failed){bHelp=!bHelp;return;}
     if (Phase != ECourierPhase::Paused) TogglePause();
     if (Phase == ECourierPhase::Paused) bHelp = !bHelp;
 }
@@ -390,9 +447,9 @@ void ACourierGameMode::RecenterCamera()
     if(!CanMove() && Phase!=ECourierPhase::Paused)return;
     if(auto* PC=UGameplayStatics::GetPlayerController(this,0))
     {
-        // This preview's route runs along +X. Recenter is explicit, including
-        // when direction lock is enabled; never turn the camera automatically.
-        PC->SetControlRotation(FRotator(-12.f,0.f,0.f));
+        const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
+        const FVector Offset=Player?NavigationTarget()-Player->GetActorLocation():FVector::ForwardVector;
+        PC->SetControlRotation(FRotator(-12.f,Offset.Size2D()>200.f?Offset.Rotation().Yaw:0.f,0.f));
     }
 }
 
@@ -400,6 +457,7 @@ void ACourierGameMode::RestoreCheckpoint()
 {
     if (auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0))
     {
+        Player->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
         Player->GetCharacterMovement()->StopMovementImmediately();
         Player->StopJumping();
         Player->ConsumeMovementInputVector();
@@ -407,12 +465,14 @@ void ACourierGameMode::RestoreCheckpoint()
         if (auto* PC=UGameplayStatics::GetPlayerController(this,0); PC && PC->PlayerCameraManager)
             PC->PlayerCameraManager->StartCameraFade(1.f,0.f,.3f,FLinearColor::Black,false,false);
         CollisionProtection = 1.f;
+        RecoverySeconds=.3f;
     }
 }
 
 void ACourierGameMode::ResetDevices()
 {
-    for (const auto& Cart : Carts) if (Cart) Cart->Reset();
+    for (const auto& Cart : Carts) if (Cart && Cart->OrderIndex==CurrentOrder) Cart->Reset();
+    for(const auto& Platform:Platforms)if(Platform && Platform->OrderIndex==CurrentOrder)Platform->Reset();
     bSlowing = false;
     SlowRemaining = 3.f;
     Cooldown = 0.f;
@@ -420,7 +480,7 @@ void ACourierGameMode::ResetDevices()
 
 void ACourierGameMode::Retry()
 {
-    if (Phase == ECourierPhase::Opening || Phase == ECourierPhase::Practice ||
+    if (Phase == ECourierPhase::Opening || Phase == ECourierPhase::Practice || Phase==ECourierPhase::Complete || Phase==ECourierPhase::Delivered ||
         (Phase==ECourierPhase::Paused && BeforePause==ECourierPhase::Practice)) return;
     if (Phase == ECourierPhase::Paused)
         if (auto* PC = UGameplayStatics::GetPlayerController(this, 0)) PC->SetPause(false);
@@ -428,14 +488,15 @@ void ACourierGameMode::Retry()
     bHelp = false;
     NoticeSeconds=0;
     ++Retries;
-    Remaining = 140.f;
+    Remaining = OrderBudget();
     OrderElapsed = 0.f;
-    Checkpoint = FVector(2400, 0, 120);
+    ConfigureOrder(CurrentOrder);
+    Checkpoint = Pickup+FVector(0,0,20);
     ResetDevices();
-    SetCoffeeLit(false);
+    UpdateCelebration();
     RestoreCheckpoint();
     if (auto* Player = Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
-        Player->Bag->SetVisibility(false);
+        Player->ShowPackage(false);
     RefreshInput();
 }
 
@@ -444,9 +505,9 @@ FString ACourierGameMode::InteractionPrompt() const
     const auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
     if (!Player) return FString();
     if (Phase == ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
-        return Copy(TEXT("E  Collect coffee box - 140 second delivery"), TEXT("E 领取咖啡保温箱 · 限时 140 秒"));
+        return Copy(TEXT("E  Read delivery brief"),TEXT("E 查看配送简报"));
     if (Phase == ECourierPhase::Delivery && CanInteractAt(Destination))
-        return Copy(TEXT("E  Deliver the coffee box"), TEXT("E 交付咖啡保温箱"));
+        return Copy(TEXT("E  Deliver package"),TEXT("E 交付包裹"));
     return FString();
 }
 
@@ -512,9 +573,11 @@ void ACourierGameMode::LoadCopy()
     TSharedPtr<FJsonObject> Root;
     if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json), Root) || !Root) return;
     const TArray<TSharedPtr<FJsonValue>>* Cards = nullptr;
-    if (Root->TryGetArrayField(TEXT("opening_cards"), Cards) && Cards->Num() == 3)
+    if (Root->TryGetArrayField(TEXT("opening_cards"), Cards) && Cards->Num()>=3 && Cards->Num()<=6)
     {
-        for (int32 I = 0; I < 3; ++I)
+        CardTitles.SetNum(Cards->Num());CardTitlesZh.SetNum(Cards->Num());
+        CardBodies.SetNum(Cards->Num());CardBodiesZh.SetNum(Cards->Num());
+        for (int32 I=0;I<Cards->Num();++I)
         {
             const auto Item = (*Cards)[I]->AsObject();
             if (!Item) continue;
@@ -583,8 +646,8 @@ void ACourierGameMode::BuildPracticeRoute()
         Box(World,FVector(X,445,75),FVector(100,16,150),Teal,false);
         Sign(World,FVector(X-3,425,150),TEXT("CHECKPOINT"));
     }
-    const float Lanes[] = {1550.f, 3300.f, 3800.f, 5300.f, 5900.f, 7200.f};
-    for (int32 I = 0; I < 6; ++I)
+    const float Lanes[] = {1550.f,3300.f,5300.f,7200.f};
+    for (int32 I=0;I<4;++I)
     {
         auto* Cart = World->SpawnActor<ACourierCart>(FVector(Lanes[I],0,55), FRotator::ZeroRotator);
         Cart->Origin = FVector(Lanes[I],0,55);
@@ -616,8 +679,8 @@ void ACourierGameMode::BuildPracticeRoute()
             Box(World,FVector(X+DX,Y-Side*293,Height*.58f),FVector(105,18,150),Ink,false);
             Box(World,FVector(X+DX,Y-Side*305,Height*.58f),FVector(75,10,115),Swatch(TEXT("9DBCB5")),false);
         }
-        Tree(World,X+300,Side*875,400+I%3*55);
-        if(I%2==0)Bench(World,X-120,Side*770);
+        Tree(World,X+300,Side*1250,400+I%3*55);
+        if(I%2==0)Bench(World,X-120,Side*1160);
     }
     // The cinema clocktower is a distant orientation landmark, outside the playable path.
     Box(World,FVector(9800,1800,550),FVector(430,430,1100),Cream,false);
@@ -628,23 +691,24 @@ void ACourierGameMode::BuildPracticeRoute()
     Box(World,FVector(9568,1800,957),FVector(15,12,75),Ink,false);
     Box(World,FVector(9566,1827,930),FVector(15,75,12),Ink,false);
 
-    auto* Sky=Shape(World,TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(4000,0,0),FVector(100000),Swatch(TEXT("A9C9CD")));
+    auto* Sky=Shape(World,TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(25000,0,0),FVector(220000),Swatch(TEXT("A9C9CD")));
     auto* SkyMesh=Sky->GetStaticMeshComponent();
-    auto* SkyMaterial=UMaterialInstanceDynamic::Create(LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_CourierSky.M_CourierSky")),SkyMesh);
+    auto* SkyMaterial=UMaterialInstanceDynamic::Create(LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_CourierSkyGradient.M_CourierSkyGradient")),SkyMesh);
     if(SkyMaterial)
     {
         SkyMaterial->SetVectorParameterValue(TEXT("Color"),Swatch(TEXT("A9C9CD")));
         SkyMesh->SetMaterial(0,SkyMaterial);
     }
     SkyMesh->SetCastShadow(false);
-    auto* Sun = World->SpawnActor<ADirectionalLight>(FVector(0,0,1200), FRotator(-48,-25,0));
+    auto* Sun = World->SpawnActor<ADirectionalLight>(FVector(0,0,1200), FRotator(-14,156,0));
     if (auto* Light = Sun->FindComponentByClass<UDirectionalLightComponent>())
     {
-        Light->SetIntensity(2.5f);
+        Light->SetIntensity(2.1f);
+        Light->LightSourceAngle=4.f;
         Light->SetLightColor(Swatch(TEXT("FFF0D4")));
         Light->SetForwardShadingPriority(1);
     }
-    auto* Fill = World->SpawnActor<ADirectionalLight>(FVector(0,0,1200), FRotator(-35,150,0));
+    auto* Fill = World->SpawnActor<ADirectionalLight>(FVector(0,0,1200), FRotator(-35,-30,0));
     if (auto* Light = Fill->FindComponentByClass<UDirectionalLightComponent>())
     {
         Light->SetIntensity(1.1f);
@@ -671,7 +735,10 @@ ACourierCharacter::ACourierCharacter()
     GetCharacterMovement()->RotationRate = FRotator(0, 600, 0);
     GetCharacterMovement()->MaxWalkSpeed = 500.f;
     GetCharacterMovement()->JumpZVelocity = 500.f;
-    GetCharacterMovement()->AirControl = .35f;
+    GetCharacterMovement()->AirControl = .55f;
+    GetCharacterMovement()->bImpartBaseVelocityX=false;
+    GetCharacterMovement()->bImpartBaseVelocityY=false;
+    GetCharacterMovement()->bImpartBaseVelocityZ=false;
     Arm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
     Arm->SetupAttachment(RootComponent);
     Arm->TargetArmLength = 450.f;
@@ -702,6 +769,13 @@ ACourierCharacter::ACourierCharacter()
     Bag->SetRelativeScale3D(FVector(.35f,.5f,.5f));
     Bag->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Bag->SetVisibility(false);
+    PackageMark=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ParcelSeal"));
+    PackageMark->SetupAttachment(RootComponent);
+    PackageMark->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cylinder.Cylinder")));
+    PackageMark->SetRelativeRotation(FRotator(90,0,0));
+    PackageMark->SetRelativeScale3D(FVector(.18f,.18f,.03f));
+    PackageMark->SetRelativeLocation(FVector(-54,0,18));
+    PackageMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);PackageMark->SetVisibility(false);
 }
 
 void ACourierCharacter::BeginPlay()
@@ -732,6 +806,29 @@ void ACourierCharacter::BeginPlay()
     Part(FVector(0,0,76),FVector(47,47,21),Swatch(TEXT("354F53")),TEXT("/Engine/BasicShapes/Sphere.Sphere"));
     Part(FVector(17,0,77),FVector(34,48,7),Swatch(TEXT("D0794F")),TEXT("/Engine/BasicShapes/Cube.Cube"));
     Part(FVector(-23,0,19),FVector(8,46,12),Swatch(TEXT("F0E3C8")),TEXT("/Engine/BasicShapes/Cube.Cube"));
+    for(float Side:{-1.f,1.f})
+    {
+        Part(FVector(20,Side*8,65),FVector(4.5f),Swatch(TEXT("243D43")),TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+        Part(FVector(23,Side*15,4),FVector(4,6,48),Swatch(TEXT("F0E3C8")),TEXT("/Engine/BasicShapes/Cube.Cube"));
+    }
+    Part(FVector(20,0,54),FVector(2,9,2),Swatch(TEXT("81634B")),TEXT("/Engine/BasicShapes/Cube.Cube"));
+    SetParcelStyle(Game(this)?Game(this)->CurrentOrder:0);
+    FootstepCue=LoadObject<USoundBase>(nullptr,TEXT("/Game/Audio/Footstep.Footstep"));
+}
+
+void ACourierCharacter::SetParcelStyle(int32 Order)
+{
+    Bag->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,Order==2?TEXT("/Engine/BasicShapes/Cylinder.Cylinder"):TEXT("/Engine/BasicShapes/Cube.Cube")));
+    Bag->SetRelativeRotation(Order==2?FRotator(90,0,0):FRotator::ZeroRotator);
+    Bag->SetRelativeScale3D(Order==2?FVector(.6f,.6f,.22f):(Order==1?FVector(.3f,.58f,.42f):FVector(.35f,.5f,.5f)));
+    Paint(Bag,Swatch(Order==2?TEXT("354F53"):(Order==1?TEXT("C86C43"):TEXT("438C95"))));
+    Paint(PackageMark,Swatch(Order==2?TEXT("D6AB73"):TEXT("F0E3C8")));
+    PackageMark->SetRelativeLocation(FVector(Order==2?-48.f:(Order==1?-52.f:-54.f),0,18));
+}
+
+void ACourierCharacter::ShowPackage(bool bVisible)
+{
+    Bag->SetVisibility(bVisible);PackageMark->SetVisibility(bVisible);
 }
 
 void ACourierCharacter::Tick(float DeltaSeconds)
@@ -739,6 +836,15 @@ void ACourierCharacter::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     const float Speed=GetVelocity().Size2D();
     WalkCycle+=DeltaSeconds*Speed*.025f;
+    if(auto* Mode=Game(this);Mode && Mode->CanMove() && GetCharacterMovement()->IsMovingOnGround() && Speed>120.f)
+    {
+        FootstepDistance+=Speed*DeltaSeconds;
+        if(FootstepDistance>155.f)
+        {
+            FootstepDistance=0.f;
+            if(Mode->bAudioEnabled && FootstepCue)UGameplayStatics::PlaySound2D(this,FootstepCue,.16f,FMath::FRandRange(.95f,1.05f));
+        }
+    }
     for(int32 I=0;I<Limbs.Num();++I)
         Limbs[I]->SetRelativeRotation(FRotator(FMath::Sin(WalkCycle+I*PI)*12.f*FMath::Clamp(Speed/500.f,0.f,1.f),0,0));
 }
@@ -766,32 +872,32 @@ void ACourierCharacter::SetupPlayerInputComponent(UInputComponent* Input)
 
 void ACourierCharacter::Forward(float Value)
 {
-    if (Controller && Game(this) && Game(this)->CanMove())
+    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::X),Value);
 }
 void ACourierCharacter::Right(float Value)
 {
-    if (Controller && Game(this) && Game(this)->CanMove())
+    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);
 }
 void ACourierCharacter::Yaw(float Value)
 {
-    if (auto* Mode=Game(this); Mode && Mode->CanMove() && !Mode->bLockCamera)
+    if (auto* Mode=Game(this); Mode && Mode->CanMove() && !Mode->bLockCamera && Mode->RecoverySeconds<=0.f)
     {
-        const float Limit=180.f*GetWorld()->GetDeltaSeconds();
+        const float Limit=180.f*FMath::Min(GetWorld()->GetDeltaSeconds(),.04f);
         AddControllerYawInput(FMath::Clamp(Value*Mode->MouseSensitivity,-Limit,Limit));
     }
 }
 void ACourierCharacter::Pitch(float Value)
 {
-    if (auto* Mode=Game(this); Mode && Mode->CanMove() && !Mode->bLockCamera)
+    if (auto* Mode=Game(this); Mode && Mode->CanMove() && !Mode->bLockCamera && Mode->RecoverySeconds<=0.f)
     {
-        const float Limit=120.f*GetWorld()->GetDeltaSeconds();
+        const float Limit=120.f*FMath::Min(GetWorld()->GetDeltaSeconds(),.04f);
         AddControllerPitchInput(FMath::Clamp(Value*Mode->MouseSensitivity,-Limit,Limit));
     }
 }
 void ACourierCharacter::SetCameraFov(float Value) { Camera->SetFieldOfView(FMath::Clamp(Value,80.f,100.f)); }
-void ACourierCharacter::JumpPressed() { if (Game(this) && Game(this)->CanMove()) Jump(); }
+void ACourierCharacter::JumpPressed() { if (Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f) Jump(); }
 void ACourierCharacter::JumpReleased() { StopJumping(); }
 
 void ACourierController::BeginPlay()
@@ -857,7 +963,7 @@ void ACourierCart::BeginPlay()
     };
     for(float X:{-83.f,83.f})for(float Y:{-76.f,76.f})
         Detail(TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(X,Y,-40),FVector(32),Swatch(TEXT("354F53")));
-    Detail(TEXT("/Engine/BasicShapes/Cube.Cube"),FVector(-87,0,3),FVector(6,73,57),Swatch(TEXT("F0E3C8")));
+    Detail(TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(-87,0,3),FVector(6,70,70),Swatch(TEXT("F0E3C8")));
     // The same clock mark on every device supports recognition beyond its blue colour.
     Detail(TEXT("/Engine/BasicShapes/Cube.Cube"),FVector(-91,0,13),FVector(4,7,25),Swatch(TEXT("354F53")));
     Detail(TEXT("/Engine/BasicShapes/Cube.Cube"),FVector(-92,9,1),FVector(4,25,7),Swatch(TEXT("354F53")));
@@ -867,7 +973,7 @@ void ACourierCart::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     auto* Mode=Game(this);
     if(!Mode) return;
-    const bool bEnabled=bTraining ? Mode->Phase==ECourierPhase::Practice : Mode->Phase==ECourierPhase::Delivery;
+    const bool bEnabled=bTraining ? Mode->Phase==ECourierPhase::Practice : Mode->Phase==ECourierPhase::Delivery && Mode->CurrentOrder==OrderIndex;
     if(!Material) Material=Paint(Mesh,FLinearColor(.02f,.42f,.75f));
     if(!bEnabled) return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
@@ -885,7 +991,7 @@ void ACourierCart::Reset()
 bool ACourierCart::Touching(const FVector& Player) const
 {
     const auto* Mode=Game(this);
-    if(!Mode || (bTraining ? Mode->Phase!=ECourierPhase::Practice : Mode->Phase!=ECourierPhase::Delivery)) return false;
+    if(!Mode || (bTraining ? Mode->Phase!=ECourierPhase::Practice : (Mode->Phase!=ECourierPhase::Delivery || Mode->CurrentOrder!=OrderIndex))) return false;
     const FVector D=Player-GetActorLocation();
     return FMath::Abs(D.X)<112.f && FMath::Abs(D.Y)<137.f && D.Z<132.f && D.Z>-120.f;
 }

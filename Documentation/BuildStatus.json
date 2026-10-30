@@ -6,8 +6,61 @@
   "metal_toolchain": "installed_and_version_command_passed",
   "map_generation": "succeeded",
   "visual_material_generation": "succeeded_zero_errors_zero_warnings",
-  "runtime_playtest": "agent_operated_smoke_checks_only",
-  "verified_in_runtime": [
+  "runtime_playtest": "agent_operated_partial_input_checks_and_controlled_visual_inspection",
+  "human_playtests": 0,
+  "full_delivery_flow": "three_orders_and_finale_implemented_controlled_engine_flow_passed",
+  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
+  "comfort_validation": "requires_human_playtest",
+  "platform_builds": {
+    "mac": "not_packaged",
+    "windows": "not_built",
+    "linux": "not_built"
+  },
+  "default_language": "en",
+  "languages": [
+    "en",
+    "zh",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
+  ],
+  "translation_coverage": {
+    "runtime_strings": 95,
+    "optional_languages": 6,
+    "check": "passed"
+  },
+  "language_selector": "dropdown_selection_confirmed_with_keyboard",
+  "opening_language_layout_checks": [
+    "en",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
+  ],
+  "pause_language_layout_checks": [
+    "zh",
+    "de"
+  ],
+  "native_speaker_review": "not_completed",
+  "audit_date": "2026-10-29",
+  "automated_regression": {
+    "report": "QA-Evidence.json",
+    "latest_run": "FinalJourneyV04",
+    "succeeded_suites": 3,
+    "failed_suites": 0,
+    "test_errors": 0,
+    "test_warnings": 0,
+    "scope": "controlled states/positions and engine-frame moving-platform ride; not human play time",
+    "capsule_routes": 6
+  },
+  "small_window": "1024x640_pause_and_gameplay_visually_checked",
+  "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
+  "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
+  "version": "0.4",
+  "previous_v03_runtime_checks": [
     "default_english_opening",
     "optional_chinese_glyphs",
     "opening_navigation",
@@ -29,55 +82,30 @@
     "retry_after_timeout",
     "delivery_pause_clock_freeze_comparison"
   ],
-  "human_playtests": 0,
-  "full_delivery_flow": "first_order_passed_orders_two_and_three_unimplemented",
-  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
-  "comfort_validation": "requires_human_playtest",
-  "platform_builds": {
-    "mac": "not_packaged",
-    "windows": "not_built",
-    "linux": "not_built"
-  },
-  "default_language": "en",
-  "languages": [
-    "en",
-    "zh",
-    "ja",
-    "ko",
-    "es",
-    "fr",
-    "de"
+  "verified_in_runtime": [
+    "default_english",
+    "four_card_navigation",
+    "fourth_card_layout_en_zh_de",
+    "untimed_practice_move_jump_q",
+    "collision_checkpoint_recovery",
+    "untimed_brief_then_accept",
+    "music_checkbox_keyboard_off_on",
+    "first_order_arcade_and_delivery",
+    "second_order_brief_layout",
+    "corrected_garden_ramp_corner_and_merge_from_controlled_start",
+    "cinema_ending_ticket_from_controlled_start",
+    "play_again_returns_to_opening"
   ],
-  "translation_coverage": {
-    "runtime_strings": 54,
-    "optional_languages": 6,
-    "check": "passed"
+  "audio": {
+    "original_assets": 7,
+    "music_seconds": 48,
+    "mute_control": true,
+    "listening_review": "human_listening_review_not_completed",
+    "import": "seven_named_assets_imported_successfully",
+    "mute_checkbox": "keyboard_toggle_visually_confirmed"
   },
-  "language_selector": "dropdown_selection_confirmed_with_keyboard",
-  "opening_language_layout_checks": [
-    "en",
-    "ja",
-    "ko",
-    "es",
-    "fr",
-    "de"
-  ],
-  "pause_language_layout_checks": [
-    "zh",
-    "de"
-  ],
-  "native_speaker_review": "not_completed",
-  "audit_date": "2026-10-29",
-  "automated_regression": {
-    "suite": "Courier.Regression.FirstOrderBoundaries",
-    "before_fix_errors": 5,
-    "final_state": "Success",
-    "final_errors": 0,
-    "final_test_warnings": 0,
-    "evidence": "Documentation/QA-Evidence.json",
-    "method": "Controlled actor positions, explicit engine ticks; not a real-input/performance/human playtest."
-  },
-  "small_window": "1024x640_pause_and_gameplay_visually_checked",
-  "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
-  "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed"
+  "sky": "Metal_render_checked_gradient_sun_clouds_hills_and_instanced_terrain",
+  "opening_cards": 4,
+  "generated_runtime_path": "Runtime.nosync (relative Saved/Intermediate symlinks; local DDC)",
+  "visual_screenshot_evidence": "QA-Evidence.json"
 }

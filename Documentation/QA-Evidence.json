@@ -81,6 +81,133 @@
           ]
         }
       ]
+    },
+    {
+      "name": "JourneyPhysicsV04",
+      "created_utc": "2026.10.29-23.29.45",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "PresentationV04",
+      "created_utc": "2026.10.29-23.50.04",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "FinalJourneyV04",
+      "created_utc": "2026.10.30-03.14.42",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "State/clock tests use explicit engine ticks and controlled locations. They do not replace input, visual, performance or human playtesting."
+            }
+          ]
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Info",
+              "message": "Controlled state/geometry regression; not a complete real-input playthrough, human feedback or a 5–10 minute measurement."
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "guardrail_followup": {
+    "native_before_position": [
+      14445.987,
+      1634.001,
+      410.15
+    ],
+    "native_after_position": [
+      15065.75,
+      51.029,
+      410
+    ],
+    "method": "Controlled garden inspection start, then ordinary W/A inputs through the corrected junction. Not a complete order playthrough.",
+    "test_fixture_note": "Initial capsule sweeps also touched normal ramp surfaces (normal Z 0.982–0.986, no initial penetration). Final checks reject initial penetration or a surface below CharacterMovement walkable-floor normal; legitimate floor contacts remain allowed.",
+    "final_capsule_routes": 6
+  },
+  "screenshots": {
+    "OpeningControlsV04.png": "Actual English fourth opening card, 1280x800.",
+    "CampusSunsetV04.png": "Actual practice-yard render after restart, 1280x800.",
+    "CinemaV04-ControlledStart.png": "Rendered ending reached from developer-controlled Cinema start. Its displayed time is not a full-level measurement."
+  }
 }

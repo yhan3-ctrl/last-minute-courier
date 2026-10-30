@@ -15,3 +15,8 @@ LocalEvidence/
 Tools/
 __pycache__/
 *.pyc
+
+Runtime.nosync/
+
+/Intermediate
+/Saved

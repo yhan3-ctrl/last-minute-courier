@@ -73,7 +73,7 @@ public:
     virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
     {
         SCompoundWidget::Tick(Geometry,Time,Delta);
-        if (Mode.IsValid() && (LastPhase!=Mode->Phase || LastCard!=Mode->Card || LastLanguage!=Mode->Language || LastHelp!=Mode->bHelp))
+        if (Mode.IsValid() && (LastPhase!=Mode->Phase || LastCard!=Mode->Card || LastLanguage!=Mode->Language || LastHelp!=Mode->bHelp || LastOrder!=Mode->CurrentOrder))
             Rebuild();
     }
 
@@ -83,6 +83,7 @@ private:
     ECourierPhase LastPhase=ECourierPhase::Opening;
     int32 LastCard=-1;
     FString LastLanguage;
+    int32 LastOrder=-1;
     bool LastHelp=false;
     FSlateBrush PaperBrush,ShadeBrush,RuleBrush;
     FButtonStyle PrimaryStyle,QuietStyle;
@@ -168,6 +169,21 @@ private:
         return SNew(SBox).HeightOverride(1)[SNew(SBorder).BorderImage(&RuleBrush).Padding(0)];
     }
 
+    TSharedRef<SWidget> Ticket()
+    {
+        auto Stamps=SNew(SHorizontalBox);
+        const FText Names[]={Copy(TEXT("COFFEE"),TEXT("咖啡")),Copy(TEXT("LENS"),TEXT("镜头")),Copy(TEXT("REEL"),TEXT("胶片"))};
+        for(int32 I=0;I<3;++I)
+            Stamps->AddSlot().FillWidth(1).Padding(0,0,I<2?12:0,0)
+                [SNew(SBorder).BorderImage(&PaperBrush).BorderBackgroundColor(CourierPalette::Teal).Padding(14)
+                    [SNew(SVerticalBox)
+                        +SVerticalBox::Slot().AutoHeight()[Text(FText::FromString(FString::Printf(TEXT("%02d / 03"),I+1)),15,false,CourierPalette::Paper)]
+                        +SVerticalBox::Slot().AutoHeight()[Text(Names[I],20,true,CourierPalette::Paper)]]];
+        return SNew(SVerticalBox)
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[Text(Copy(TEXT("ADMIT ONE / CAMPUS CINEMA"),TEXT("一人入场 / 校园电影夜")),18,true)]
+            +SVerticalBox::Slot().AutoHeight()[Stamps];
+    }
+
     TSharedRef<SWidget> Menu(const FText& Title,const FText& Body,TSharedRef<SWidget> Actions,bool Comfort=false)
     {
         auto Column=SNew(SVerticalBox);
@@ -180,6 +196,7 @@ private:
             [SNew(STextBlock).Text(Title).Font(Typeface(42,true)).ColorAndOpacity(CourierPalette::Ink).WrapTextAt(820).LineHeightPercentage(1.25f)];
         Column->AddSlot().AutoHeight().Padding(0,0,0,28)
             [SNew(STextBlock).Text(Body).Font(Typeface(22)).ColorAndOpacity(CourierPalette::Ink).WrapTextAt(820).LineHeightPercentage(1.25f)];
+        if(Mode->Phase==ECourierPhase::Complete)Column->AddSlot().AutoHeight().Padding(0,0,0,22)[Ticket()];
         if(Comfort) Column->AddSlot().AutoHeight().Padding(0,0,0,22)[CameraSettings()];
         Column->AddSlot().AutoHeight().Padding(0,0,0,24)[Actions];
         Column->AddSlot().AutoHeight().Padding(0,0,0,16)[Rule()];
@@ -187,9 +204,6 @@ private:
             [SNew(SHorizontalBox)
                 +SHorizontalBox::Slot().FillWidth(1)[Languages()]
                 +SHorizontalBox::Slot().AutoWidth()[Action(Copy(TEXT("Quit game"),TEXT("退出游戏")),7)]];
-        if(Mode->Phase==ECourierPhase::Opening)
-            Column->AddSlot().AutoHeight().Padding(0,12,0,0)
-                [Text(Copy(TEXT("Preview: first delivery. More routes are in development."),TEXT("预览版：当前包含第一单，后续路线仍在制作中。")),14,false,CourierPalette::Muted,820)];
         Column->AddSlot().AutoHeight().Padding(0,15,0,0)
             [Text(Copy(TEXT("Enter to continue  /  Backspace to go back  /  L to switch language"),TEXT("Enter 继续 / Backspace 返回 / L 切换语言")),14,false,CourierPalette::Muted,820)];
         return SNew(SOverlay)
@@ -203,6 +217,11 @@ private:
     TSharedRef<SWidget> CameraSettings()
     {
         return SNew(SVerticalBox)
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)
+                [SNew(SCheckBox)
+                    .IsChecked_Lambda([this](){return Mode->bAudioEnabled?ECheckBoxState::Checked:ECheckBoxState::Unchecked;})
+                    .OnCheckStateChanged_Lambda([this](ECheckBoxState V){if(Mode.IsValid())Mode->SetAudioEnabled(V==ECheckBoxState::Checked);})
+                    [Text(Copy(TEXT("Music & sound"),TEXT("音乐与音效")),18)]]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,8)
                 [Text(Copy(TEXT("Camera comfort"),TEXT("镜头舒适度")),20,true)]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10).HAlign(HAlign_Left)
@@ -246,13 +265,20 @@ private:
         Overlay->AddSlot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(24)
             [SNew(SBox).WidthOverride(350)
                 [CardBox(SNew(SVerticalBox)
-                    +SVerticalBox::Slot().AutoHeight()[Text(Copy(TEXT("DELIVERY / 01"),TEXT("配送 / 01")),14,false,CourierPalette::Orange)]
+                    +SVerticalBox::Slot().AutoHeight()[Text(FText::FromString(Copy(TEXT("DELIVERIES"),TEXT("配送进度")).ToString()+FString::Printf(TEXT("  %02d / 03"),Mode->CurrentOrder+1)),14,false,CourierPalette::Orange)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
-                        [Text(Mode->Phase==ECourierPhase::Delivery?Copy(TEXT("A little warmth"),TEXT("把暖意送到")):
+                        [Text(Mode->Phase==ECourierPhase::Delivery?FText::FromString(Mode->OrderTitle()):
                             (Mode->Phase==ECourierPhase::AwaitPickup?Copy(TEXT("Ready for pickup"),TEXT("准备取件")):Copy(TEXT("Practice yard"),TEXT("练习区"))),27,true)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
-                        [SNew(STextBlock).Text(Mode->Phase==ECourierPhase::Delivery?Copy(TEXT("Destination: Coffee Stand"),TEXT("目的地：咖啡摊")):Copy(TEXT("Follow the marked path to the parcel desk."),TEXT("沿标记路线前往取件台。")))
+                        [SNew(STextBlock).Text(Mode->Phase==ECourierPhase::Delivery?FText::FromString(Mode->OrderDestination()+TEXT(" / ")+Mode->OrderLabel()):(Mode->Phase==ECourierPhase::Practice?Copy(TEXT("Follow the marked path to the parcel desk."),TEXT("沿标记路线前往取件台。")):Copy(TEXT("Collect your package when you are ready."),TEXT("准备好后领取包裹。"))))
                             .Font(Typeface(17)).ColorAndOpacity(CourierPalette::Ink).WrapTextAt(310).LineHeightPercentage(1.25f)])]];
+        Overlay->AddSlot().HAlign(HAlign_Center).VAlign(VAlign_Top).Padding(24)
+            [CardBox(SNew(SVerticalBox)
+                +SVerticalBox::Slot().AutoHeight()
+                    [SNew(STextBlock).Font(Typeface(19,true)).ColorAndOpacity(CourierPalette::Ink)
+                        .Text_Lambda([this](){return FText::FromString(Mode->NavigationText());})]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)
+                    [Text(Copy(TEXT("C recenter / H route hint"),TEXT("C 镜头回正 / H 路线提示")),13,false,CourierPalette::Muted)])];
         if(Mode->Phase==ECourierPhase::Delivery)
         {
             Overlay->AddSlot().HAlign(HAlign_Right).VAlign(VAlign_Top).Padding(24)
@@ -260,7 +286,7 @@ private:
                     [CardBox(SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight()[Text(Copy(TEXT("TIME LEFT"),TEXT("剩余时间")),14,false,CourierPalette::Muted)]
                         +SVerticalBox::Slot().AutoHeight()
-                            [SNew(STextBlock).Font(Typeface(38)).ColorAndOpacity(CourierPalette::Ink)
+                            [SNew(STextBlock).Font(Typeface(38)).ColorAndOpacity_Lambda([this](){return Mode->Remaining<=20.f?CourierPalette::Orange:CourierPalette::Ink;})
                                 .Text_Lambda([this]()
                                 {
                                     const int32 Sec=Mode.IsValid()?FMath::CeilToInt(Mode->Remaining):0;
@@ -302,7 +328,9 @@ private:
                         }
                         if(Mode->Phase==ECourierPhase::AwaitPickup)
                             return Copy(TEXT("Find the parcel desk. Your delivery clock has not started."),TEXT("找到取件台。订单倒计时尚未开始。"));
-                        return Copy(TEXT("Coffee Stand ahead. Pick a gap, then go."),TEXT("咖啡摊就在前面。找准空隙再出发。"));
+                        if(Mode->CurrentOrder==0)return Copy(TEXT("Pick a gap, or take the right arcade."),TEXT("选择车流空隙，或走右侧长廊。"));
+                        if(Mode->CurrentOrder==1)return Copy(TEXT("Ride the blue lifts; jump the stones, or follow the wide ramps."),TEXT("乘蓝色升降台、跳过石墩，或选择宽阔坡道。"));
+                        return Copy(TEXT("Plan the next crossing. Side paths give your Borrower time to recharge."),TEXT("安排好下一次通行。走侧路时，借秒器可以重新充能。"));
                     }))]];
         Overlay->SetVisibility(EVisibility::HitTestInvisible);
         return Overlay;
@@ -311,7 +339,7 @@ private:
     void Rebuild()
     {
         if(!Mode.IsValid())return;
-        LastPhase=Mode->Phase;LastCard=Mode->Card;LastLanguage=Mode->Language;LastHelp=Mode->bHelp;
+        LastPhase=Mode->Phase;LastCard=Mode->Card;LastLanguage=Mode->Language;LastHelp=Mode->bHelp;LastOrder=Mode->CurrentOrder;
         if(Mode->CanMove())
         {
             Root->SetContent(SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)
@@ -321,32 +349,53 @@ private:
         auto Actions=SNew(SHorizontalBox);
         if(Mode->Phase==ECourierPhase::Opening)
         {
-            const int32 I=FMath::Clamp(Mode->Card,0,2);
+            const int32 Count=Mode->CardTitles.Num();
+            const int32 I=FMath::Clamp(Mode->Card,0,Count-1);
             Actions->AddSlot().AutoWidth().Padding(0,0,12,0)
-                [Action(I==2?Copy(TEXT("Start practice"),TEXT("进入练习区")):Copy(TEXT("Continue"),TEXT("继续")),0,true)];
+                [Action(I==Count-1?Copy(TEXT("Start practice"),TEXT("进入练习区")):Copy(TEXT("Continue"),TEXT("继续")),0,true)];
             if(I>0)Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Back"),TEXT("返回")),1)];
             Actions->AddSlot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center)
-                [Text(FText::FromString(FString::Printf(TEXT("%02d / 03"),I+1)),16,false,CourierPalette::Muted)];
+                [Text(FText::FromString(FString::Printf(TEXT("%02d / %02d"),I+1,Count)),16,false,CourierPalette::Muted)];
             Root->SetContent(Menu(FText::FromString(Mode->Copy(*Mode->CardTitles[I],*Mode->CardTitlesZh[I])),
                 FText::FromString(Mode->Copy(*Mode->CardBodies[I],*Mode->CardBodiesZh[I])),Actions));
         }
+        else if(Mode->Phase==ECourierPhase::Briefing)
+        {
+            Actions->AddSlot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Accept delivery"),TEXT("确认接单")),0,true)];
+            Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Back"),TEXT("返回")),1)];
+            Root->SetContent(Menu(FText::FromString(Mode->OrderTitle()),FText::FromString(Mode->OrderBrief()),Actions));
+        }
         else if(Mode->Phase==ECourierPhase::Paused)
         {
-            Actions->AddSlot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Resume delivery"),TEXT("继续配送")),2,true)];
+            Actions->AddSlot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Resume"),TEXT("继续")),2,true)];
             Actions->AddSlot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Story & controls"),TEXT("故事与操作")),3)];
             Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Retry order"),TEXT("重试本单")),4)];
-            const FText Body=Mode->bHelp?
-                Copy(TEXT("Movie night needs three deliveries. Hold Q to slow blue-tagged devices for up to 3 seconds; recharge takes 4 seconds. Your delivery clock keeps ticking. WASD moves, Space jumps, E collects and delivers. Progress lasts for this session."),TEXT("电影夜还缺三份急件。按住 Q 减慢蓝色标签装置，最长 3 秒，结束后充能 4 秒；订单倒计时照常进行。WASD 移动，空格跳跃，E 接单和交付。进度在本次运行中保留。")):
-                Copy(TEXT("A moment to breathe. The clock and devices are paused."),TEXT("慢慢来。倒计时和装置都已暂停。"));
-            Root->SetContent(Menu(Copy(TEXT("Take your time."),TEXT("慢慢来。")),Body,Actions,true));
+            const FString Body=Mode->bHelp?
+                Mode->RouteHint()+TEXT("\n\n")+Mode->Copy(TEXT("WASD moves. Space jumps. Hold Q to slow blue clock-tagged devices for up to 3 seconds; recharge takes 4. E collects and delivers. C recenters your view. Progress lasts for this session."),TEXT("WASD 移动，空格跳跃。按住 Q 减慢蓝色时钟装置，最长 3 秒，之后充能 4 秒。E 接单和交付，C 镜头回正。进度在本次运行中保留。")):
+                Mode->Copy(TEXT("A moment to breathe. The clock and devices are paused."),TEXT("慢慢来。倒计时和装置都已暂停。"));
+            Root->SetContent(Menu(Copy(TEXT("Take your time."),TEXT("慢慢来。")),FText::FromString(Body),Actions,!Mode->bHelp));
+        }
+        else if(Mode->Phase==ECourierPhase::Complete)
+        {
+            Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Play again"),TEXT("再玩一次")),0,true)];
+            const int32 Sec=FMath::CeilToInt(Mode->DeliveryTimes[0]+Mode->DeliveryTimes[1]+Mode->DeliveryTimes[2]);
+            const FString Stats=Mode->Copy(TEXT("Delivery time"),TEXT("配送用时"))+FString::Printf(TEXT("  %02d:%02d    "),Sec/60,Sec%60)+
+                Mode->Copy(TEXT("Retries"),TEXT("重试次数"))+FString::Printf(TEXT("  %d"),Mode->Retries);
+            Root->SetContent(Menu(Copy(TEXT("A seat for you."),TEXT("也有你的座位。")),
+                FText::FromString(Mode->Copy(TEXT("The film begins. Your three delivery stamps make one ticket. Tonight, there is a seat for you too."),TEXT("放映开始。三枚配送邮戳，拼成了你的电影票。今晚，也有一个座位属于你。"))+TEXT("\n\n")+Stats),Actions));
+        }
+        else if(Mode->Phase==ECourierPhase::Delivered)
+        {
+            Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Next delivery"),TEXT("下一单")),0,true)];
+            Root->SetContent(Menu(Copy(TEXT("Delivered."),TEXT("送达了。")),
+                FText::FromString(Mode->OrderOutcome()+TEXT("\n\n")+Mode->ProgressText()),Actions));
         }
         else
         {
-            const bool Success=Mode->Phase==ECourierPhase::Delivered;
-            Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Try this delivery again"),TEXT("再配送一次")),4,true)];
-            Root->SetContent(Menu(Success?Copy(TEXT("Coffee is ready."),TEXT("咖啡准备好了。")):Copy(TEXT("Almost there."),TEXT("差一点。")),
-                Success?Copy(TEXT("The stand is lit and the first delivery is complete. This preview contains the first route; the projector and film-reel deliveries are still being built."),TEXT("咖啡摊亮起来了，第一单完成。当前预览包含第一条路线，镜头和胶片配送仍在制作中。")):
-                Copy(TEXT("Give it another go. The clock starts when you collect the package."),TEXT("再试一次吧。领取包裹后才开始计时。")),Actions));
+            Actions->AddSlot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Retry order"),TEXT("重试本单")),4,true)];
+            Actions->AddSlot().AutoWidth()[Action(Copy(TEXT("Show route hint"),TEXT("查看路线提示")),3)];
+            const FString Body=Mode->bHelp?Mode->RouteHint():Mode->Copy(TEXT("The delivery clock ran out. Your earlier deliveries are safe. Try this order again; the clock starts after you accept the brief."),TEXT("本单配送超时。之前的交付已经保留。再试一次吧，确认简报后才开始计时。"));
+            Root->SetContent(Menu(Copy(TEXT("Time is up."),TEXT("配送时间到了。")),FText::FromString(Body),Actions));
         }
     }
 };

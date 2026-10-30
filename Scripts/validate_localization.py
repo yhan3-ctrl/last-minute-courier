@@ -25,6 +25,10 @@ content = json.loads((root / "DesignData/game_content.json").read_text())
 for card in content["opening_cards"]:
     required.add(card["title"]["en"])
     required.add(card["body"]["en"])
+for order in content["orders"]:
+    for value in order.values():
+        if isinstance(value, dict) and "en" in value:
+            required.add(value["en"])
 assert not required - strings.keys(), f"Untranslated runtime copy: {required - strings.keys()}"
 
 for name in ("AtkinsonHyperlegible-Regular.ttf", "BreeSerif-Regular.ttf", "NotoSansSC-Regular.otf",

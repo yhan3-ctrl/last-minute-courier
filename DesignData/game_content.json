@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "design_not_playtested",
+  "status": "three_order_implementation_pending_playtest",
   "title": {
     "en": "Last Minute Courier",
     "zh": "最后一刻快递员"
@@ -24,8 +24,8 @@
         "zh": "借来的三秒"
       },
       "body": {
-        "en": "The lab lent you a Borrower. Hold Q to slow devices with blue time tags. You move normally. Your delivery clock keeps ticking.",
-        "zh": "实验室借给你一枚借秒器。按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"
+        "en": "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Recharge takes 4. You move normally, and your delivery clock keeps ticking.",
+        "zh": "按住 Q，让带蓝色时钟标签的装置减速，最长 3 秒，之后充能 4 秒。你的步伐和订单倒计时照常进行。"
       }
     },
     {
@@ -35,8 +35,19 @@
         "zh": "三份急件，一个晚上"
       },
       "body": {
-        "en": "Follow the package and destination markers. Collect your next order where you finish the last. If something goes wrong, retry the current order.",
-        "zh": "沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。"
+        "en": "Deliver coffee to the stand, the lens to the projection booth, and the reel to the clocktower. E reads a delivery brief; Enter accepts and starts its clock. R retries only your current order.",
+        "zh": "把咖啡送到咖啡摊、镜头送到投影台、胶片送到钟楼。按 E 阅读配送简报，Enter 确认后才开始计时。R 只重试当前订单，前面的交付保留。"
+      }
+    },
+    {
+      "id": "first_steps",
+      "title": {
+        "en": "Your first steps",
+        "zh": "先练习，再出发"
+      },
+      "body": {
+        "en": "WASD: move / Mouse: look\nSpace: jump / Hold Q: slow blue devices\nE: collect or deliver / C: recenter\nEsc: pause / H: route help\nStart with safe practice. There is no timer yet.",
+        "zh": "WASD：移动 / 鼠标：视角\n空格：跳跃 / 按住 Q：减慢蓝色装置\nE：接单或交付 / C：镜头回正\nEsc：暂停 / H：路线帮助\n先在安全练习区试一试，现在没有倒计时。"
       }
     }
   ],
@@ -168,7 +179,7 @@
     "slow_max_seconds": 3.0,
     "cooldown_seconds": 4.0,
     "collision_protection_seconds": 1.0,
-    "respawn_fade_seconds": 0.5,
+    "respawn_fade_seconds": 0.3,
     "timer_slowed_by_ability": false,
     "pause_stops_timer": true,
     "intro_starts_timer": false,

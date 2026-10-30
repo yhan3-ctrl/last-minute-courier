@@ -14,10 +14,17 @@ class UCameraComponent;
 
 enum class ECourierPhase : uint8
 {
-    Opening, Practice, AwaitPickup, Delivery, Delivered, Failed, Paused
+    Opening, Practice, AwaitPickup, Briefing, Delivery, Delivered, Complete, Failed, Paused
 };
 
-// Native greybox for the FIRST order only. Full three-order level is a later milestone.
+struct FCourierOrder
+{
+    FString Title,TitleZh,Package,PackageZh,Destination,DestinationZh;
+    FString Brief,BriefZh,Label,LabelZh,Delivered,DeliveredZh;
+    float Seconds=140.f;
+};
+
+// One connected campus, three deliveries, current-session progress.
 UCLASS()
 class LASTMINUTECOURIER_API ACourierGameMode : public AGameModeBase
 {
@@ -31,11 +38,18 @@ public:
     int32 Card = 0;
     int32 Tutorial = 0;
     int32 Retries = 0;
+    int32 CurrentOrder = 0;
+    int32 CompletedOrders = 0;
+    int32 RouteNode = 0;
+    float SessionSeconds = 0.f;
+    TArray<float> DeliveryTimes = {0.f,0.f,0.f};
+    TArray<FCourierOrder> Orders;
     FString Language = TEXT("en"); // Always English on a new run, independent of OS language.
     bool bHelp = false;
     bool bSlowing = false;
     bool bLockCamera = false;
     bool bTrainingJumped = false;
+    bool bAudioEnabled = true;
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 140.f;
@@ -44,8 +58,8 @@ public:
     float MouseSensitivity = .6f;
     float CameraFov = 90.f;
     FVector Checkpoint = FVector(100, 0, 120);
-    const FVector Pickup = FVector(2400, 0, 100);
-    const FVector Destination = FVector(8000, 0, 100);
+    FVector Pickup = FVector(2400, 0, 100);
+    FVector Destination = FVector(8000, 0, 100);
     TArray<FString> CardTitles;
     TArray<FString> CardBodies;
     TArray<FString> CardTitlesZh;
@@ -74,10 +88,34 @@ public:
     void ToggleLanguage();
     void RecenterCamera();
     void Retry();
+    void RestartRun();
+    void NextOrder();
+    void SetAudioEnabled(bool bEnabled);
+    FString OrderTitle() const;
+    FString OrderBrief() const;
+    FString OrderDestination() const;
+    FString OrderOutcome() const;
+    FString OrderLabel() const;
+    FString RouteHint() const;
+    FString NavigationText() const;
+    FString ProgressText() const;
+    FVector NavigationTarget() const;
+    float OrderBudget() const;
+    float RecoverySeconds = 0.f;
 private:
     UPROPERTY() TArray<TObjectPtr<class ACourierCart>> Carts;
     UPROPERTY() TObjectPtr<AActor> CoffeeLamp;
+    UPROPERTY() TArray<TObjectPtr<class ACourierLift>> Platforms;
+    UPROPERTY() TArray<TObjectPtr<AActor>> FinaleActors;
+    UPROPERTY() TArray<TObjectPtr<AActor>> ProjectionActors;
+    UPROPERTY() TObjectPtr<class UAudioComponent> Music;
+    TArray<FVector> Route;
     void BuildPracticeRoute();
+    void BuildDeliveryDistricts();
+    void ConfigureOrder(int32 Index);
+    void AcceptOrder();
+    void Sound(const TCHAR* Name,float Volume=.3f);
+    void UpdateCelebration();
     void LoadCopy();
     void LoadTranslations();
     TMap<FString,TMap<FString,FString>> Translations;
@@ -100,12 +138,17 @@ public:
     virtual void OnJumped_Implementation() override;
     virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
     void SetCameraFov(float Value);
+    void SetParcelStyle(int32 Order);
+    void ShowPackage(bool bVisible);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Bag;
 private:
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Head;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> PackageMark;
     UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Limbs;
     float WalkCycle = 0.f;
+    float FootstepDistance = 0.f;
+    UPROPERTY() TObjectPtr<class USoundBase> FootstepCue;
     UPROPERTY() TObjectPtr<USpringArmComponent> Arm;
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
     void Forward(float Value);
@@ -152,9 +195,28 @@ public:
     float Period = 5.f;
     float Amplitude = 420.f;
     bool bTraining = false;
+    int32 OrderIndex = 0;
     bool bSlowedOnce = false;
     void Reset();
     bool Touching(const FVector& Player) const;
+};
+
+UCLASS()
+class LASTMINUTECOURIER_API ACourierLift : public AActor
+{
+    GENERATED_BODY()
+public:
+    ACourierLift();
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Mesh;
+    UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> Material;
+    FVector Origin=FVector::ZeroVector;
+    FVector Travel=FVector(0,0,320);
+    float Clock=0.f;
+    float Period=9.f;
+    int32 OrderIndex=1;
+    void Reset();
 };
 
 UCLASS()

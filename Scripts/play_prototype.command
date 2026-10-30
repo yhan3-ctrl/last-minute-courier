@@ -2,6 +2,7 @@
 set -euo pipefail
 
 COURIER_PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$COURIER_PROJECT_ROOT/Scripts/local_runtime.zsh"
 COURIER_ENGINE_ROOT="${1:-/Users/Shared/Epic Games/UE_5.8}"
 COURIER_RES_X="${2:-1280}"
 COURIER_RES_Y="${3:-800}"
@@ -18,12 +19,12 @@ if [[ ! -f "$COURIER_PROJECT_ROOT/Binaries/Mac/libUnrealEditor-LastMinuteCourier
     print -u2 'Build the Editor module and generate the map before launching the prototype.'
     exit 2
 fi
-mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/DerivedDataCache"
+mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache"
 if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
     export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 fi
-exec env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/DerivedDataCache" \
+exec env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "$COURIER_EDITOR" "$COURIER_PROJECT_ROOT/LastMinuteCourier.uproject" \
     /Game/Maps/L_Courier -game -windowed "-ResX=$COURIER_RES_X" "-ResY=$COURIER_RES_Y" -nosplash -NoLiveCoding \
-    "-LocalDataCachePath=$COURIER_PROJECT_ROOT/DerivedDataCache" \
+    "-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "-abslog=$COURIER_PROJECT_ROOT/Saved/Logs/FirstPlayable.log"

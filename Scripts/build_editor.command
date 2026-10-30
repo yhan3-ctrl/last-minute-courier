@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Only run after engine/Xcode installation and license setup are complete.
 COURIER_PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$COURIER_PROJECT_ROOT/Scripts/local_runtime.zsh"
 if [[ $# -ne 1 ]]; then
     print -u2 'Usage: build_editor.command /absolute/path/to/UE_version'
     exit 2
@@ -17,9 +18,9 @@ fi
 if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
     export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 fi
-mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/DerivedDataCache"
-env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/DerivedDataCache" \
+mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache"
+env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     /bin/bash "$COURIER_BUILD_SCRIPT" LastMinuteCourierEditor Mac Development \
     "-Project=$COURIER_PROJECT_ROOT/LastMinuteCourier.uproject" \
-    -WaitMutex -NoHotReloadFromIDE \
+    -WaitMutex -NoHotReloadFromIDE -NoUBA \
     "-log=$COURIER_PROJECT_ROOT/Saved/Logs/BuildEditor.log"

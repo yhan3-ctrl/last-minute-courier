@@ -441,6 +441,462 @@
       "es": "Centrar cámara (C)",
       "fr": "Recentrer la caméra (C)",
       "de": "Kamera ausrichten (C)"
+    },
+    "COFFEE": {
+      "zh": "咖啡",
+      "ja": "コーヒー",
+      "ko": "커피",
+      "es": "CAFÉ",
+      "fr": "CAFÉ",
+      "de": "KAFFEE"
+    },
+    "LENS": {
+      "zh": "镜头",
+      "ja": "レンズ",
+      "ko": "렌즈",
+      "es": "LENTE",
+      "fr": "OBJECTIF",
+      "de": "OBJEKTIV"
+    },
+    "REEL": {
+      "zh": "胶片",
+      "ja": "フィルム",
+      "ko": "필름",
+      "es": "PELÍCULA",
+      "fr": "BOBINE",
+      "de": "FILMROLLE"
+    },
+    "ADMIT ONE / CAMPUS CINEMA": {
+      "zh": "一人入场 / 校园电影夜",
+      "ja": "一名様 / キャンパス映画館",
+      "ko": "1인 입장 / 캠퍼스 영화관",
+      "es": "UNA ENTRADA / CINE DEL CAMPUS",
+      "fr": "UNE ENTRÉE / CINÉMA DU CAMPUS",
+      "de": "EINTRITT FÜR EINE PERSON / CAMPUSKINO"
+    },
+    "Music & sound": {
+      "zh": "音乐与音效",
+      "ja": "音楽と効果音",
+      "ko": "음악 및 효과음",
+      "es": "Música y sonido",
+      "fr": "Musique et sons",
+      "de": "Musik und Ton"
+    },
+    "DELIVERIES": {
+      "zh": "配送进度",
+      "ja": "配達",
+      "ko": "배달",
+      "es": "ENTREGAS",
+      "fr": "LIVRAISONS",
+      "de": "LIEFERUNGEN"
+    },
+    "Collect your package when you are ready.": {
+      "zh": "准备好后领取包裹。",
+      "ja": "準備ができたら荷物を受け取ろう。",
+      "ko": "준비되면 소포를 받으세요.",
+      "es": "Recoge el paquete cuando estés listo.",
+      "fr": "Récupérez le colis quand vous êtes prêt.",
+      "de": "Hol dein Paket ab, wenn du bereit bist."
+    },
+    "C recenter / H route hint": {
+      "zh": "C 镜头回正 / H 路线提示",
+      "ja": "C 視点を正面に / H ルートのヒント",
+      "ko": "C 카메라 정면 / H 경로 도움말",
+      "es": "C centrar / H pista de ruta",
+      "fr": "C recentrer / H indice de trajet",
+      "de": "C Kamera ausrichten / H Routenhinweis"
+    },
+    "Pick a gap, or take the right arcade.": {
+      "zh": "选择车流空隙，或走右侧长廊。",
+      "ja": "車の切れ目を選ぶか、右の回廊を通ろう。",
+      "ko": "빈틈을 고르거나 오른쪽 아케이드로 가세요.",
+      "es": "Busca un hueco o toma la galería de la derecha.",
+      "fr": "Choisissez une ouverture ou prenez la galerie à droite.",
+      "de": "Nutze eine Lücke oder den rechten Arkadengang."
+    },
+    "Ride the blue lifts; jump the stones, or follow the wide ramps.": {
+      "zh": "乘蓝色升降台、跳过石墩，或选择宽阔坡道。",
+      "ja": "青いリフトに乗り、飛び石を渡ろう。広いスロープも使える。",
+      "ko": "파란 승강기와 징검돌을 이용하거나 넓은 경사로로 가세요.",
+      "es": "Usa los elevadores azules y salta las piedras, o sigue las rampas anchas.",
+      "fr": "Prenez les plateformes bleues et sautez sur les pierres, ou suivez les larges rampes.",
+      "de": "Nutze die blauen Lifte und Trittsteine oder die breiten Rampen."
+    },
+    "Plan the next crossing. Side paths give your Borrower time to recharge.": {
+      "zh": "安排好下一次通行。走侧路时，借秒器可以重新充能。",
+      "ja": "次に渡る場所を考えよう。脇道を歩く間に借秒器が充電される。",
+      "ko": "다음 통과를 계획하세요. 옆길로 가는 동안 시간 차용기가 충전됩니다.",
+      "es": "Planea el próximo cruce. Los caminos laterales dan tiempo para recargar.",
+      "fr": "Préparez le prochain passage. Les chemins latéraux laissent le temps de recharger.",
+      "de": "Plane den nächsten Übergang. Auf den Seitenwegen kann sich dein Zeitborger aufladen."
+    },
+    "Accept delivery": {
+      "zh": "确认接单",
+      "ja": "配達を引き受ける",
+      "ko": "배달 수락",
+      "es": "Aceptar entrega",
+      "fr": "Accepter la livraison",
+      "de": "Lieferung annehmen"
+    },
+    "Resume": {
+      "zh": "继续",
+      "ja": "再開",
+      "ko": "계속",
+      "es": "Continuar",
+      "fr": "Reprendre",
+      "de": "Fortsetzen"
+    },
+    "WASD moves. Space jumps. Hold Q to slow blue clock-tagged devices for up to 3 seconds; recharge takes 4. E collects and delivers. C recenters your view. Progress lasts for this session.": {
+      "zh": "WASD 移动，空格跳跃。按住 Q 减慢蓝色时钟装置，最长 3 秒，之后充能 4 秒。E 接单和交付，C 镜头回正。进度在本次运行中保留。",
+      "ja": "WASD で移動、Space でジャンプ。Q を押すと青い時計マークの装置が最大3秒減速し、充電に4秒かかる。E で受け取りと配達、C で視点を正面に戻す。進行は今回のプレイ中のみ保存される。",
+      "ko": "WASD로 이동, Space로 점프합니다. Q를 누르면 파란 시계 표시 장치가 최대 3초 느려지고, 충전에는 4초가 걸립니다. E로 수령과 배달, C로 카메라를 정면으로 돌립니다. 진행은 이번 실행 동안만 유지됩니다.",
+      "es": "WASD mueve, Espacio salta. Mantén Q para ralentizar hasta 3 segundos los dispositivos azules con reloj; recargar tarda 4. E recoge y entrega. C centra la vista. El progreso dura esta sesión.",
+      "fr": "WASD pour se déplacer, Espace pour sauter. Maintenez Q pour ralentir les appareils bleus marqués d'une horloge pendant 3 secondes ; recharge en 4 secondes. E pour récupérer et livrer, C pour recentrer. La progression dure cette session.",
+      "de": "WASD bewegt, Leertaste springt. Halte Q, um blaue Geräte mit Uhrsymbol bis zu 3 Sekunden zu verlangsamen; Aufladen dauert 4 Sekunden. E holt ab und liefert. C richtet die Kamera aus. Fortschritt gilt für diese Sitzung."
+    },
+    "Play again": {
+      "zh": "再玩一次",
+      "ja": "もう一度遊ぶ",
+      "ko": "다시 플레이",
+      "es": "Volver a jugar",
+      "fr": "Rejouer",
+      "de": "Erneut spielen"
+    },
+    "Delivery time": {
+      "zh": "配送用时",
+      "ja": "配達時間",
+      "ko": "배달 시간",
+      "es": "Tiempo de entrega",
+      "fr": "Temps de livraison",
+      "de": "Lieferzeit"
+    },
+    "Retries": {
+      "zh": "重试次数",
+      "ja": "再挑戦回数",
+      "ko": "재시도 횟수",
+      "es": "Reintentos",
+      "fr": "Nouvelles tentatives",
+      "de": "Wiederholungen"
+    },
+    "A seat for you.": {
+      "zh": "也有你的座位。",
+      "ja": "あなたの席も。",
+      "ko": "당신을 위한 자리.",
+      "es": "Un asiento para ti.",
+      "fr": "Une place pour vous.",
+      "de": "Ein Platz für dich."
+    },
+    "The film begins. Your three delivery stamps make one ticket. Tonight, there is a seat for you too.": {
+      "zh": "放映开始。三枚配送邮戳，拼成了你的电影票。今晚，也有一个座位属于你。",
+      "ja": "上映が始まる。配達でもらった三つのスタンプが一枚のチケットになった。今夜は、あなたの席もある。",
+      "ko": "영화가 시작됩니다. 배달 도장 세 개가 티켓 한 장이 되었습니다. 오늘 밤, 당신을 위한 자리도 있습니다.",
+      "es": "La película comienza. Tus tres sellos de entrega forman una entrada. Esta noche también hay un asiento para ti.",
+      "fr": "Le film commence. Vos trois tampons de livraison forment un billet. Ce soir, il y a une place pour vous aussi.",
+      "de": "Der Film beginnt. Deine drei Lieferstempel ergeben eine Eintrittskarte. Heute Abend gibt es auch einen Platz für dich."
+    },
+    "Next delivery": {
+      "zh": "下一单",
+      "ja": "次の配達",
+      "ko": "다음 배달",
+      "es": "Siguiente entrega",
+      "fr": "Livraison suivante",
+      "de": "Nächste Lieferung"
+    },
+    "Delivered.": {
+      "zh": "送达了。",
+      "ja": "配達完了。",
+      "ko": "배달 완료.",
+      "es": "Entregado.",
+      "fr": "Livré.",
+      "de": "Geliefert."
+    },
+    "Show route hint": {
+      "zh": "查看路线提示",
+      "ja": "ルートのヒントを見る",
+      "ko": "경로 도움말 보기",
+      "es": "Ver pista de ruta",
+      "fr": "Voir l'indice de trajet",
+      "de": "Routenhinweis zeigen"
+    },
+    "The delivery clock ran out. Your earlier deliveries are safe. Try this order again; the clock starts after you accept the brief.": {
+      "zh": "本单配送超时。之前的交付已经保留。再试一次吧，确认简报后才开始计时。",
+      "ja": "この配達の時間が切れた。前の配達は完了したまま。もう一度挑戦しよう。依頼を確認して引き受けてから時間が進む。",
+      "ko": "이번 배달 시간이 끝났습니다. 이전 배달은 유지됩니다. 다시 시도하세요. 안내를 읽고 수락한 뒤에 시간이 시작됩니다.",
+      "es": "Se acabó el tiempo de esta entrega. Las anteriores están a salvo. Reintenta este pedido; el reloj empieza al aceptar el encargo.",
+      "fr": "Le temps de cette livraison est écoulé. Les précédentes sont conservées. Réessayez ; le chrono démarre après acceptation du briefing.",
+      "de": "Die Lieferzeit ist abgelaufen. Frühere Lieferungen bleiben erhalten. Versuch diesen Auftrag erneut; die Zeit läuft erst nach Annahme des Briefings."
+    },
+    "Time is up.": {
+      "zh": "配送时间到了。",
+      "ja": "時間切れ。",
+      "ko": "시간이 끝났습니다.",
+      "es": "Se acabó el tiempo.",
+      "fr": "Le temps est écoulé.",
+      "de": "Die Zeit ist um."
+    },
+    "TIME LIMIT": {
+      "zh": "配送时限",
+      "ja": "制限時間",
+      "ko": "제한 시간",
+      "es": "TIEMPO LÍMITE",
+      "fr": "TEMPS LIMITE",
+      "de": "ZEITLIMIT"
+    },
+    "Read at your own pace. The clock starts only after you accept.": {
+      "zh": "慢慢阅读。确认接单后才开始计时。",
+      "ja": "ゆっくり読んで大丈夫。引き受けてから時間が進む。",
+      "ko": "천천히 읽으세요. 수락한 뒤에만 시간이 시작됩니다.",
+      "es": "Lee a tu ritmo. El reloj solo empieza cuando aceptas.",
+      "fr": "Lisez à votre rythme. Le chrono ne démarre qu'après acceptation.",
+      "de": "Lies in deinem Tempo. Die Uhr startet erst, wenn du annimmst."
+    },
+    "Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both routes reach the coffee stand.": {
+      "zh": "中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥。两条路都能到咖啡摊。",
+      "ja": "中央は台車を横切る短いルート。右の回廊は広くて安全。どちらもコーヒースタンドに着く。",
+      "ko": "중앙은 수레를 지나는 짧은 길, 오른쪽 아케이드는 넓고 안전한 길입니다. 둘 다 커피 가판대로 이어집니다.",
+      "es": "Centro: cruces de carros más cortos. Galería derecha: camino más ancho y seguro. Ambas rutas llegan al puesto de café.",
+      "fr": "Au centre : des passages plus courts entre les chariots. À droite : une galerie plus large et plus sûre. Les deux mènent au café.",
+      "de": "Mitte: kürzere Wagenübergänge. Rechte Arkade: breiter und sicherer. Beide Wege führen zum Kaffeestand."
+    },
+    "Garden lifts: jump aboard low, ride up, then leave at the landing. Q gives you more boarding time. Wide side ramps bypass every lift and the stepping stones.": {
+      "zh": "花园升降台：低处跳上，乘台升高，到站离开。Q 能延长登台窗口。宽阔的侧坡道可绕过升降台和跳石。",
+      "ja": "庭園のリフトは低い位置で飛び乗り、上まで乗ってから降りよう。Q で乗れる時間が長くなる。広い脇のスロープならリフトも飛び石も迂回できる。",
+      "ko": "정원 승강기가 낮을 때 뛰어올라 타고, 올라가면 내리세요. Q로 탈 수 있는 시간을 늘릴 수 있습니다. 넓은 옆 경사로로 승강기와 징검돌을 모두 우회할 수 있습니다.",
+      "es": "Elevadores del jardín: sube de un salto cuando estén bajos y baja al llegar arriba. Q amplía el tiempo para subir. Las rampas laterales evitan todos los elevadores y las piedras.",
+      "fr": "Plateformes du jardin : sautez dessus en bas, montez et descendez au palier. Q donne plus de temps pour embarquer. Les larges rampes contournent plateformes et pierres.",
+      "de": "Gartenlifte: unten aufspringen, hochfahren und am Absatz aussteigen. Q verlängert das Zeitfenster zum Einsteigen. Breite Seitenrampen umgehen alle Lifte und Trittsteine."
+    },
+    "The last route combines cart lanes, a shuttle and a terrace lift. Q lasts 3 seconds, then needs 4 to recharge. Side paths are always available; save a charge for your next crossing.": {
+      "zh": "最后一程组合了车道、摆渡台和露台升降机。Q 最长 3 秒，之后充能 4 秒。始终有侧路可选，为下一次通行安排好能量。",
+      "ja": "最後のルートには台車の車線、往復台、テラスのリフトがある。Q は最大3秒、充電は4秒。脇道も使いながら、次の通行に備えて充電を残そう。",
+      "ko": "마지막 경로에는 수레 차선, 왕복 발판, 테라스 승강기가 있습니다. Q는 3초 동안 작동하고 충전에 4초가 걸립니다. 항상 옆길이 있으니 다음 통과에 쓸 에너지를 남겨 두세요.",
+      "es": "La última ruta combina carriles de carros, una plataforma móvil y un elevador. Q dura 3 segundos y recarga en 4. Siempre hay caminos laterales; reserva energía para el próximo cruce.",
+      "fr": "Le dernier trajet combine chariots, navette et plateforme de terrasse. Q dure 3 secondes, puis recharge en 4. Des chemins latéraux restent disponibles ; gardez de l'énergie pour le prochain passage.",
+      "de": "Die letzte Route verbindet Wagenspuren, eine Pendelplattform und einen Terrassenlift. Q hält 3 Sekunden und lädt 4 Sekunden auf. Seitenwege sind immer offen; spare Energie für den nächsten Übergang."
+    },
+    "BEHIND": {
+      "zh": "后方",
+      "ja": "後ろ",
+      "ko": "뒤쪽",
+      "es": "DETRÁS",
+      "fr": "DERRIÈRE",
+      "de": "HINTEN"
+    },
+    "RIGHT": {
+      "zh": "右方",
+      "ja": "右",
+      "ko": "오른쪽",
+      "es": "DERECHA",
+      "fr": "DROITE",
+      "de": "RECHTS"
+    },
+    "LEFT": {
+      "zh": "左方",
+      "ja": "左",
+      "ko": "왼쪽",
+      "es": "IZQUIERDA",
+      "fr": "GAUCHE",
+      "de": "LINKS"
+    },
+    "AHEAD": {
+      "zh": "前方",
+      "ja": "前方",
+      "ko": "앞쪽",
+      "es": "DELANTE",
+      "fr": "DEVANT",
+      "de": "VORAUS"
+    },
+    "E  Read delivery brief": {
+      "zh": "E 查看配送简报",
+      "ja": "E 配達の説明を読む",
+      "ko": "E 배달 안내 읽기",
+      "es": "E Leer el encargo",
+      "fr": "E Lire le briefing",
+      "de": "E Lieferbriefing lesen"
+    },
+    "E  Deliver package": {
+      "zh": "E 交付包裹",
+      "ja": "E 荷物を届ける",
+      "ko": "E 소포 배달",
+      "es": "E Entregar paquete",
+      "fr": "E Livrer le colis",
+      "de": "E Paket abgeben"
+    },
+    "A Little Warmth": {
+      "zh": "把暖意送到",
+      "ja": "温もりを届けて",
+      "ko": "따뜻함을 전해요",
+      "es": "Un poco de calor",
+      "fr": "Un peu de chaleur",
+      "de": "Ein wenig Wärme"
+    },
+    "Insulated Coffee Box": {
+      "zh": "咖啡保温箱",
+      "ja": "保温コーヒーボックス",
+      "ko": "커피 보온 상자",
+      "es": "Caja térmica de café",
+      "fr": "Boîte isotherme de café",
+      "de": "Isolierte Kaffeebox"
+    },
+    "Coffee Stand": {
+      "zh": "咖啡摊",
+      "ja": "コーヒースタンド",
+      "ko": "커피 가판대",
+      "es": "Puesto de café",
+      "fr": "Stand de café",
+      "de": "Kaffeestand"
+    },
+    "Bring the coffee box to the stand before the screening. Watch for delivery carts crossing the square.": {
+      "zh": "把保温箱送到咖啡摊。广场上的运输车正在穿行，留意空隙。",
+      "ja": "上映前にコーヒーボックスをスタンドへ届けよう。広場を横切る台車に注意。",
+      "ko": "상영 전에 커피 상자를 가판대로 가져가세요. 광장을 가로지르는 배달 수레를 조심하세요.",
+      "es": "Lleva el café al puesto antes de la proyección. Cuidado con los carros que cruzan la plaza.",
+      "fr": "Apportez le café au stand avant la séance. Attention aux chariots qui traversent la place.",
+      "de": "Bring die Kaffeebox vor der Vorführung zum Stand. Achte auf die Lieferwagen, die den Platz kreuzen."
+    },
+    "Serve warm.": {
+      "zh": "趁热。",
+      "ja": "温かいうちに。",
+      "ko": "따뜻할 때 드세요.",
+      "es": "Servir caliente.",
+      "fr": "À servir chaud.",
+      "de": "Warm servieren."
+    },
+    "Coffee is ready. Next up: the projector lens.": {
+      "zh": "咖啡准备好了。下一单：投影镜头。",
+      "ja": "コーヒーの準備完了。次は映写機のレンズ。",
+      "ko": "커피 준비 완료. 다음은 영사기 렌즈입니다.",
+      "es": "El café está listo. Ahora, la lente del proyector.",
+      "fr": "Le café est prêt. Place à l'objectif du projecteur.",
+      "de": "Der Kaffee ist bereit. Als Nächstes: das Projektorobjektiv."
+    },
+    "Light Up the Screen": {
+      "zh": "让银幕亮起来",
+      "ja": "スクリーンに光を",
+      "ko": "화면을 밝혀요",
+      "es": "Ilumina la pantalla",
+      "fr": "Éclairez l'écran",
+      "de": "Licht auf die Leinwand"
+    },
+    "Projector Lens Case": {
+      "zh": "投影镜头盒",
+      "ja": "映写機のレンズケース",
+      "ko": "영사기 렌즈 케이스",
+      "es": "Estuche de la lente",
+      "fr": "Étui de l'objectif",
+      "de": "Projektorobjektivkoffer"
+    },
+    "Projection Booth": {
+      "zh": "投影台",
+      "ja": "映写台",
+      "ko": "영사대",
+      "es": "Cabina de proyección",
+      "fr": "Cabine de projection",
+      "de": "Projektionsstand"
+    },
+    "Take the lens through the garden. Slow the lift to give yourself more time to board, or follow the longer ramp.": {
+      "zh": "把镜头送过花园。减慢升降台可延长登台时机，也可以走较长的坡道。",
+      "ja": "庭園を通ってレンズを届けよう。リフトを減速して乗る時間を作るか、長めのスロープを通ろう。",
+      "ko": "정원을 지나 렌즈를 배달하세요. 승강기를 느리게 해 탈 시간을 늘리거나 더 긴 경사로를 따라가세요.",
+      "es": "Lleva la lente por el jardín. Ralentiza el elevador para subir con más tiempo o toma la rampa larga.",
+      "fr": "Traversez le jardin avec l'objectif. Ralentissez la plateforme pour embarquer plus facilement, ou prenez la rampe plus longue.",
+      "de": "Bring das Objektiv durch den Garten. Verlangsame den Lift zum Einsteigen oder nimm die längere Rampe."
+    },
+    "Handle with care.": {
+      "zh": "轻放。",
+      "ja": "取扱注意。",
+      "ko": "조심히 다뤄 주세요.",
+      "es": "Manipular con cuidado.",
+      "fr": "À manipuler avec soin.",
+      "de": "Vorsichtig behandeln."
+    },
+    "The projector is ready. One last reel to deliver.": {
+      "zh": "投影机准备好了。还差最后一卷胶片。",
+      "ja": "映写機の準備完了。あとは最後のフィルムだけ。",
+      "ko": "영사기가 준비되었습니다. 마지막 필름만 배달하면 됩니다.",
+      "es": "El proyector está listo. Solo falta la última película.",
+      "fr": "Le projecteur est prêt. Il reste une dernière bobine.",
+      "de": "Der Projektor ist bereit. Noch eine letzte Filmrolle."
+    },
+    "The Final Reel": {
+      "zh": "最后一卷",
+      "ja": "最後のフィルム",
+      "ko": "마지막 필름",
+      "es": "La última película",
+      "fr": "La dernière bobine",
+      "de": "Die letzte Filmrolle"
+    },
+    "Opening Film Reel": {
+      "zh": "开场胶片",
+      "ja": "上映用フィルム",
+      "ko": "상영용 필름",
+      "es": "Película de apertura",
+      "fr": "Bobine d'ouverture",
+      "de": "Eröffnungsfilmrolle"
+    },
+    "Clocktower Console": {
+      "zh": "钟楼控制台",
+      "ja": "時計塔の操作盤",
+      "ko": "시계탑 제어대",
+      "es": "Consola del reloj",
+      "fr": "Console de l'horloge",
+      "de": "Uhrturmkonsole"
+    },
+    "The whole square is waiting for this reel. Choose your route, cross the cart lanes, and save a charge for the lift.": {
+      "zh": "全场都在等这一卷。选择路线、穿过车道，并为升降台安排好借秒器的使用时机。",
+      "ja": "広場のみんながこのフィルムを待っている。ルートを選び、台車の車線を渡り、リフト用の充電を残そう。",
+      "ko": "광장 모두가 이 필름을 기다립니다. 경로를 선택해 수레 차선을 건너고, 승강기에 쓸 에너지를 남겨 두세요.",
+      "es": "Toda la plaza espera esta película. Elige tu ruta, cruza los carriles y reserva energía para el elevador.",
+      "fr": "Toute la place attend cette bobine. Choisissez votre trajet, traversez les voies des chariots et gardez de l'énergie pour la plateforme.",
+      "de": "Der ganze Platz wartet auf diese Rolle. Wähle deine Route, kreuze die Wagenspuren und spare Energie für den Lift."
+    },
+    "The whole square is waiting.": {
+      "zh": "全场都在等这一卷。",
+      "ja": "広場のみんなが待っている。",
+      "ko": "광장 모두가 기다립니다.",
+      "es": "Toda la plaza está esperando.",
+      "fr": "Toute la place attend.",
+      "de": "Der ganze Platz wartet."
+    },
+    "All three deliveries made. Time to take your seat.": {
+      "zh": "三份急件全部送达。现在，轮到你入座了。",
+      "ja": "三つの配達が完了。さあ、自分の席へ。",
+      "ko": "세 배달 모두 완료. 이제 자리에 앉을 시간입니다.",
+      "es": "Las tres entregas están hechas. Es hora de tomar asiento.",
+      "fr": "Les trois livraisons sont faites. Il est temps de vous asseoir.",
+      "de": "Alle drei Lieferungen geschafft. Zeit, deinen Platz einzunehmen."
+    },
+    "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Recharge takes 4. You move normally, and your delivery clock keeps ticking.": {
+      "zh": "按住 Q，让带蓝色时钟标签的装置减速，最长 3 秒，之后充能 4 秒。你的步伐和订单倒计时照常进行。",
+      "ja": "Q を押すと青い時計マークの装置が最大3秒減速し、充電に4秒かかる。あなたの動きと配達の時計は通常どおり進む。",
+      "ko": "Q를 누르면 파란 시계 표시 장치가 최대 3초 느려지고, 충전에는 4초가 걸립니다. 자신의 움직임과 배달 시간은 그대로입니다.",
+      "es": "Mantén Q para ralentizar hasta 3 segundos los dispositivos azules con reloj; recargar tarda 4. Tú te mueves normalmente y el reloj de entrega sigue corriendo.",
+      "fr": "Maintenez Q pour ralentir les appareils bleus marqués d’une horloge pendant 3 secondes ; recharge en 4 secondes. Vous bougez normalement et le chrono continue.",
+      "de": "Halte Q, um blaue Geräte mit Uhrsymbol bis zu 3 Sekunden zu verlangsamen. Aufladen dauert 4 Sekunden. Du bewegst dich normal und die Lieferzeit läuft weiter."
+    },
+    "Deliver coffee to the stand, the lens to the projection booth, and the reel to the clocktower. E reads a delivery brief; Enter accepts and starts its clock. R retries only your current order.": {
+      "zh": "把咖啡送到咖啡摊、镜头送到投影台、胶片送到钟楼。按 E 阅读配送简报，Enter 确认后才开始计时。R 只重试当前订单，前面的交付保留。",
+      "ja": "コーヒーをスタンドへ、レンズを映写台へ、フィルムを時計塔へ届けよう。E で説明を読み、Enter で引き受けると時間が進む。R で今の配達だけ再挑戦でき、前の配達は残る。",
+      "ko": "커피는 가판대로, 렌즈는 영사대로, 필름은 시계탑으로 배달하세요. E로 안내를 읽고 Enter로 수락하면 시간이 시작됩니다. R은 현재 배달만 다시 시작하며 이전 배달은 유지됩니다.",
+      "es": "Lleva café al puesto, la lente a la cabina y la película al reloj. E abre el encargo; Enter acepta e inicia el tiempo. R reinicia solo el pedido actual.",
+      "fr": "Livrez le café au stand, l’objectif à la cabine et la bobine à l’horloge. E ouvre le briefing ; Entrée accepte et lance le chrono. R relance seulement la livraison en cours.",
+      "de": "Bring Kaffee zum Stand, das Objektiv zum Projektionsstand und den Film zum Uhrturm. E öffnet das Briefing; Enter nimmt an und startet die Zeit. R wiederholt nur den aktuellen Auftrag."
+    },
+    "Your first steps": {
+      "zh": "先练习，再出发",
+      "ja": "はじめの一歩",
+      "ko": "첫걸음",
+      "es": "Tus primeros pasos",
+      "fr": "Vos premiers pas",
+      "de": "Deine ersten Schritte"
+    },
+    "WASD: move / Mouse: look\nSpace: jump / Hold Q: slow blue devices\nE: collect or deliver / C: recenter\nEsc: pause / H: route help\nStart with safe practice. There is no timer yet.": {
+      "zh": "WASD：移动 / 鼠标：视角\n空格：跳跃 / 按住 Q：减慢蓝色装置\nE：接单或交付 / C：镜头回正\nEsc：暂停 / H：路线帮助\n先在安全练习区试一试，现在没有倒计时。",
+      "ja": "WASD：移動 / マウス：視点\nSpace：ジャンプ / Q 長押し：青い装置を減速\nE：受け取り・配達 / C：視点を正面に\nEsc：一時停止 / H：ルートのヒント\nまず安全な場所で練習。まだ時計は進まない。",
+      "ko": "WASD: 이동 / 마우스: 시점\nSpace: 점프 / Q 누르기: 파란 장치 감속\nE: 수령 또는 배달 / C: 카메라 정면\nEsc: 일시정지 / H: 경로 도움말\n먼저 안전하게 연습하세요. 아직 제한 시간이 없습니다.",
+      "es": "WASD: mover / Ratón: mirar\nEspacio: saltar / Mantén Q: ralentizar dispositivos azules\nE: recoger o entregar / C: centrar\nEsc: pausa / H: pista de ruta\nEmpieza practicando sin reloj.",
+      "fr": "WASD : bouger / Souris : regarder\nEspace : sauter / Q maintenu : ralentir les appareils bleus\nE : récupérer ou livrer / C : recentrer\nÉchap : pause / H : indice de trajet\nCommencez par un entraînement sans chrono.",
+      "de": "WASD: bewegen / Maus: umsehen\nLeertaste: springen / Q halten: blaue Geräte verlangsamen\nE: abholen oder liefern / C: Kamera ausrichten\nEsc: Pause / H: Routenhinweis\nÜbe zuerst in Ruhe. Noch läuft keine Uhr."
     }
   }
 }

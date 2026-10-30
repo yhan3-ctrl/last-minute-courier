@@ -1,0 +1,160 @@
+#include "../CourierPrototype.h"
+
+#if WITH_DEV_AUTOMATION_TESTS
+#include "Misc/AutomationTest.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
+#include "Components/StaticMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCourierJourneyRegression,"Courier.Regression.ThreeOrderJourney",
+    EAutomationTestFlags::ClientContext|EAutomationTestFlags::EngineFilter)
+
+bool FCourierJourneyRegression::RunTest(const FString&)
+{
+    UWorld* World=nullptr;
+    for(const auto& Context:GEngine->GetWorldContexts())
+        if(Context.World() && Context.World()->GetAuthGameMode<ACourierGameMode>())World=Context.World();
+    if(!TestNotNull(TEXT("Courier world exists"),World))return false;
+    auto* Mode=World->GetAuthGameMode<ACourierGameMode>();
+    auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(World,0));
+    auto* PC=UGameplayStatics::GetPlayerController(World,0);
+    if(!TestNotNull(TEXT("Courier exists"),Player) || !TestNotNull(TEXT("Controller exists"),PC))return false;
+    Mode->Phase=ECourierPhase::Complete;Mode->RestartRun();Mode->SetLanguage(TEXT("en"));
+    auto Place=[Mode,Player](FVector P,bool Ground=true)
+    {
+        Mode->RecoverySeconds=0;Player->StopJumping();
+        Player->GetCharacterMovement()->StopMovementImmediately();
+        Player->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
+        Player->SetActorLocation(P,false,nullptr,ETeleportType::TeleportPhysics);
+        Player->GetCharacterMovement()->SetMovementMode(Ground?MOVE_Walking:MOVE_Falling);
+    };
+    const auto Visible=[World](FName Tag)
+    {
+        int32 Count=0;
+        for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(Tag) && !It->IsHidden())++Count;
+        return Count;
+    };
+    FCollisionQueryParams WalkParams;WalkParams.AddIgnoredActor(Player);
+    const auto WalkClear=[&](FVector A,FVector B,const TCHAR* Name)
+    {
+        FHitResult Hit;
+        const bool Blocked=World->SweepSingleByChannel(Hit,A,B,FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(34,88),WalkParams);
+        const bool Wall=Blocked && (Hit.bStartPenetrating || Hit.ImpactNormal.Z<Player->GetCharacterMovement()->GetWalkableFloorZ());
+        if(Wall)AddInfo(FString::Printf(TEXT("Blocked sweep %s: actor=%s, point=%s, normal=%s, initial=%d"),Name,*GetNameSafe(Hit.GetActor()),*Hit.ImpactPoint.ToString(),*Hit.ImpactNormal.ToString(),Hit.bStartPenetrating));
+        // A sweep may touch the walkable ramp while leaving it. Only a wall or
+        // initial penetration obstructs this walking route.
+        TestFalse(Name,Wall);
+    };
+    WalkClear(FVector(14100,1900,410),FVector(14800,1900,410),TEXT("Garden ramp corner has no rail gate"));
+    WalkClear(FVector(14800,1900,410),FVector(14800,0,410),TEXT("Garden ramp joins raised walk without a rail gate"));
+    WalkClear(FVector(24900,2100,490),FVector(25700,2100,490),TEXT("Projection ramp corner has no rail gate"));
+    WalkClear(FVector(25700,2100,490),FVector(25700,0,490),TEXT("Projection ramp exit is open"));
+    WalkClear(FVector(42200,2200,510),FVector(43000,2200,510),TEXT("Final terrace ramp corner is open"));
+    WalkClear(FVector(43000,2200,510),FVector(43000,0,510),TEXT("Final terrace ramp joins upper walk"));
+    TestEqual(TEXT("Three orders loaded from runtime data"),Mode->Orders.Num(),3);
+    TestEqual(TEXT("Restart clears completed stamps"),Mode->CompletedOrders,0);
+    TestEqual(TEXT("Projection initially off"),Visible(TEXT("CourierProjection")),0);
+    TestEqual(TEXT("Final scene initially off"),Visible(TEXT("CourierFinale")),0);
+    while(Mode->Phase==ECourierPhase::Opening)Mode->Continue();
+    Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
+    TestTrue(TEXT("Ready after teaching"),Mode->Phase==ECourierPhase::AwaitPickup);
+    for(int32 Order=0;Order<3;++Order)
+    {
+        TestEqual(TEXT("Correct active order"),Mode->CurrentOrder,Order);
+        TestTrue(TEXT("Budget matches runtime order data"),Mode->Remaining==Mode->OrderBudget());
+        Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();
+        TestTrue(TEXT("E opens a brief, not a running clock"),Mode->Phase==ECourierPhase::Briefing);
+        Mode->StartSlow();const float BeforeBrief=Mode->Remaining;Mode->Tick(20.f);
+        TestFalse(TEXT("Borrower inactive while reading"),Mode->bSlowing);
+        TestEqual(TEXT("Reading does not use delivery time"),Mode->Remaining,BeforeBrief);
+        Mode->Back();TestTrue(TEXT("Can cancel brief"),Mode->Phase==ECourierPhase::AwaitPickup);
+        Mode->Interact();Mode->Continue();
+        TestTrue(TEXT("Accept starts the current delivery"),Mode->Phase==ECourierPhase::Delivery);
+
+        // The guide/checkpoint targets must have real collision support at the intended height.
+        FCollisionQueryParams Params;Params.AddIgnoredActor(Player);
+        for(int32 N=0;N<16;++N)
+        {
+            Mode->RouteNode=N;const FVector Target=Mode->NavigationTarget();FHitResult Hit;
+            const bool Found=World->LineTraceSingleByChannel(Hit,Target+FVector(0,0,650),Target-FVector(0,0,180),ECC_Visibility,Params);
+            TestTrue(*FString::Printf(TEXT("Order %d guide %d has supported ground"),Order+1,N),Found);
+            if(Found)TestTrue(TEXT("Guide target height matches floor"),FMath::Abs(Hit.ImpactPoint.Z-(Target.Z-100.f))<30.f);
+            if(Target.Equals(Mode->Destination))break;
+        }
+        if(Order==1)
+        {
+            for(int32 I=0;I<=19;++I)
+            {
+                const FVector Floor(12200+I*100,1900,I*320.f/19.f);FHitResult Hit;
+                const bool Supported=World->LineTraceSingleByChannel(Hit,Floor+FVector(0,0,180),Floor-FVector(0,0,80),ECC_Visibility,Params);
+                TestTrue(TEXT("Garden walk ramp is continuously supported"),Supported);
+                if(Supported)TestTrue(TEXT("Garden ramp has no hidden landing lip"),FMath::Abs(Hit.ImpactPoint.Z-Floor.Z)<25.f);
+            }
+            Place(FVector(13150,1900,248));
+            TestTrue(TEXT("Navigation follows selected ramp instead of crossing water"),FMath::IsNearlyEqual(Mode->NavigationTarget().Y,1900.f));
+            FHitResult GapHit;
+            TestFalse(TEXT("Stepping-stone gap is a real gap"),World->LineTraceSingleByChannel(GapHit,FVector(19350,0,150),FVector(19350,0,-150),ECC_Visibility,Params));
+            ACourierLift* Lift=nullptr;
+            for(TActorIterator<ACourierLift> It(World);It;++It)if(It->OrderIndex==1){Lift=*It;break;}
+            if(TestNotNull(TEXT("Garden moving lift exists"),Lift))
+            {
+                Lift->Reset();const float Initial=Lift->Clock;
+                Mode->StartSlow();Lift->Tick(1.f);
+                TestTrue(TEXT("Platform uses quarter device time"),FMath::IsNearlyEqual(Lift->Clock-Initial,.25f));
+                const float PausedClock=Lift->Clock;const FVector PausedPosition=Lift->GetActorLocation();
+                Mode->TogglePause();Lift->Tick(1.f);Mode->Tick(1.f);
+                TestTrue(TEXT("Pause freezes platform time and position"),Lift->Clock==PausedClock && Lift->GetActorLocation()==PausedPosition);
+                Mode->TogglePause();
+                TestFalse(TEXT("Resume resolves released Q"),Mode->bSlowing);
+                TestFalse(TEXT("No launch velocity inherited from lifts"),Player->GetCharacterMovement()->bImpartBaseVelocityZ);
+            }
+            const float SavedFirst=Mode->DeliveryTimes[0];
+            Mode->Remaining=.01f;Mode->Tick(.02f);
+            TestTrue(TEXT("Second-order timeout reaches failure"),Mode->Phase==ECourierPhase::Failed);
+            Mode->ToggleHelp();TestTrue(TEXT("Failed run can open route hint"),Mode->bHelp && Mode->Phase==ECourierPhase::Failed);
+            Mode->Retry();
+            TestEqual(TEXT("Retry keeps earlier stamp"),Mode->CompletedOrders,1);
+            TestEqual(TEXT("Retry keeps earlier delivery time"),Mode->DeliveryTimes[0],SavedFirst);
+            TestEqual(TEXT("Retry remains on order two"),Mode->CurrentOrder,1);
+            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==170 && Mode->Phase==ECourierPhase::AwaitPickup);
+            Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();Mode->Continue();
+        }
+        if(Order==2)
+        {
+            for(int32 I=0;I<=23;++I)
+            {
+                const FVector Floor(39900+I*100,2200,I*420.f/23.f);FHitResult Hit;
+                const bool Supported=World->LineTraceSingleByChannel(Hit,Floor+FVector(0,0,180),Floor-FVector(0,0,80),ECC_Visibility,Params);
+                TestTrue(TEXT("Final terrace ramp has walkable support"),Supported);
+                if(Supported)TestTrue(TEXT("Final ramp has no hidden landing lip"),FMath::Abs(Hit.ImpactPoint.Z-Floor.Z)<25.f);
+            }
+        }
+        Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.25f);
+        Place(Mode->Destination-FVector(0,0,12));Mode->Interact();
+        TestEqual(TEXT("Delivery adds exactly one stamp"),Mode->CompletedOrders,Order+1);
+        TestFalse(TEXT("Delivery hides package"),Player->Bag->IsVisible());
+        if(Order<2)
+        {
+            TestTrue(TEXT("Intermediate result is not final ending"),Mode->Phase==ECourierPhase::Delivered);
+            if(Order==1)TestTrue(TEXT("Second delivery lights projector"),Visible(TEXT("CourierProjection"))>0);
+            TestEqual(TEXT("Finale waits for all deliveries"),Visible(TEXT("CourierFinale")),0);
+            const FVector Station=Mode->Destination;Mode->Continue();
+            TestTrue(TEXT("Next order starts at the delivery station"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Pickup.Equals(Station));
+        }
+    }
+    TestTrue(TEXT("Third delivery reaches complete ending"),Mode->Phase==ECourierPhase::Complete);
+    TestTrue(TEXT("Final landscape and lights visible"),Visible(TEXT("CourierFinale"))>5);
+    const float Finished=Mode->Remaining;Mode->Tick(10.f);
+    TestEqual(TEXT("Ending does not run delivery clock"),Mode->Remaining,Finished);
+    Mode->Retry();TestTrue(TEXT("Retry cannot undo completed game"),Mode->Phase==ECourierPhase::Complete);
+    Mode->Continue();TestTrue(TEXT("Play again returns to opening"),Mode->Phase==ECourierPhase::Opening);
+    TestEqual(TEXT("New run has zero stamps"),Mode->CompletedOrders,0);
+    TestEqual(TEXT("New run has zero retries"),Mode->Retries,0);
+    TestEqual(TEXT("New run turns final scene off"),Visible(TEXT("CourierFinale")),0);
+    AddInfo(TEXT("Controlled state/geometry regression; not a complete real-input playthrough, human feedback or a 5–10 minute measurement."));
+    return true;
+}
+#endif

@@ -14,7 +14,7 @@ IMPLEMENT_COMPLEX_AUTOMATION_TEST(FCourierVisualInspection,"Courier.Visual",
 
 void FCourierVisualInspection::GetTests(TArray<FString>& Names,TArray<FString>& Commands) const
 {
-    for(const TCHAR* Name:{TEXT("GardenCorner"),TEXT("ProjectionCorner"),TEXT("Cinema")})
+    for(const TCHAR* Name:{TEXT("Coffee"),TEXT("GardenCorner"),TEXT("ProjectionCorner"),TEXT("Cinema")})
     {Names.Add(Name);Commands.Add(Name);}
 }
 
@@ -38,15 +38,15 @@ bool FCourierVisualInspection::RunTest(const FString& Name)
     };
     while(Mode->Phase==ECourierPhase::Opening)Mode->Continue();
     Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
-    const int32 Target=Name==TEXT("Cinema")?2:1;
+    const int32 Target=Name==TEXT("Coffee")?0:(Name==TEXT("Cinema")?2:1);
     for(int32 I=0;I<=Target;++I)
     {
         Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();Mode->Continue();
         if(I<Target){Place(Mode->Destination-FVector(0,0,12));Mode->Interact();Mode->Continue();}
     }
-    Place(Name==TEXT("GardenCorner")?FVector(14400,1900,410):
-        (Name==TEXT("ProjectionCorner")?FVector(24900,2100,490):FVector(44500,0,510)));
-    Mode->bLockCamera=true;PC->SetControlRotation(FRotator(-12,0,0));
+    Place(Name==TEXT("Coffee")?FVector(6750,0,90):(Name==TEXT("GardenCorner")?FVector(14400,1900,410):
+        (Name==TEXT("ProjectionCorner")?FVector(24900,2100,490):FVector(44500,0,510))));
+    Mode->bLockCamera=true;PC->SetControlRotation(FRotator(-22,0,0));
     AddInfo(TEXT("Controlled visual inspection start only. Verify the resulting rendered view and movement separately; this does not measure level completion or player feedback."));
     return true;
 }

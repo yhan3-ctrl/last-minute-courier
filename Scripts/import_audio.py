@@ -7,7 +7,7 @@ unreal.EditorAssetLibrary.make_directory("/Game/Audio")
 tasks = []
 for source in sorted((root / "SourceAssets/Audio").glob("*.wav")):
     destination = "/Game/Audio/" + source.stem
-    if source.stem not in {"CampusLoop","Pickup","Paper","Stamp","Borrow","Finale","Footstep"}:
+    if source.stem not in {"CampusLoop","Pickup","Paper","Stamp","Borrow","Finale","Footstep","CampusStrings","CampusBells"}:
         continue
     task = unreal.AssetImportTask()
     task.filename = str(source)
@@ -21,9 +21,11 @@ unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks(tasks)
 for task in tasks:
     if not task.imported_object_paths:
         raise RuntimeError("Audio import failed: " + task.filename)
-track = unreal.EditorAssetLibrary.load_asset("/Game/Audio/CampusLoop")
-if not track:
-    raise RuntimeError("Campus loop was not imported")
-track.set_editor_property("looping", True)
-unreal.EditorAssetLibrary.save_loaded_asset(track)
-unreal.log("Courier original audio imported and loop configured.")
+for name in ("CampusLoop", "CampusStrings", "CampusBells"):
+    track = unreal.EditorAssetLibrary.load_asset("/Game/Audio/" + name)
+    if not track:
+        raise RuntimeError("Missing music loop: " + name)
+    track.set_editor_property("looping", True)
+    track.set_editor_property("virtualization_mode", unreal.VirtualizationMode.PLAY_WHEN_SILENT)
+    unreal.EditorAssetLibrary.save_loaded_asset(track)
+unreal.log("Courier original audio imported with synchronized silent playback configured.")

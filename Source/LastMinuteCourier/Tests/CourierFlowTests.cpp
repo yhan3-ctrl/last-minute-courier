@@ -65,7 +65,9 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Place(FVector(1200,0,88));Mode->Tick(.01f);
     TestEqual(TEXT("Crossing without jumping does not pass jump lesson"),Mode->Tutorial,1);
     // Complete the real Character jump callback near the lesson, then cross.
-    Place(FVector(850,0,88));Player->OnJumped_Implementation();
+    Place(FVector(560,0,88));Player->OnJumped_Implementation();
+    TestTrue(TEXT("A jump immediately after its prompt is accepted"),Mode->bTrainingJumped);
+    TestTrue(TEXT("Jump navigation stays ahead until its exit"),Mode->NavigationTarget().X>1100.f);
     Place(FVector(1200,0,88));Mode->Tick(.01f);
     TestEqual(TEXT("Learned jump advances tutorial"),Mode->Tutorial,2);
     Place(FVector(100,0,88));Mode->StartSlow();Training->Tick(.1f);Mode->EndSlow();
@@ -99,7 +101,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Pause really pauses Unreal world"),World->IsPaused());
     Mode->bLockCamera=true;
     PC->SetControlRotation(FRotator(20,75,0));Mode->RecenterCamera();
-    TestTrue(TEXT("Explicit recenter works while paused and camera locked"),PC->GetControlRotation().Equals(FRotator(-12,0,0),.01f));
+    TestTrue(TEXT("Explicit recenter works while paused and camera locked"),PC->GetControlRotation().Equals(FRotator(-22,0,0),.01f));
     TestTrue(TEXT("Recenter preserves pause and camera lock"),World->IsPaused() && Mode->bLockCamera);
     Mode->bLockCamera=false;
     const float PausedClock=Mode->Remaining,PausedCharge=Mode->SlowRemaining,PausedCart=DeliveryCart->Clock;

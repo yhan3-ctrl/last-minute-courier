@@ -1,5 +1,6 @@
 #include "CourierPrototype.h"
 #include "Components/AudioComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Dom/JsonObject.h"
 #include "Kismet/GameplayStatics.h"
@@ -56,9 +57,9 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
         }
     }
     CurrentOrder=FMath::Clamp(Index,0,2);
-    const FVector Stations[]={FVector(2400,0,100),FVector(8000,0,100),FVector(26000,0,500),FVector(46000,0,520)};
+    const FVector Stations[]={FVector(2400,0,100),FVector(8000,0,100),FVector(26000,0,500),FVector(46000,-950,520)};
     Pickup=Stations[CurrentOrder];Destination=Stations[CurrentOrder+1];
-    Remaining=OrderBudget();RouteNode=0;RecoverySeconds=0.f;
+    Remaining=OrderBudget();OrderElapsed=0.f;RouteNode=0;RecoverySeconds=0.f;
     Checkpoint=Pickup+FVector(0,0,20);
     if(CurrentOrder==0)
         Route={FVector(4500,0,100),FVector(6500,0,100),Destination};
@@ -69,7 +70,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
     else
         Route={FVector(26000,1100,500),FVector(27400,1100,500),FVector(30000,0,100),FVector(32700,0,100),
                FVector(33900,0,100),FVector(36300,0,100),FVector(38900,0,100),
-               FVector(39600,-1100,100),FVector(39800,0,100),FVector(42000,0,520),Destination};
+               FVector(39600,-1100,100),FVector(39800,0,100),FVector(42000,0,520),FVector(46100,0,520),Destination};
     if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->SetParcelStyle(CurrentOrder);
 }
 
@@ -97,7 +98,7 @@ FVector ACourierGameMode::NavigationTarget() const
 {
     if(Phase==ECourierPhase::Practice)
     {
-        const FVector Markers[]={FVector(650,0,100),FVector(1000,0,100),FVector(1800,0,100),Pickup};
+        const FVector Markers[]={FVector(650,0,100),FVector(1200,0,100),FVector(2000,0,100),Pickup};
         return Markers[FMath::Clamp(Tutorial,0,3)];
     }
     if(Phase==ECourierPhase::AwaitPickup || Phase==ECourierPhase::Briefing)return Pickup;
@@ -143,6 +144,9 @@ FVector ACourierGameMode::NavigationTarget() const
 
 FString ACourierGameMode::NavigationText() const
 {
+    if((Phase==ECourierPhase::AwaitPickup && CanInteractAt(Pickup)) ||
+       (Phase==ECourierPhase::Delivery && CanInteractAt(Destination)))
+        return Copy(TEXT("ARRIVED"),TEXT("已到达"));
     const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
     const auto* PC=UGameplayStatics::GetPlayerController(this,0);
     if(!Player || !PC)return FString();
@@ -169,11 +173,49 @@ void ACourierGameMode::SetAudioEnabled(bool bEnabled)
 {
     bAudioEnabled=bEnabled;
     if(Music)Music->SetPaused(!bEnabled);
+    for(const auto& Layer:MusicLayers)if(Layer)Layer->SetPaused(!bEnabled);
 }
 
 void ACourierGameMode::UpdateCelebration()
 {
     SetCoffeeLit(CompletedOrders>=1);
+    for(int32 I=0;I<MusicLayers.Num();++I)if(MusicLayers[I])
+        MusicLayers[I]->AdjustVolume(2.f,CompletedOrders>=I+1?(CompletedOrders>=3?.36f:.27f):0.f);
     for(const auto& Actor:ProjectionActors)if(Actor)Actor->SetActorHiddenInGame(CompletedOrders<2);
     for(const auto& Actor:FinaleActors)if(Actor)Actor->SetActorHiddenInGame(CompletedOrders<3);
+}
+
+FString ACourierGameMode::ContextHint() const
+{
+    const FString Notice=StatusNotice();if(!Notice.IsEmpty())return Notice;
+    const FString Prompt=InteractionPrompt();if(!Prompt.IsEmpty())return Prompt;
+    if(Phase==ECourierPhase::Practice)
+    {
+        const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
+    }
+    if(Phase==ECourierPhase::AwaitPickup)
+        return Copy(TEXT("E reads the brief. Enter accepts. The clock waits for you."),TEXT("E 阅读简报，Enter 确认接单。现在尚未计时。"));
+    const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);if(!Player)return FString();
+    const FVector P=Player->GetActorLocation();
+    for(const auto& Lift:Platforms)if(Lift && Player->GetMovementBaseObject()==Lift->Mesh.Get())
+        return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
+    if(CurrentOrder==0 && P.X>4260 && P.X<4840 && FMath::Abs(P.Y)<340)
+        return Copy(TEXT("Space jumps over the planters. You can also walk around them."),TEXT("按空格跳过花箱，也可以从旁边绕过。"));
+    if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
+    const ACourierCart* NextCart=nullptr;
+    for(const auto& Cart:Carts)if(Cart && !Cart->bTraining && Cart->OrderIndex==CurrentOrder &&
+        Cart->Origin.X>=P.X-120.f && Cart->Origin.X-P.X<900.f && FMath::Abs(P.Y)<570.f &&
+        (!NextCart || Cart->Origin.X<NextCart->Origin.X))NextCart=Cart;
+    if(NextCart)
+        return Copy(TEXT("Wait until the cart moves aside. Hold Q to keep the gap open, then cross."),TEXT("先等运输车让开，再按住 Q 延长空隙，趁机通过。"));
+    for(const auto& Lift:Platforms)if(Lift && Lift->OrderIndex==CurrentOrder &&
+        FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f)
+    {
+        if(Player->GetMovementBaseObject()==Lift->Mesh.Get())
+            return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
+        return Copy(TEXT("Wait for the blue platform to reach your side. Hold Q to make boarding easier."),TEXT("等蓝色平台来到你这一侧，再按住 Q 延长登台时机。"));
+    }
+    if(FVector::Dist2D(P,Destination)<1800.f)
+        return Copy(TEXT("Walk onto the orange square. Press E to deliver."),TEXT("走到橙色方形标记上，按 E 交付。"));
+    return Copy(TEXT("Follow the orange route markers. C gently recenters your view."),TEXT("沿橙色路线标记前进。C 可平缓地将镜头回正。"));
 }

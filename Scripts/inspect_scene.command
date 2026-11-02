@@ -5,8 +5,8 @@ COURIER_PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$COURIER_PROJECT_ROOT/Scripts/local_runtime.zsh"
 COURIER_ENGINE_ROOT="${1:-/Users/Shared/Epic Games/UE_5.8}"
 COURIER_SCENE="${2:-GardenCorner}"
-if [[ "$COURIER_SCENE" != GardenCorner && "$COURIER_SCENE" != ProjectionCorner && "$COURIER_SCENE" != Cinema ]]; then
-    print -u2 "Scene must be GardenCorner, ProjectionCorner or Cinema."
+if [[ "$COURIER_SCENE" != Coffee && "$COURIER_SCENE" != GardenCorner && "$COURIER_SCENE" != ProjectionCorner && "$COURIER_SCENE" != Cinema ]]; then
+    print -u2 "Scene must be Coffee, GardenCorner, ProjectionCorner or Cinema."
     exit 2
 fi
 COURIER_RES_X=1280

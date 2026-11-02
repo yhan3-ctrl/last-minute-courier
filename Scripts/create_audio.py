@@ -6,6 +6,7 @@ Outputs are PCM WAV masters, preserved alongside the source for reproducibility.
 from pathlib import Path
 from array import array
 import math
+import os
 import random
 import wave
 
@@ -22,11 +23,13 @@ def save(name, values):
     peak = max(max(abs(x) for x in values), .001)
     gain = min(1., .65 / peak)
     pcm = array("h", (int(max(-1, min(1, x * gain)) * 32767) for x in values))
-    with wave.open(str(OUT / (name + ".wav")), "wb") as wav:
+    temp = ROOT / "Runtime.nosync" / ("audio-build-" + name + ".wav")
+    with wave.open(str(temp), "wb") as wav:
         wav.setnchannels(1)
         wav.setsampwidth(2)
         wav.setframerate(RATE)
         wav.writeframes(pcm.tobytes())
+    os.replace(temp, OUT / (name + ".wav"))
 
 # An original 16-bar, 80 BPM cue: soft electric keys, wooden plucks,
 # a restrained bass and brushed percussion. No sampled instruments or songs.

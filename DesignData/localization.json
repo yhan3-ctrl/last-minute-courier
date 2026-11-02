@@ -897,6 +897,110 @@
       "es": "WASD: mover / Ratón: mirar\nEspacio: saltar / Mantén Q: ralentizar dispositivos azules\nE: recoger o entregar / C: centrar\nEsc: pausa / H: pista de ruta\nEmpieza practicando sin reloj.",
       "fr": "WASD : bouger / Souris : regarder\nEspace : sauter / Q maintenu : ralentir les appareils bleus\nE : récupérer ou livrer / C : recentrer\nÉchap : pause / H : indice de trajet\nCommencez par un entraînement sans chrono.",
       "de": "WASD: bewegen / Maus: umsehen\nLeertaste: springen / Q halten: blaue Geräte verlangsamen\nE: abholen oder liefern / C: Kamera ausrichten\nEsc: Pause / H: Routenhinweis\nÜbe zuerst in Ruhe. Noch läuft keine Uhr."
+    },
+    "Blue devices are slower. You and the delivery clock move normally.": {
+      "zh": "蓝色装置正在减速。你的步伐和配送倒计时照常进行。",
+      "ja": "青い装置が減速中。移動速度と配達の残り時間は通常どおりです。",
+      "ko": "파란 장치가 느려졌어요. 이동 속도와 배달 타이머는 그대로예요.",
+      "es": "Los dispositivos azules van más despacio. Tú y el reloj de entrega seguís al ritmo normal.",
+      "fr": "Les dispositifs bleus ralentissent. Votre vitesse et le compte à rebours restent normaux.",
+      "de": "Blaue Geräte sind langsamer. Du und die Lieferzeit laufen normal weiter."
+    },
+    "E reads the brief. Enter accepts. The clock waits for you.": {
+      "zh": "E 阅读简报，Enter 确认接单。现在尚未计时。",
+      "ja": "Eで依頼を読み、Enterで引き受けます。まだ時間は減りません。",
+      "ko": "E로 의뢰를 읽고 Enter로 수락하세요. 아직 타이머는 시작되지 않았어요.",
+      "es": "E: leer el encargo. Intro: aceptarlo. El reloj todavía no corre.",
+      "fr": "E : lire la mission. Entrée : accepter. Le compte à rebours attend.",
+      "de": "E liest den Auftrag. Enter nimmt ihn an. Die Zeit läuft noch nicht."
+    },
+    "Enter to continue  /  L to switch language": {
+      "zh": "Enter 继续 / L 切换语言",
+      "ja": "Enter：続ける / L：言語を切り替える",
+      "ko": "Enter: 계속 / L: 언어 변경",
+      "es": "Intro: continuar / L: cambiar idioma",
+      "fr": "Entrée : continuer / L : changer de langue",
+      "de": "Enter: weiter / L: Sprache wechseln"
+    },
+    "Follow the orange route markers. C gently recenters your view.": {
+      "zh": "沿橙色路线标记前进。C 可平缓地将镜头回正。",
+      "ja": "オレンジ色の道しるべを追いましょう。Cで視点をゆっくり正面に戻せます。",
+      "ko": "주황색 길 표시를 따라가세요. C로 시점을 부드럽게 정면으로 돌릴 수 있어요.",
+      "es": "Sigue las marcas naranjas. C centra la cámara suavemente.",
+      "fr": "Suivez les repères orange. C recentre doucement la caméra.",
+      "de": "Folge den orangefarbenen Wegmarkierungen. C richtet die Kamera sanft aus."
+    },
+    "Press Space to jump over the low step.": {
+      "zh": "按空格跳过低台阶。",
+      "ja": "スペースで低い段差を飛び越えましょう。",
+      "ko": "스페이스로 낮은 턱을 뛰어넘으세요.",
+      "es": "Pulsa Espacio para saltar el escalón bajo.",
+      "fr": "Appuyez sur Espace pour sauter la petite marche.",
+      "de": "Drücke die Leertaste, um über die niedrige Stufe zu springen."
+    },
+    "Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.": {
+      "zh": "走到取件台。E 阅读简报，Enter 确认接单后才开始计时。",
+      "ja": "荷物の窓口へ。Eで依頼を読み、Enterで引き受けると計測が始まります。",
+      "ko": "소포 접수대로 가세요. E로 의뢰를 읽고 Enter로 수락하면 타이머가 시작돼요.",
+      "es": "Ve al mostrador. E abre el encargo; Intro lo acepta y pone el reloj en marcha.",
+      "fr": "Rejoignez le comptoir. E ouvre la mission ; Entrée accepte et lance le compte à rebours.",
+      "de": "Geh zum Paketschalter. E öffnet den Auftrag; Enter nimmt ihn an und startet die Zeit."
+    },
+    "Read next delivery": {
+      "zh": "阅读下一单",
+      "ja": "次の依頼を読む",
+      "ko": "다음 의뢰 읽기",
+      "es": "Leer siguiente encargo",
+      "fr": "Lire la mission suivante",
+      "de": "Nächsten Auftrag lesen"
+    },
+    "Wait for the blue platform to reach your side. Hold Q to make boarding easier.": {
+      "zh": "等蓝色平台来到你这一侧，再按住 Q 延长登台时机。",
+      "ja": "青い足場がこちらに来るまで待ち、Qを長押しして乗りやすくしましょう。",
+      "ko": "파란 발판이 이쪽으로 올 때까지 기다린 뒤 Q를 누르고 있으면 타기 쉬워져요.",
+      "es": "Espera a que la plataforma azul llegue a tu lado. Mantén Q para subir con más facilidad.",
+      "fr": "Attendez que la plateforme bleue arrive de votre côté. Maintenez Q pour monter plus facilement.",
+      "de": "Warte, bis die blaue Plattform zu dir kommt. Halte Q, um leichter aufzusteigen."
+    },
+    "Wait until the cart moves aside. Hold Q to keep the gap open, then cross.": {
+      "zh": "先等运输车让开，再按住 Q 延长空隙，趁机通过。",
+      "ja": "カートが道を空けるまで待ち、Qを長押しして隙間を保ちながら渡りましょう。",
+      "ko": "수레가 비켜날 때까지 기다린 뒤 Q를 누르고 있으면 빈틈을 오래 유지하며 건널 수 있어요.",
+      "es": "Espera a que el carro deje paso. Mantén Q para conservar el hueco y cruza.",
+      "fr": "Attendez que le chariot libère le passage. Maintenez Q pour garder le passage libre, puis traversez.",
+      "de": "Warte, bis der Wagen den Weg freigibt. Halte Q, um die Lücke offen zu halten, und geh hindurch."
+    },
+    "Walk onto the orange square. Press E to deliver.": {
+      "zh": "走到橙色方形标记上，按 E 交付。",
+      "ja": "オレンジ色の四角い印に立ち、Eで届けましょう。",
+      "ko": "주황색 사각형 표시 위로 가서 E로 배달하세요.",
+      "es": "Ponte sobre el cuadrado naranja y pulsa E para entregar.",
+      "fr": "Placez-vous sur le carré orange et appuyez sur E pour livrer.",
+      "de": "Stell dich auf das orangefarbene Quadrat und drücke E zum Abliefern."
+    },
+    "You are aboard. Release Q to ride at normal speed; step off at the landing.": {
+      "zh": "已经上台。松开 Q 恢复正常速度，到达平台后再走下去。",
+      "ja": "乗れました。Qを離して通常の速さに戻し、乗り場に着いたら降りましょう。",
+      "ko": "발판에 탔어요. Q를 놓아 정상 속도로 이동하고 도착하면 내리세요.",
+      "es": "Ya estás a bordo. Suelta Q para viajar a velocidad normal y baja al llegar.",
+      "fr": "Vous êtes à bord. Relâchez Q pour retrouver la vitesse normale, puis descendez à l’arrivée.",
+      "de": "Du bist an Bord. Lass Q los, fahre normal weiter und steig am Absatz ab."
+    },
+    "Space jumps over the planters. You can also walk around them.": {
+      "zh": "按空格跳过花箱，也可以从旁边绕过。",
+      "ja": "スペースで花壇を飛び越えられます。横を回っても大丈夫です。",
+      "ko": "스페이스로 화단을 뛰어넘거나 옆으로 돌아갈 수 있어요.",
+      "es": "Espacio salta las jardineras. También puedes rodearlas.",
+      "fr": "Espace permet de sauter les jardinières. Vous pouvez aussi les contourner.",
+      "de": "Mit der Leertaste springst du über die Pflanzkästen. Du kannst auch daran vorbeigehen."
+    },
+    "ARRIVED": {
+      "zh": "已到达",
+      "ja": "到着",
+      "ko": "도착",
+      "es": "HAS LLEGADO",
+      "fr": "VOUS ÊTES ARRIVÉ",
+      "de": "ANGEKOMMEN"
     }
   }
 }

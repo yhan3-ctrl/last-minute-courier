@@ -23,8 +23,12 @@ mkdir -p "$COURIER_PROJECT_ROOT/Saved/Logs" "$COURIER_PROJECT_ROOT/Runtime.nosyn
 if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
     export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 fi
+COURIER_QA_ARGS=()
+if [[ "${COURIER_TELEMETRY:-0}" == 1 ]]; then
+    COURIER_QA_ARGS=(-CourierTelemetry)
+fi
 exec env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "$COURIER_EDITOR" "$COURIER_PROJECT_ROOT/LastMinuteCourier.uproject" \
-    /Game/Maps/L_Courier -game -windowed "-ResX=$COURIER_RES_X" "-ResY=$COURIER_RES_Y" -nosplash -NoLiveCoding \
+    /Game/Maps/L_Courier -game "${COURIER_QA_ARGS[@]}" -windowed "-ResX=$COURIER_RES_X" "-ResY=$COURIER_RES_Y" -nosplash -NoLiveCoding \
     "-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "-abslog=$COURIER_PROJECT_ROOT/Saved/Logs/FirstPlayable.log"

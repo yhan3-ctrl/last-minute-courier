@@ -25,6 +25,8 @@ content = json.loads((root / "DesignData/game_content.json").read_text())
 for card in content["opening_cards"]:
     required.add(card["title"]["en"])
     required.add(card["body"]["en"])
+for lesson in content["tutorial"]:
+    required.add(lesson["text"]["en"])
 for order in content["orders"]:
     for value in order.values():
         if isinstance(value, dict) and "en" in value:

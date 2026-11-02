@@ -30,7 +30,7 @@ namespace
         M->SetWorldScale3D(Size/100.f);M->SetCollisionProfileName(Solid?TEXT("BlockAll"):TEXT("NoCollision"));
         Finish(M,Hex);return A;
     }
-    struct FRailSpan {FVector A,B;float Width;};
+    struct FRailSpan {FVector A,B;float Width;bool Guard;};
     void Deck(UWorld* W,FVector At,FVector2D Size,const TCHAR* Hex=TEXT("C5BBA4"))
     {auto* Floor=Block(W,At-FVector(0,0,25),FVector(Size.X,Size.Y,50),Hex,true);Floor->Tags.Add(TEXT("CourierWalkable"));}
     void Road(UWorld* W,TArray<FRailSpan>& Spans,FVector A,FVector B,float Width=760,bool Rails=false)
@@ -38,13 +38,7 @@ namespace
         const FVector D=B-A;
         auto* Floor=Block(W,(A+B)*.5f-FVector(0,0,25),FVector(D.Size()+80,Width,50),TEXT("C5BBA4"),true);
         Floor->SetActorRotation(D.Rotation());Floor->Tags.Add(TEXT("CourierWalkable"));
-        if(Rails)Spans.Add({A,B,Width});
-        const FVector Side=FVector::CrossProduct(FVector::UpVector,D.GetSafeNormal2D());
-        for(float Sign:{-1.f,1.f})
-        {
-            auto* Edge=Block(W,(A+B)*.5f+Side*Sign*(Width*.5f-10)+FVector(0,0,12),FVector(D.Size(),22,24),TEXT("E5D7BB"));
-            Edge->SetActorRotation(D.Rotation());
-        }
+        Spans.Add({A,B,Width,Rails});
         const int32 Marks=FMath::FloorToInt(D.Size()/650.f);
         for(int32 I=1;I<=Marks;++I)
         {
@@ -69,7 +63,7 @@ namespace
     {
         // Evaluate the finished walkways before adding rails. A continuous rail on
         // each segment would put a gate across corners and side-path junctions.
-        TArray<FTransform> Pieces;
+        TArray<FTransform> Pieces,Curbs;
         FCollisionQueryParams Params;
         if(auto* Player=UGameplayStatics::GetPlayerCharacter(W,0))Params.AddIgnoredActor(Player);
         const auto Supported=[W,&Params](FVector P)
@@ -87,7 +81,8 @@ namespace
             {
                 const FVector At=FMath::Lerp(Span.A,Span.B,(I+.5f)/Count)+Side*Sign*(Span.Width*.5f-15.f);
                 if(Supported(At+Side*85.f) && Supported(At-Side*85.f))continue;
-                Pieces.Add(FTransform(D.Rotation().Quaternion(),At+FVector(0,0,55),FVector(D.Size()/Count,20,30)/100.f));
+                Curbs.Add(FTransform(D.Rotation().Quaternion(),At+FVector(0,0,12),FVector(D.Size()/Count,22,24)/100.f));
+                if(Span.Guard)Pieces.Add(FTransform(D.Rotation().Quaternion(),At+FVector(0,0,55),FVector(D.Size()/Count,20,30)/100.f));
             }
         }
         auto* Actor=W->SpawnActor<AActor>();Actor->Tags.Add(TEXT("CourierGuardrails"));
@@ -95,6 +90,11 @@ namespace
         Mesh->SetMobility(EComponentMobility::Movable);Mesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
         Mesh->SetCollisionProfileName(TEXT("BlockAll"));Mesh->SetCastShadow(false);Finish(Mesh,TEXT("438C95"));Mesh->RegisterComponent();
         for(const auto& Piece:Pieces)Mesh->AddInstance(Piece,true);
+        auto* EdgeActor=W->SpawnActor<AActor>();
+        auto* Edge=NewObject<UInstancedStaticMeshComponent>(EdgeActor);EdgeActor->SetRootComponent(Edge);
+        Edge->SetMobility(EComponentMobility::Movable);Edge->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
+        Edge->SetCollisionProfileName(TEXT("NoCollision"));Edge->SetCastShadow(false);Finish(Edge,TEXT("E5D7BB"));Edge->RegisterComponent();
+        for(const auto& Curb:Curbs)Edge->AddInstance(Curb,true);
     }
     AActor* Plaque(UWorld* W,FVector At,const FString& Text,float Size=32)
     {
@@ -147,8 +147,8 @@ void ACourierGameMode::BuildDeliveryDistricts()
     // Routes share stations. All side routes are walkable alternatives, not dead ends.
     Way(W,RailSpans,{FVector(2800,0,0),FVector(3050,850,0),FVector(7400,850,0),FVector(7700,0,0)},450);
     Plaque(W,FVector(2860,440,160),TEXT("ARCADE / WALK"),25);
-    Block(W,FVector(4600,0,35),FVector(110,380,70),TEXT("BB886F"),true);
-    Block(W,FVector(4700,0,70),FVector(90,300,140),TEXT("BB886F"),true);
+    Block(W,FVector(4600,0,25),FVector(110,380,50),TEXT("BB886F"),true);
+    Block(W,FVector(4700,0,42.5f),FVector(90,300,85),TEXT("BB886F"),true);
 
     // Garden: approach, low boarding dock, upper garden, stepping stones, final lift.
     Block(W,FVector(17000,0,-100),FVector(19000,10500,60),TEXT("8FA17B"));
@@ -211,7 +211,11 @@ void ACourierGameMode::BuildDeliveryDistricts()
     for(int32 I=0;I<3;++I)
         Block(W,FVector(43200+I*580,(I%2?1:-1)*280,470),FVector(160,530,100),TEXT("BB886F"),true);
     Deck(W,FVector(45900,0,420),FVector2D(2400,3000));
-    Pavilion(W,FVector(46000,0,420),TEXT("CLOCKTOWER CONSOLE"));
+    // A roofless console preserves the screen sightline above the left aisle.
+    Block(W,FVector(46220,-950,505),FVector(150,650,170),TEXT("354F53"),true);
+    Block(W,FVector(46135,-950,590),FVector(40,610,25),TEXT("E5D7BB"),true);
+    Plaque(W,FVector(46110,-950,690),TEXT("CLOCKTOWER CONSOLE"),26);
+    Block(W,FVector(46000,-950,425),FVector(250,250,10),TEXT("C86C43"));
 
     const auto Cart=[this,W](FVector At,int32 Order,float CartPhase,float Period)
     {
@@ -265,7 +269,7 @@ void ACourierGameMode::BuildDeliveryDistricts()
         FinaleActors.Add(Block(W,FVector(47280,-940+I*230,1500+(I%3)*170),FVector(12,14,14),TEXT("F4EBD9"),false,TEXT("Sphere")));
     for(int32 I=0;I<5;++I)
     {
-        auto* Hill=Block(W,FVector(47280,-1000+I*510,950),FVector(18,700,400+(I%3)*90),I%2?TEXT("438C95"):TEXT("63856A"),false,TEXT("Sphere"));
+        auto* Hill=Block(W,FVector(47280,-800+I*400,950),FVector(18,600,400+(I%3)*90),I%2?TEXT("438C95"):TEXT("63856A"),false,TEXT("Sphere"));
         FinaleActors.Add(Hill);
     }
     for(float Y:{-1400.f,1400.f})for(float X:{44400.f,45800.f,47100.f})
@@ -297,17 +301,17 @@ void ACourierGameMode::BuildDeliveryDistricts()
         FVector(38000,17000,11500),FVector(48000,-15000,8500),FVector(58000,14000,10500)};
     for(const auto& At:Clouds)
     {
-        Atmosphere(At,FVector(3400,6500,900),TEXT("M_CourierCloud"));
-        Atmosphere(At+FVector(100,2100,330),FVector(2600,3700,1100),TEXT("M_CourierCloud"));
-        Atmosphere(At+FVector(-50,-1700,200),FVector(2700,3900,1000),TEXT("M_CourierCloud"));
+        Atmosphere(At,FVector(2600,4800,1700),TEXT("M_CourierCloud"));
+        Atmosphere(At+FVector(100,2100,330),FVector(2100,3100,1500),TEXT("M_CourierCloud"));
+        Atmosphere(At+FVector(-50,-1700,200),FVector(2100,3300,1400),TEXT("M_CourierCloud"));
     }
     for(int32 I=0;I<8;++I)
         Atmosphere(FVector(61000+(I%2)*9000,-31000+I*9500,1100),FVector(14000,17000,5500+(I%3)*1500),TEXT("M_CourierSun"),I%2?TEXT("B6B4C0"):TEXT("9CAAB9"));
     auto* Haze=W->SpawnActor<AExponentialHeightFog>();
     if(auto* Fog=Haze->FindComponentByClass<UExponentialHeightFogComponent>())
     {
-        Fog->SetVolumetricFog(false);Fog->SetFogDensity(.0015f);Fog->SetStartDistance(4000.f);
-        Fog->SetFogMaxOpacity(.28f);Fog->SetFogInscatteringColor(Color(TEXT("DBC7BF")));
+        Fog->SetVolumetricFog(false);Fog->SetFogDensity(.0008f);Fog->SetStartDistance(8000.f);
+        Fog->SetFogMaxOpacity(.18f);Fog->SetFogInscatteringColor(Color(TEXT("DBC7BF")));
     }
 }
 
@@ -336,6 +340,7 @@ void ACourierLift::BeginPlay()
         Hand->SetRelativeLocation(FVector(I?3.f:0.f,I?0.f:3.f,80));
         Hand->SetRelativeScale3D(I?FVector(.09f,.012f,.1f):FVector(.014f,.075f,.1f));
         Hand->SetCollisionProfileName(TEXT("NoCollision"));Hand->RegisterComponent();Finish(Hand,TEXT("243D43"));
+        if(I==0)ClockHand=Hand;
     }
 }
 
@@ -343,8 +348,12 @@ void ACourierLift::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const auto* Mode=Cast<ACourierGameMode>(UGameplayStatics::GetGameMode(this));
-    if(!Mode || !Mode->IsPlaying() || Mode->CurrentOrder!=OrderIndex || Mode->RecoverySeconds>0)return;
+    if(!Mode)return;
+    const bool Active=Mode->IsPlaying() && Mode->CurrentOrder==OrderIndex && Mode->RecoverySeconds<=0;
+    if(Material)Material->SetVectorParameterValue(TEXT("Color"),Color(Active && Mode->bSlowing?TEXT("8EC8CD"):TEXT("438C95")));
+    if(!Active)return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
+    if(ClockHand)ClockHand->SetRelativeRotation(FRotator(0,Clock*360.f/Period,0));
     const float Phase=.5f-.5f*FMath::Cos(Clock*2.f*PI/Period);
     SetActorLocation(Origin+Travel*Phase,false,nullptr,ETeleportType::None);
     if(Material)Material->SetVectorParameterValue(TEXT("Color"),Color(Mode->bSlowing?TEXT("8EC8CD"):TEXT("438C95")));

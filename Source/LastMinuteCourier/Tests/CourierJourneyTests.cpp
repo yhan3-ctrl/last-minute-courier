@@ -54,6 +54,13 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     WalkClear(FVector(25700,2100,490),FVector(25700,0,490),TEXT("Projection ramp exit is open"));
     WalkClear(FVector(42200,2200,510),FVector(43000,2200,510),TEXT("Final terrace ramp corner is open"));
     WalkClear(FVector(43000,2200,510),FVector(43000,0,510),TEXT("Final terrace ramp joins upper walk"));
+    WalkClear(FVector(7600,0,90),FVector(8000,0,90),TEXT("Coffee counter approach is clear"));
+    WalkClear(FVector(45300,-950,510),FVector(46000,-950,510),TEXT("Cinema side console approach is clear"));
+    PC->SetControlRotation(FRotator(-22,179,0));Player->RecenterView(-179.f);Player->Tick(.2f);
+    TestTrue(TEXT("Recenter takes the short arc across 180 degrees"),FMath::Abs(FMath::FindDeltaAngleDegrees(179.f,PC->GetControlRotation().Yaw))<2.1f);
+    Player->Tick(.5f);
+    TestTrue(TEXT("Recenter reaches its requested direction"),FMath::Abs(FMath::FindDeltaAngleDegrees(-179.f,PC->GetControlRotation().Yaw))<.01f);
+    PC->SetControlRotation(FRotator(-22,0,0));
     TestEqual(TEXT("Three orders loaded from runtime data"),Mode->Orders.Num(),3);
     TestEqual(TEXT("Restart clears completed stamps"),Mode->CompletedOrders,0);
     TestEqual(TEXT("Projection initially off"),Visible(TEXT("CourierProjection")),0);
@@ -86,6 +93,12 @@ bool FCourierJourneyRegression::RunTest(const FString&)
         }
         if(Order==1)
         {
+            Place(FVector(14800,1900,410));Mode->Tick(.01f);
+            TestTrue(TEXT("Side ramp saves its safe upper landing"),Mode->Checkpoint.Equals(FVector(14800,1900,440)));
+            Mode->RouteNode=99;Place(FVector(14800,1900,-200),false);Mode->Tick(.01f);
+            TestTrue(TEXT("Recovery rewinds route progress with the courier"),Mode->RouteNode<99);
+            TestTrue(TEXT("Recovery guidance follows ramp exit before crossing the water"),Mode->NavigationTarget().Equals(FVector(14800,0,420)));
+            Mode->RecoverySeconds=0.f;Mode->Checkpoint=Mode->Pickup+FVector(0,0,20);
             for(int32 I=0;I<=19;++I)
             {
                 const FVector Floor(12200+I*100,1900,I*320.f/19.f);FHitResult Hit;
@@ -133,7 +146,11 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             }
         }
         Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.25f);
-        Place(Mode->Destination-FVector(0,0,12));Mode->Interact();
+        // Just past the marker, the counter is still reachable. Do not send the
+        // player backward while E is already offering the delivery action.
+        Place(Mode->Destination+FVector(50,0,-12));PC->SetControlRotation(FRotator(-22,0,0));
+        TestEqual(TEXT("At a reachable counter navigation says arrived, not behind"),Mode->NavigationText(),FString(TEXT("ARRIVED")));
+        Mode->Interact();
         TestEqual(TEXT("Delivery adds exactly one stamp"),Mode->CompletedOrders,Order+1);
         TestFalse(TEXT("Delivery hides package"),Player->Bag->IsVisible());
         if(Order<2)
@@ -142,7 +159,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             if(Order==1)TestTrue(TEXT("Second delivery lights projector"),Visible(TEXT("CourierProjection"))>0);
             TestEqual(TEXT("Finale waits for all deliveries"),Visible(TEXT("CourierFinale")),0);
             const FVector Station=Mode->Destination;Mode->Continue();
-            TestTrue(TEXT("Next order starts at the delivery station"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Pickup.Equals(Station));
+            TestTrue(TEXT("Next brief opens at the delivery station without starting its clock"),Mode->Phase==ECourierPhase::Briefing && Mode->Pickup.Equals(Station));
         }
     }
     TestTrue(TEXT("Third delivery reaches complete ending"),Mode->Phase==ECourierPhase::Complete);

@@ -77,6 +77,7 @@ public:
     FString InteractionPrompt() const;
     bool CanInteractAt(const FVector& Target) const;
     FString StatusNotice() const;
+    FString ContextHint() const;
     void Notify(const TCHAR* English,const TCHAR* Chinese);
     void Continue();
     void Back();
@@ -109,6 +110,7 @@ private:
     UPROPERTY() TArray<TObjectPtr<AActor>> FinaleActors;
     UPROPERTY() TArray<TObjectPtr<AActor>> ProjectionActors;
     UPROPERTY() TObjectPtr<class UAudioComponent> Music;
+    UPROPERTY() TArray<TObjectPtr<class UAudioComponent>> MusicLayers;
     TArray<FVector> Route;
     void BuildPracticeRoute();
     void BuildDeliveryDistricts();
@@ -140,6 +142,7 @@ public:
     void SetCameraFov(float Value);
     void SetParcelStyle(int32 Order);
     void ShowPackage(bool bVisible);
+    void RecenterView(float Yaw, float Pitch=-22.f);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Bag;
 private:
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Body;
@@ -148,6 +151,8 @@ private:
     UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Limbs;
     float WalkCycle = 0.f;
     float FootstepDistance = 0.f;
+    float RecenterTime = -1.f;
+    FRotator RecenterFrom, RecenterTo;
     UPROPERTY() TObjectPtr<class USoundBase> FootstepCue;
     UPROPERTY() TObjectPtr<USpringArmComponent> Arm;
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
@@ -189,6 +194,7 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> Material;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> ClockHand;
     FVector Origin = FVector::ZeroVector;
     float Clock = 0.f;
     float InitialPhase = 0.f;
@@ -211,6 +217,7 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> Material;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> ClockHand;
     FVector Origin=FVector::ZeroVector;
     FVector Travel=FVector(0,0,320);
     float Clock=0.f;

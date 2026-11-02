@@ -72,16 +72,16 @@
       "id": "slow",
       "completion": "activate_slow_and_cross_training_lane",
       "text": {
-        "en": "Hold Q to slow the blue-tagged cart. Cross while it moves slowly.",
-        "zh": "按住 Q 让蓝色标签运输车减速，趁它变慢时通过。"
+        "en": "Wait until the cart moves aside. Hold Q to keep the gap open, then cross.",
+        "zh": "先等运输车让开，再按住 Q 延长空隙，趁机通过。"
       }
     },
     {
       "id": "ready",
       "completion": "acknowledge_then_collect_first_order",
       "text": {
-        "en": "Ready! Your delivery clock starts when you collect an order.",
-        "zh": "准备好了！领取订单后才开始计时。"
+        "en": "Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.",
+        "zh": "走到取件台。E 阅读简报，Enter 确认接单后才开始计时。"
       }
     }
   ],

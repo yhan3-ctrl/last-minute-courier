@@ -20,3 +20,6 @@ Runtime.nosync/
 
 /Intermediate
 /Saved
+
+# Generated default Xcode packaging resources; custom authored assets live in Content.
+/Build/

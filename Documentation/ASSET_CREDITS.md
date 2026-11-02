@@ -25,3 +25,10 @@ The A Short Hike and Alba websites were consulted as visual references. Their im
 Scripts/create_audio.py synthesizes the original 48-second campus cue and six interaction/footstep cues from oscillators and deterministic noise; no third-party music, recordings or samples are bundled. The WAV masters are in SourceAssets/Audio and imported SoundWave assets in Content/Audio. Music looping is configured by import_audio.py.
 
 M_CourierSkyGradient, M_CourierCloud and M_CourierSun are authored by Scripts/build_atmosphere.py using gradient math and color parameters. Clouds, sun, distant hills, cinema screen, landscape reveal, terrain and delivery props use engine BasicShapes assembled in project code. No third-party sky image or HDRI is used.
+
+
+## Original campus additions — v0.5
+
+CourierCampusScene.cpp assembles the cafe awning, roof cup, eight toy people, service mugs/steam, flags, flower pots/arches and moving film star from Engine BasicShapes. No third-party character, environment or image assets were added.
+
+Scripts/create_music_layers.py synthesizes CampusStrings and CampusBells, both 48 seconds and aligned with CampusLoop's original harmony. These use original oscillators, with no downloaded samples or recordings. import_audio.py enables looping and play-when-silent virtualization for all three music layers. Subjective listening quality is not yet human-reviewed.

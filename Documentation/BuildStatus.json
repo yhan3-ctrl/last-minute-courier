@@ -6,13 +6,13 @@
   "metal_toolchain": "installed_and_version_command_passed",
   "map_generation": "succeeded",
   "visual_material_generation": "succeeded_zero_errors_zero_warnings",
-  "runtime_playtest": "agent_operated_partial_input_checks_and_controlled_visual_inspection",
+  "runtime_playtest": "agent_complete_normal_keyboard_run_in_editor_preview_plus_packaged_startup_checks",
   "human_playtests": 0,
-  "full_delivery_flow": "three_orders_and_finale_implemented_controlled_engine_flow_passed",
+  "full_delivery_flow": "normal_keyboard_run_from_opening_to_three_orders_and_complete_ending",
   "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
   "comfort_validation": "requires_human_playtest",
   "platform_builds": {
-    "mac": "not_packaged",
+    "mac": "arm64_development_packaged_signed_and_startup_CJK_verified_full_packaged_run_and_other_hardware_pending",
     "windows": "not_built",
     "linux": "not_built"
   },
@@ -27,7 +27,7 @@
     "de"
   ],
   "translation_coverage": {
-    "runtime_strings": 95,
+    "runtime_strings": 101,
     "optional_languages": 6,
     "check": "passed"
   },
@@ -45,21 +45,21 @@
     "de"
   ],
   "native_speaker_review": "not_completed",
-  "audit_date": "2026-10-29",
+  "audit_date": "2026-11-01",
   "automated_regression": {
     "report": "QA-Evidence.json",
-    "latest_run": "FinalJourneyV04",
+    "latest_run": "RubricV051Final",
     "succeeded_suites": 3,
     "failed_suites": 0,
     "test_errors": 0,
     "test_warnings": 0,
     "scope": "controlled states/positions and engine-frame moving-platform ride; not human play time",
-    "capsule_routes": 6
+    "capsule_routes": 8
   },
   "small_window": "1024x640_pause_and_gameplay_visually_checked",
   "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
   "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
-  "version": "0.4",
+  "version": "0.5.1",
   "previous_v03_runtime_checks": [
     "default_english_opening",
     "optional_chinese_glyphs",
@@ -97,15 +97,63 @@
     "play_again_returns_to_opening"
   ],
   "audio": {
-    "original_assets": 7,
+    "original_assets": 9,
     "music_seconds": 48,
     "mute_control": true,
     "listening_review": "human_listening_review_not_completed",
-    "import": "seven_named_assets_imported_successfully",
-    "mute_checkbox": "keyboard_toggle_visually_confirmed"
+    "import": "nine_named_assets_imported_zero_errors_zero_warnings",
+    "mute_checkbox": "keyboard_toggle_visually_confirmed",
+    "music_layers": 3,
+    "synchronization": "three_48_second_loops_with_play_when_silent_virtualization"
   },
   "sky": "Metal_render_checked_gradient_sun_clouds_hills_and_instanced_terrain",
   "opening_cards": 4,
   "generated_runtime_path": "Runtime.nosync (relative Saved/Intermediate symlinks; local DDC)",
-  "visual_screenshot_evidence": "QA-Evidence.json"
+  "visual_screenshot_evidence": "QA-Evidence.json",
+  "source_control": {
+    "original_git": "preserved; bulk restoration was rejected and not executed",
+    "active_checkout": "Project3/Runtime.nosync/CampusV05Work",
+    "v04_checkpoint": "72e02a2",
+    "v05": "b2578df gameplay; fd018a2 packaged startup/finale; later documentation/launch checkpoint in git log",
+    "backup_note": "nosync working copy is not an iCloud backup; authored changes mirrored to outer Project3",
+    "history_backup": "Outer Project3/VersionHistory/LastMinuteCourier-v0.5.bundle; verified after local commit"
+  },
+  "v05_runtime_checks": [
+    "fresh_english_opening",
+    "jump_immediately_after_prompt_advances_lesson",
+    "charge_seconds_visible",
+    "coffee_delivery_cups_steam_and_side_result_from_controlled_start",
+    "next_order_brief_directly_from_result_without_accepting",
+    "central_cinema_aisle_walk_and_E_delivery_from_controlled_start",
+    "arrived_prompt_in_reachable_delivery_area",
+    "ending_wide_view_ticket_and_movie_reveal_from_controlled_start"
+  ],
+  "v05_native_limits": "Full agent input run includes pauses, camera lock and read-only trace; successful-order time 4:07 is not first-time human wall time. Packaged app startup and CJK switching verified after startup crash fix; packaged full run, human comfort/listening/native-language review remain incomplete.",
+  "packaged_startup_fix": {
+    "problem": "User reported app cannot open; crash stack confirmed HUD Rebuild read empty card arrays before GameMode loaded content.",
+    "commit": "fd018a2",
+    "verification": "Fresh independent executable remains running, English opening and Chinese/Japanese/Korean opening render verified through native UI. No Editor or uproject launch arguments.",
+    "assembly_log": "Saved/Logs/MacStartupFixAssembly.log",
+    "signature": "codesign --verify --deep --strict passed",
+    "complete_packaged_playthrough": "not_completed"
+  },
+  "disk_policy": {
+    "user_choice": "Keep Unreal; pause large builds",
+    "editor_minimum_free_gib": 8,
+    "packaging_minimum_free_gib": 12,
+    "automatic_build_on_launch": false,
+    "local_game_image": "Runtime.nosync/CourierBuildMac.sparseimage",
+    "note": "Image contains only completed local app and residual tiny assembly metadata; failed build trees and duplicate staging removed."
+  },
+  "graduate_requirements": {
+    "confirmed": true,
+    "mechanic_categories": 7,
+    "balance_lenses": [
+      "Reward",
+      "Punishment",
+      "Simplicity/Complexity"
+    ],
+    "document": "GraduateAnalysis.md",
+    "lecture_structure_checked": true
+  }
 }

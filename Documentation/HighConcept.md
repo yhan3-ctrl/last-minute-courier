@@ -1,43 +1,33 @@
 # Last Minute Courier
 
-Design draft v0.1, October 29, 2026. Planned features below have not yet been implemented or playtested. Final structure must be checked against lecture deck 3.
+High Concept | v0.5.1 | November 1, 2026
 
-## Concept
+## High concept statement
 
-A cheerful third-person 3D delivery game in which a campus courier borrows three seconds of slow motion to bring a movie night together. Run through moving cart lanes, jump onto service lifts, and choose when to spend your next charge. Each delivery lights up another part of the same evening scene.
+A campus movie night is missing its coffee, projector lens and final reel. As the last courier on shift, you borrow three seconds from blue-tagged machinery to find safe crossing and boarding windows, deliver all three parcels, and earn a seat at the screening.
 
-## Audience and player role
+## Player role and primary gameplay
 
-Designed for a single player who understands basic keyboard movement but may be unfamiliar with action games. The opening practice yard introduces movement, camera control, jumping and selective slow motion without a deadline. Wide paths, short recovery distances and order-level retries support new players. More confident players can select shortcuts and improve their delivery times.
+You control one courier in a connected 3D campus, using an avatar-based interaction model and a dynamic third-person camera. This is a single-player action and timing puzzle game: observe a moving device, choose a path, move or jump through a safe window, and deliver. The camera follows without head bob, shake, motion blur or speed zoom. Mouse control, gentle recentering, optional direction lock, sensitivity and field-of-view controls support different preferences.
 
-## Theme and background
+## Audience
 
-The project theme is Time. The laboratory's Borrower slows campus transport devices marked with blue time tags. The courier and delivery clock continue normally. This limitation is explained before play and gives players a reason to think about timing rather than treating slow motion as a way to stop the deadline.
+For players who understand a keyboard and mouse but may be new to 3D action games. Four readable opening cards and an untimed practice yard precede the first deadline. Wide paths, nearby recovery points and longer alternative paths support cautious players; lifts, stepping stones and a shuttle offer more demanding routes. English is the default, with Chinese, Japanese, Korean, Spanish, French and German available from a language selector. Translation coverage is checked; native-speaker review is pending.
 
-The campus film screening is about to begin. A coffee stand needs its insulated box, the projection booth needs its lens, and the clocktower console needs the opening reel. The courier's three deliveries progressively prepare the square. At the end, three delivery stamps form a ticket: the courier has a seat at the screening too.
+## Distinctive experience
 
-## Core experience
+The Borrower slows marked machinery to one quarter speed for up to three seconds. It leaves the courier and deadline unchanged, so extending a safe window still costs delivery time. Releasing it after boarding makes transport useful again. One rule supports avoidance, boarding and route planning.
 
-Collect an order, read its destination and deadline, traverse a short route, and deliver it. Collect the next order at the same destination. Slow motion changes both obstacle avoidance and the timing window for boarding moving platforms. The third route combines these uses with a choice of path.
+Each parcel changes the same evening: coffee brings warm cups and a musical layer; the lens prepares the projector and brings an audience; the reel opens the cinema. Three delivery stamps become one admission ticket. The courier contributes to a shared event and receives a place in it.
 
-## Distinguishing details
+## World and progression
 
-- One ability with multiple applications and an explicit recharge interval.
-- A connected level with three purposeful deliveries and visible changes to the shared destination.
-- A warm ending that rewards completing the work, without requiring a high score.
+A small, stylized campus connects a parcel desk, coffee plaza, garden, projection booth and clocktower cinema. Cream buildings, terracotta details, blue clock tags and orange route markers make roles recognizable. Read the story, practice movement/jumping/time control, then complete coffee, lens and reel orders in sequence. Read each untimed brief before accepting its deadline. A collision or fall returns to a nearby checkpoint; an order retry preserves earlier deliveries. Completion reveals the screening and offers Play Again.
 
-## Scope and modes
+## Modes, platform and scope
 
-One single-player level, intended to take 5–10 minutes on a first completed run. The experience includes an opening story sequence, untimed practice, timed delivery, pause/help, order results, order retry and final completion. These are the planned interaction states; the course's precise use of Game Modes remains to be checked against the lecture.
+One local single-player campaign; no multiplayer, competitive mode or separate time-trial mode. Timed delivery is the primary gameplay mode; untimed practice and collection are preparation modes. Story, briefing, pause/help, results, timeout and completion are shell screens. Target releases are Windows x86-family, macOS and Linux x86-family; exact Windows/Linux bitness must be confirmed if the instructor means 32-bit specifically. Mac is the current development and validation platform.
 
-## Learning goals
+One complete level is implemented. The target first completed run is 5-10 minutes without filler. An agent-operated full keyboard run reached the ending with 4:07 of successful-order delivery time, excluding reading, practice and pauses; this does not establish first-time player duration. Genuine first-time timing, learning transfer, enjoyment and comfort remain acceptance checks.
 
-Players learn to read moving obstacles, use slow motion to enlarge safe movement windows, transfer that understanding to moving platforms, and plan their route around a limited charge. The final route should demonstrate independent use rather than simply repeating the tutorial.
-
-## Implementation and delivery
-
-Unreal Engine, 3D, keyboard and mouse. Target releases: Windows, macOS and Linux, with architectures to be confirmed against grading hardware. macOS is the initial development machine, not the only required release. A playable build and build sizes have not yet been validated.
-
-## Validation plan
-
-Use real first-time playtests to evaluate instruction clarity, camera comfort, route readability, ability transfer, failure recovery and completion time. Document feedback-driven revisions with corresponding Git commits. Do not describe planned changes as completed iterations.
+Course structure checked against lecture deck 3, slides 19-23, 35, 47, 55 and 80-82. Monetary and licensed-IP pitches are omitted as permitted for this class. No minimum hardware specification is claimed without independent build tests.

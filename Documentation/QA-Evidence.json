@@ -1,5 +1,5 @@
 {
-  "kind": "agent_operated_engine_regression_not_human_playtest",
+  "kind": "agent_operated_engine_regression_and_native_input_checks_not_completed_human_playtest",
   "engine": "5.8.4",
   "runs": [
     {
@@ -188,6 +188,262 @@
           ]
         }
       ]
+    },
+    {
+      "name": "CampusV05",
+      "date": "2026-10-30",
+      "succeeded_suites": 2,
+      "failed_suites": 1,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Fail",
+          "errors": 1,
+          "warnings": 0,
+          "events": [
+            {
+              "type": "Error",
+              "message": "Expected 'Explicit recenter works while paused and camera locked' to be true.",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            }
+          ]
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "CampusV05Final",
+      "date": "2026-10-30",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "CampusV05Aligned",
+      "date": "2026-10-30",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "CampusV05Arrival",
+      "date": "2026-10-30",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "CampusV05Finale",
+      "date": "2026-10-30",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0,
+          "events": []
+        }
+      ]
+    },
+    {
+      "name": "CampusV05Nov01",
+      "date": "2026-11-01",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
+    },
+    {
+      "name": "CampusV05RecoveryVerified",
+      "date": "2026-11-01",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
+    },
+    {
+      "name": "CampusV051Final",
+      "date": "2026-11-01",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
+    },
+    {
+      "name": "RubricV051Final",
+      "date": "2026-11-01",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
     }
   ],
   "guardrail_followup": {
@@ -208,6 +464,61 @@
   "screenshots": {
     "OpeningControlsV04.png": "Actual English fourth opening card, 1280x800.",
     "CampusSunsetV04.png": "Actual practice-yard render after restart, 1280x800.",
-    "CinemaV04-ControlledStart.png": "Rendered ending reached from developer-controlled Cinema start. Its displayed time is not a full-level measurement."
+    "CinemaV04-ControlledStart.png": "Rendered ending reached from developer-controlled Cinema start. Its displayed time is not a full-level measurement.",
+    "CoffeeDeliveredV05-ControlledStart.png": "Actual Coffee delivery result from developer-controlled start; before final counter-height polish, not a whole-level playthrough.",
+    "CinemaV05-ControlledStart.png": "Final v0.5 rendered ending after actual W/C/W/E from controlled Cinema start; displayed time is not a full-level measurement.",
+    "CinemaV051-FullInput.png": "Actual ending from complete normal keyboard input run; time is successful-order clock sum, not first-time wall time. Before final stamp typography/finale collision polish."
+  },
+  "v05": {
+    "scope": "Full agent normal-input Editor run plus separate packaged startup checks; no completed first-time human playtest.",
+    "native_findings_fixed": [
+      "Jump was prompted at x550 but accepted only beyond x600; callback now accepts x500–1100.",
+      "Practice targets were behind lesson exits; targets moved ahead.",
+      "Ability seconds clipped; separate numeric column.",
+      "At a reachable desk navigation could say BEHIND; now ARRIVED.",
+      "Ending chair backs too prominent; 2.4-second wider presentation."
+    ],
+    "latest_run": "RubricV051Final",
+    "capsule_routes": 8,
+    "runtime_strings": 101,
+    "optional_languages": 6,
+    "audio_assets": 9,
+    "original_music_layers": 3,
+    "human_playtests": 0,
+    "full_first_time_duration": "not measured",
+    "human_listening_review": "not completed",
+    "platform_packages": "Mac arm64 Development app startup checked; Windows/Linux not built.",
+    "native_procedure": "Ordinary keyboard from fresh opening through practice, three orders and ending; no controlled start, teleport, time or phase mutations. Pause/settings and read-only telemetry used."
+  },
+  "native_full_run": {
+    "date": "2026-11-01",
+    "version": "v0.5.1_before_final_UI_startup_guard",
+    "evidence": "Saved/QA/FullInputV05/Attempt3.log",
+    "method": "Ordinary keyboard from fresh opening through practice, three orders and ending; no controlled start, teleport, time or phase mutations. Pause/settings and read-only telemetry used.",
+    "end_delivery_time": "04:07",
+    "order_elapsed_observed_seconds": [
+      15.49,
+      128.32,
+      102.24
+    ],
+    "explicit_retries": 0,
+    "recoveries": "multiple; not counted as explicit retries",
+    "human_first_time": false,
+    "limits": "Tool cannot press Q and W simultaneously. Used alternative paths and ordinary jumps; full human learning transfer and 5-10 minute wall time not established."
+  },
+  "packaged_startup": {
+    "user_feedback": "User screenshot and statement that app repeatedly cannot open.",
+    "cause": "HUD constructed before opening arrays populated, verified in crash stack.",
+    "fix_commit": "fd018a2",
+    "native_after_fix": [
+      "fresh_independent_process_alive",
+      "default_English_opening",
+      "Chinese_opening_glyphs",
+      "Japanese_opening_glyphs",
+      "Korean_opening_glyphs"
+    ],
+    "full_packaged_run": "pending",
+    "signature_validation": "strict deep passed",
+    "startup_log": "Saved/Logs/PackagedMacStartupFixed.log"
   }
 }

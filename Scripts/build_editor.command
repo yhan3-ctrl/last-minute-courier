@@ -3,6 +3,11 @@ set -euo pipefail
 
 # Only run after engine/Xcode installation and license setup are complete.
 COURIER_PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+COURIER_FREE_KB=$(/bin/df -k "$COURIER_PROJECT_ROOT" | /usr/bin/awk 'NR==2 {print $4}')
+if [[ "$COURIER_FREE_KB" -lt 8388608 ]]; then
+    print -u2 'Build paused: keep at least 8 GiB free before compiling this project.'
+    exit 3
+fi
 source "$COURIER_PROJECT_ROOT/Scripts/local_runtime.zsh"
 if [[ $# -ne 1 ]]; then
     print -u2 'Usage: build_editor.command /absolute/path/to/UE_version'

@@ -902,6 +902,8 @@ void ACourierCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const bool Finale=Game(this) && Game(this)->Phase==ECourierPhase::Complete;
+    // A seated audience behind the courier must not collapse the ending pullback.
+    Arm->bDoCollisionTest=!Finale;
     if(!Finale){Arm->TargetArmLength=620.f;Arm->SocketOffset.Z=100.f;}
     if(RecenterTime>=0.f && Controller)
     {

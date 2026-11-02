@@ -341,7 +341,13 @@ private:
 
     void Rebuild()
     {
-        if(!Mode.IsValid())return;
+        // Packaged actor BeginPlay order can construct the HUD before the game mode
+        // has loaded its cards. Keep the empty root and retry on the next tick.
+        // Do not cache LastCard until content exists, or the opening can stay blank.
+        if(!Mode.IsValid() || Mode->CardTitles.IsEmpty() ||
+            Mode->CardTitles.Num()!=Mode->CardBodies.Num() ||
+            Mode->CardTitles.Num()!=Mode->CardTitlesZh.Num() ||
+            Mode->CardTitles.Num()!=Mode->CardBodiesZh.Num())return;
         LastPhase=Mode->Phase;LastCard=Mode->Card;LastLanguage=Mode->Language;LastHelp=Mode->bHelp;LastOrder=Mode->CurrentOrder;
         if(Mode->CanMove())
         {

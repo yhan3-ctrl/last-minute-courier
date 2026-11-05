@@ -1,8 +1,8 @@
 # Graduate Mechanics and Balance Analysis
 
-Last Minute Courier | v0.5.2 | November 4, 2026
+Last Minute Courier | v0.5.3 | November 5, 2026
 
-Required for this student's graduate submission. Based on lecture deck 4, The Art of Game Design: mechanics 1-7 and the balance lenses on slides 104, 112 and 118. The following answers refer to implemented rules. Statements about player feelings are hypotheses until genuine player observation is recorded.
+Required for this student's graduate submission. Based on lecture deck 4, The Art of Game Design: mechanics 1-7 and the balance lenses on slides 104, 112 and 118. The following answers refer to implemented rules. November 5 practice feedback is recorded explicitly; other player-feeling claims remain hypotheses.
 
 ## Seven mechanic categories
 
@@ -38,7 +38,7 @@ These categories describe different aspects of the same interaction. For example
 
 **2. Why punish, and what should it achieve?** A visible setback gives traffic timing and safe landings a consequence. Retrying a single order gives the player a chance to apply newly learned timing without replaying already mastered routes. The purpose is attention and learning, not humiliation or lengthening play through repeated work.
 
-**3. Does the punishment feel fair, and why or why not?** The design uses visible machinery, clear failure messages, a brief recovery fade and collision immunity. Native garden play showed that the old checkpoint was too far back and guidance stayed ahead after recovery. v0.5.1 saves the side-ramp landing and rewinds route guidance; engine regression and a fresh input run verified this change. Perceived fairness still needs players' reports; repeated unanticipated recoveries would count against it.
+**3. Does the punishment feel fair, and why or why not?** The November 5 user reported that their intuitive strategy was to wait for the cart to move aside and cross quickly, but the forced-Q lesson respawned them. That was a mismatch between the visible danger and the actual failure rule. v0.5.3 accepts safe timing with or without Q and names an actual cart hit in its recovery message. Earlier side-ramp checkpoints still limit lost progress. Engine checks cover both safe passage and real contact; the player's response to the new build is not yet known.
 
 **4. Could a reward produce the same or better effect?** Safe progress is already rewarded by new checkpoints and preserved delivery stamps. The game avoids subtracting delivered stamps or adding an arbitrary time penalty. A cleaner crossing naturally leaves more deadline time, without an extra score system. Removing every setback would make machinery less meaningful; the current compromise keeps the local challenge and limits repeated work.
 
@@ -52,7 +52,7 @@ These categories describe different aspects of the same interaction. For example
 
 **3. What emergent interactions arise?** Slowing a cart extends a crossing window but still spends real order time; slowing a lift helps boarding but delays travel if held; a longer ramp avoids precision but costs travel time. Releasing Q can therefore be strategically useful. These interactions are implemented; whether novices independently discover them must be observed.
 
-**4. Is anything too simple?** If players always choose bypasses, they may finish without transferring Q or jumping to a new context. The full agent run verifies those accessible routes, not learning transfer. The v0.5.2 tutorial now checks a crossing while Q stays held, and the lift prompts explicitly cover waiting, jumping aboard, releasing Q and stepping off. The next genuine playtest must record route choices and later ability use. If transfer is absent, revise the first lift's instruction/route incentive and retest before claiming the rubric's highest mechanics band. Do not add a hidden gate or unrelated busywork merely to force longer play.
+**4. Is anything too simple?** Optional bypasses can still let a player finish without transferring Q or jumping to a later device. Forcing Q during an otherwise safe crossing caused documented user confusion, so v0.5.3 teaches it as a useful choice and retains explicit lift boarding/release guidance. The user also found the route unclear; larger arrows, current-order highlighting and a visible next waypoint reduce navigation ambiguity. Later independent ability use and the clarity of the revised route still require observation.
 
 ## Evidence and submission relationship
 

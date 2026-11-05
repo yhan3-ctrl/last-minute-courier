@@ -70,10 +70,10 @@
     },
     {
       "id": "slow",
-      "completion": "hold_slow_from_near_edge_to_far_edge_of_training_lane",
+      "completion": "cross_training_lane_safely_with_or_without_Q",
       "text": {
-        "en": "Wait for a gap. Keep Q held while walking across the blue lane. Release Q on the other side.",
-        "zh": "先等运输车让开。走过蓝色车道时持续按住 Q，到另一侧后再松开。"
+        "en": "Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe.",
+        "zh": "等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"
       }
     },
     {

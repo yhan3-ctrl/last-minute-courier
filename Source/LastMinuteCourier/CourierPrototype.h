@@ -111,7 +111,12 @@ private:
     UPROPERTY() TArray<TObjectPtr<AActor>> ProjectionActors;
     UPROPERTY() TObjectPtr<class UAudioComponent> Music;
     UPROPERTY() TArray<TObjectPtr<class UAudioComponent>> MusicLayers;
+    UPROPERTY() TArray<TObjectPtr<AActor>> RouteGuideGroups;
+    UPROPERTY() TObjectPtr<AActor> RouteBeacon;
     TArray<FVector> Route;
+    void BuildRouteGuide();
+    void AddRouteGuideSpan(int32 Order,const FVector& A,const FVector& B);
+    void UpdateRouteGuide();
     void BuildPracticeRoute();
     void BuildDeliveryDistricts();
     void ConfigureOrder(int32 Index);
@@ -202,8 +207,6 @@ public:
     float Amplitude = 420.f;
     bool bTraining = false;
     int32 OrderIndex = 0;
-    bool bSlowedOnce = false;
-    bool bTrainingSlowEntry = false;
     void Reset();
     bool Touching(const FVector& Player) const;
 };

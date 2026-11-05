@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -66,6 +67,18 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     TestEqual(TEXT("Projection initially off"),Visible(TEXT("CourierProjection")),0);
     TestEqual(TEXT("Final scene initially off"),Visible(TEXT("CourierFinale")),0);
     while(Mode->Phase==ECourierPhase::Opening)Mode->Continue();
+    int32 ActiveGuides=0;
+    for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(TEXT("CourierRouteGuide")))
+    {
+        if(!It->IsHidden()){++ActiveGuides;TestTrue(TEXT("Only the practice route is highlighted initially"),It->ActorHasTag(TEXT("CourierRoutePractice")));}
+        TArray<UInstancedStaticMeshComponent*> Markings;It->GetComponents(Markings);
+        for(auto* M:Markings)
+        {
+            TestTrue(TEXT("Route markings have no collision"),M->GetCollisionEnabled()==ECollisionEnabled::NoCollision);
+            TestTrue(TEXT("Every route includes large painted guidance"),M->GetInstanceCount()>0);
+        }
+    }
+    TestEqual(TEXT("Exactly one current route group is shown"),ActiveGuides,1);
     Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
     TestTrue(TEXT("Ready after teaching"),Mode->Phase==ECourierPhase::AwaitPickup);
     for(int32 Order=0;Order<3;++Order)
@@ -80,6 +93,10 @@ bool FCourierJourneyRegression::RunTest(const FString&)
         Mode->Back();TestTrue(TEXT("Can cancel brief"),Mode->Phase==ECourierPhase::AwaitPickup);
         Mode->Interact();Mode->Continue();
         TestTrue(TEXT("Accept starts the current delivery"),Mode->Phase==ECourierPhase::Delivery);
+        ActiveGuides=0;
+        for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(TEXT("CourierRouteGuide")) && !It->IsHidden())
+        {++ActiveGuides;TestTrue(TEXT("Highlighted arrows belong to this delivery"),It->ActorHasTag(FName(*FString::Printf(TEXT("CourierRoute%d"),Order))));}
+        TestEqual(TEXT("Later delivery arrows do not compete with the current route"),ActiveGuides,1);
 
         // The guide/checkpoint targets must have real collision support at the intended height.
         FCollisionQueryParams Params;Params.AddIgnoredActor(Player);

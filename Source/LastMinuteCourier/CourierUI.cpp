@@ -287,7 +287,7 @@ private:
                         [Text(Mode->Phase==ECourierPhase::Delivery?FText::FromString(Mode->OrderTitle()):
                             (Mode->Phase==ECourierPhase::AwaitPickup?Copy(TEXT("Ready for pickup"),TEXT("准备取件")):Copy(TEXT("Practice yard"),TEXT("练习区"))),27,true)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
-                        [SNew(STextBlock).Text(Mode->Phase==ECourierPhase::Delivery?FText::FromString(Mode->OrderDestination()+TEXT(" / ")+Mode->OrderLabel()):(Mode->Phase==ECourierPhase::Practice?Copy(TEXT("Follow the marked path to the parcel desk."),TEXT("沿标记路线前往取件台。")):Copy(TEXT("Collect your package when you are ready."),TEXT("准备好后领取包裹。"))))
+                        [SNew(STextBlock).Text(Mode->Phase==ECourierPhase::Delivery?FText::FromString(Mode->OrderDestination()+TEXT(" / ")+Mode->OrderLabel()):(Mode->Phase==ECourierPhase::Practice?Copy(TEXT("Follow the orange arrows to the parcel desk."),TEXT("沿橙色箭头前往取件台。")):Copy(TEXT("Collect your package when you are ready."),TEXT("准备好后领取包裹。"))))
                             .Font(Typeface(17)).ColorAndOpacity(CourierPalette::Ink).WrapTextAt(310).LineHeightPercentage(1.25f)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,10)[Rule()]
                     +SVerticalBox::Slot().AutoHeight()
@@ -297,7 +297,9 @@ private:
         Overlay->AddSlot().HAlign(HAlign_Center).VAlign(VAlign_Top).Padding(24)
             [CardBox(SNew(SVerticalBox)
                 +SVerticalBox::Slot().AutoHeight()
-                    [SNew(STextBlock).Font(Typeface(19,true)).ColorAndOpacity(CourierPalette::Ink)
+                    [Text(Copy(TEXT("NEXT ORANGE MARKER"),TEXT("下一个橙色标记")),13,true,CourierPalette::Orange)]
+                +SVerticalBox::Slot().AutoHeight()
+                    [SNew(STextBlock).Font(Typeface(25,true)).ColorAndOpacity(CourierPalette::Ink)
                         .Text_Lambda([this](){return FText::FromString(Mode->NavigationText());})]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)
                     [Text(Copy(TEXT("C recenter / H route hint"),TEXT("C 镜头回正 / H 路线提示")),13,false,CourierPalette::Muted)])];

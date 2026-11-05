@@ -2,7 +2,7 @@
 
 An Unreal Engine 5.8.4 campus delivery game about borrowed seconds and a film night.
 
-The current v0.5.2 development version contains a safe practice yard, three connected orders, moving lifts and a shuttle, alternative paths, a three-stamp cinema ending, seven selectable languages (English by default), camera comfort controls, a lively cafe and cinema audience, three synchronized original music layers and six sound effects. A Mac arm64 Development DMG is available at Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64-Final.dmg. Three Editor and three standalone engine regression suites pass. Native opening, practice instructions and retry guidance were checked; CJK font checks were completed in v0.5.1. Full packaged playthrough, other hardware and first-time player timing/feedback remain outstanding. It is not submission-ready.
+The current v0.5.3 development version contains a safe practice yard, three connected orders, moving lifts and a shuttle, alternative paths, a three-stamp cinema ending, seven selectable languages (English by default), camera comfort controls, a lively cafe and cinema audience, three synchronized original music layers and six sound effects. A Mac arm64 Development DMG is available at Builds/Mac-v0.5.3/LastMinuteCourier-0.5.3-Mac-arm64.dmg. Three Editor and three standalone engine regression suites pass. An ordinary-input Editor practice crossing without Q and the new route markings were checked. User practice feedback drove this iteration; a full human run is still pending. CJK font checks were completed in v0.5.1. Full packaged playthrough, other hardware and first-time player timing/feedback remain outstanding. It is not submission-ready.
 
 Read [current implementation and checks](Documentation/Prototype.zh.md), the [game script](Documentation/GameScript.md), [rubric checklist](Documentation/Acceptance.zh.md), [test evidence](Documentation/QA-Evidence.json), and [iteration history](Documentation/ITERATIONS.md). Older observations in QA.zh.md are dated historical evidence.
 
@@ -19,3 +19,5 @@ Before submission: complete genuine first-time player tests and measured pacing;
 See Documentation/Improvement-v05.zh.md for the latest changes and validation limits. Original Project3/.git remains preserved; active local commit history lives in the stable working copy.
 
 Graduate status is confirmed. Documentation/GraduateAnalysis.md maps all seven course mechanics and answers three implemented balance lenses. English design PDFs are in output/pdf. Large builds are paused at the user's request because disk space is low. UE and Xcode remain installed; rebuilding still requires them.
+
+In v0.5.3, wait for a clear cart gap and cross. Q is optional and extends the gap; the tutorial no longer respawns safe crossings for not using Q. Follow the continuous orange line and large arrows toward the ring and downward pointer. Only the current delivery route is highlighted.

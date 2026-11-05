@@ -1,6 +1,6 @@
 # Last Minute Courier — Game Script
 
-Development version v0.5.2, November 4, 2026. Rules and core mechanics describe implemented behavior. Structure checked against lecture deck 3: slides 19-23 distinguish gameplay modes and shell screens; slide 55 asks for a non-technical rules script. Player timing and response remain measured acceptance tasks.
+Development version v0.5.3, November 5, 2026. Rules and core mechanics describe implemented behavior. Structure checked against lecture deck 3: slides 19-23 distinguish gameplay modes and shell screens; slide 55 asks for a non-technical rules script. Player timing and response remain measured acceptance tasks.
 
 ## Background and goal
 
@@ -8,7 +8,7 @@ A campus film screening is about to begin. The courier carries the three things 
 
 ## Learning goals
 
-Learn moving and looking; physically jump over a low obstacle; recognize blue clock tags and keep Q held while crossing a moving cart lane. Then transfer the same time-control ability to boarding/riding lifts and judging a horizontal shuttle crossing. Alternative arcades and ramps let the player trade route length for precision. No new input is introduced during a timed delivery.
+Learn moving and looking; physically jump over a low obstacle; recognize blue clock tags and learn that Q extends a useful gap in machinery movement. Then transfer the same time-control ability to boarding/riding lifts and judging a horizontal shuttle crossing. Alternative arcades and ramps let the player trade route length for precision. No new input is introduced during a timed delivery.
 
 ## Rules and modes
 
@@ -35,12 +35,16 @@ Adjust field of view and sensitivity; optionally lock camera direction; use C to
 
 ## Iteration and evidence
 
-The user requested a stronger opening, less generic typography, a prettier sky, enjoyable sounds and a comfortable 3D view. Technical checks also found tutorial bypasses, invalid-height interactions, ramp lips, misleading side-route navigation, default-grid terrain and an unbuilt-lighting warning. Implementations and observed regressions are recorded in ITERATIONS.md and QA-Evidence.json. These are development checks; genuine first-time player feedback and measured 5–10 minute pacing remain required.
+The user requested a stronger opening, less generic typography, a prettier sky, enjoyable sounds and a comfortable 3D view. Technical checks also found tutorial bypasses, invalid-height interactions, ramp lips, misleading side-route navigation, default-grid terrain and an unbuilt-lighting warning. Implementations and observed regressions are recorded in ITERATIONS.md and QA-Evidence.json. The user reported practice confusion and faint route markings on November 5. Those partial-session observations drove v0.5.3. A complete first-time run and measured 5–10 minute pacing remain required.
 
 
 ## v0.5 moment-to-moment clarity
 
-In practice, wait for a gap, then keep Q held while walking from the near edge to the far edge of the blue lane. Release Q after clearing the lane. A short tap followed by an unslowed crossing repeats this untimed lesson from its approach. A completed slow crossing remains valid after releasing Q. During later deliveries, choose when to use the same ability. At a lift, wait for it to come down without spending Q, then hold Q and press Space to jump aboard. Once aboard, release Q so it carries you normally. At the far landing, walk forward to step off. Contextual prompts follow these stages and remain visible while Q is active. A nearby delivery desk shows ARRIVED and E Deliver package. Reading the next brief has no timer; only Accept delivery starts it.
+In practice, cross when the cart moves aside. Q is an optional tool for making the gap last longer. A safe crossing is accepted whether Q was held, released early, or never pressed. The lesson does not reset the courier for choosing natural timing. An actual cart hit still returns to a checkpoint, with an explicit collision message. Crossing saves forward progress.
+
+Continuous orange lines and broad arrows show the current practice or delivery route, including available side paths. A stationary orange ring and downward pointer mark the next waypoint. Future delivery markings are hidden. These visual guides have no collision. Follow the larger direction/distance panel at corners; C gently recenters the view.
+
+At a lift, wait for it to come down without spending Q, then hold Q and press Space to jump aboard. Once aboard, release Q so it carries you normally. At the far landing, walk forward to step off. Contextual prompts follow these stages and remain visible while Q is active. A nearby delivery desk shows ARRIVED and E Deliver package. Reading the next brief has no timer; only Accept delivery starts it.
 
 Coffee delivery places hot cups on the counter and starts the strings. The second delivery brings the audience into the terrace and starts the bells. The last delivery reveals the moonlit screen, three-stamp ticket and wider concluding view. These are implemented feedback; their emotional impact requires player observation.
 
@@ -54,7 +58,7 @@ The expected player uses a keyboard and mouse and may be unfamiliar with timing 
 | Mode or shell screen | Available decisions and actions | Clock and devices | Exit |
 |---|---|---|---|
 | Opening shell | Four story/control cards; continue/back; language; quit | No delivery timer; devices inactive | Continue after card four enters practice |
-| Practice gameplay | Move, look, jump, hold/release Q, C, pause/help | No delivery deadline; active training devices | Actual jump and Q held across the training lane, then reach parcel desk |
+| Practice gameplay | Move, look, jump, hold/release Q, C, pause/help | No delivery deadline; active training devices | Actual jump and safe cart-lane crossing with or without Q, then reach parcel desk |
 | Await-pickup gameplay | Walk to current desk; E reads brief; pause/help | No delivery deadline; delivery devices inactive | E at reachable desk enters briefing |
 | Briefing shell | Read parcel, destination, route and budget; Enter accepts; Back cancels | No budget consumed | Accept enters delivery; cancel returns to pickup |
 | Delivery gameplay (primary) | Move/look/jump/Q; E delivers; C; help/pause; R retries current order | Current budget and marked devices advance in real time, with selective Q slowdown | Valid E delivery, timeout, or pause |
@@ -83,17 +87,12 @@ Practice and delivery share the same avatar, camera and action vocabulary. Shell
 |---|---|---|---|
 | Move/look | Reach the practice marker with camera-relative WASD; recenter and mouse controls explained | Choose long arcades or short device routes, turn between landings and align with the final cinema aisle | First-time route comprehension without coaching |
 | Jump | Actually jump over the low training step; simply walking around does not pass | Jump across stepping stones and onto or off a changing-height service platform; combine movement and landing judgment | A first-time player must demonstrate a later application; safe routes can bypass these challenges |
-| Selective time control | Keep Q held from the near edge to the far edge of the blue training lane | Slow a lift/shuttle for boarding, release it to travel, then judge disembarkation; combine timing with movement and jumping | Platform physics regression passes; ordinary simultaneous Q + movement input and independent human learning transfer still require testing |
+| Selective time control | Observe the cart gap; optionally try Q to prolong it. Safe natural timing is accepted | Slow a lift/shuttle for boarding, release it to travel, then judge disembarkation; combine timing with movement and jumping | Platform physics regression passes; ordinary simultaneous Q + movement input and independent human learning transfer still require testing |
 
 The level provides later applications of every taught ability, but the optional bypasses mean completion alone does not prove all applications were used. For the highest rubric band, observe a first-time player recognizing and executing these transfers. If they always bypass them or fail to understand them, change route incentives and instruction placement and test again; do not report the criterion as complete merely because the objects exist.
 
-## Feedback-driven changes in v0.5.1
+## Feedback-driven revisions
 
-During ordinary keyboard play, the coffee awning crossed the camera on exit, decorative continuous curbs resembled roadblocks at merges, and garden recovery sent the courier back beyond the side ramp while guidance stayed ahead. The awning was shortened, curb/rail spans now leave supported intersections open, and safe side landings save progress while recovery rewinds guidance. A fresh ordinary-input run then completed all three orders without changing player position or state through a fixture. It included recoveries and pauses, optional camera lock, and read-only position/time logging; it is an agent technical run, not first-time human feedback.
+Ordinary keyboard checks in v0.5.1 led to a shorter coffee awning, open curb/rail junctions, safe side-ramp checkpoints and recovery guidance. v0.5.2 added staged platform instructions but also forced Q use at the training crossing. On November 5 the user reported that waiting for a natural gap was intuitive, yet crossing that way caused respawns; they also found the route unclear. v0.5.3 removes the forced-Q reset, distinguishes real collision recovery, saves crossing progress and adds continuous high-contrast route arrows plus a visible next-waypoint marker.
 
-A post-run German check exposed awkward stamp-word wrapping. Stamp spacing/type and separate delivery-time/retry lines were adjusted. Pause transitions now clear held-key state and pending movement so the courier does not resume stale input. Detailed evidence and local commits are indexed in ITERATIONS.md and QA-Evidence.json. Changes must be pushed to the required repository before submission; a local history or bundle is not a GitHub submission.
-
-
-## Feedback-driven changes in v0.5.2
-
-Review of the standalone practice found that tapping Q briefly before walking through at full device speed still passed. Practice now checks Q staying active across the lane, with explicit release and recharge guidance. Lift hints explain waiting for a low platform, using Space to board, releasing Q during travel, and walking off at the landing. Active slowdown no longer masks the boarding prompt. Three engine regression suites pass with zero test errors or warnings, including early release, side bypass, recovery and context transitions. These controlled checks do not replace normal simultaneous keyboard input or a first-time human playtest.
+Three engine regression suites pass, including safe crossings with no Q, early Q release, valid slowdown, real cart contact and route visibility/collision checks. An ordinary-keyboard technical check crossed the practice lane without Q and observed the next lesson with a full charge. These are partial technical checks and actual user-reported practice feedback. No complete human duration, enjoyment, comfort or later learning-transfer result has been recorded. Full observations and commit-linked changes are in ITERATIONS.md, PlaytestFeedback-Nov05.zh.md and QA-Evidence.json.

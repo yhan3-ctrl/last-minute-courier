@@ -6,13 +6,13 @@
   "metal_toolchain": "installed_and_version_command_passed",
   "map_generation": "succeeded",
   "visual_material_generation": "succeeded_zero_errors_zero_warnings",
-  "runtime_playtest": "v052_editor_and_standalone_controlled_regressions_plus_native_opening_practice_checks; historical_v051_editor_full_input_run",
-  "human_playtests": 0,
-  "full_delivery_flow": "normal_keyboard_run_from_opening_to_three_orders_and_complete_ending",
+  "runtime_playtest": "v053_Editor_normal_keyboard_noQ_crossing_and_route_render_plus_three_Editor_and_standalone_regression_suites",
+  "human_playtests": 1,
+  "full_delivery_flow": "Historical v051 ordinary-input Editor completion; current v053 controlled three-order regression. No current full normal-input packaged run.",
   "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
   "comfort_validation": "requires_human_playtest",
   "platform_builds": {
-    "mac": "v052_arm64_Development_DMG_checksum_and_mounted_signature_verified; native_English_opening_from_DMG_verified; full_normal_input_run_and_other_hardware_pending",
+    "mac": "v053_arm64_Development_DMG_checksum_and_mounted_signature_verified; candidate_and_readonly_image_three_suites_passed; native_Editor_practice_check; full_normal_input_standalone_run_pending",
     "windows": "not_built",
     "linux": "not_built"
   },
@@ -45,21 +45,21 @@
     "de"
   ],
   "native_speaker_review": "not_completed",
-  "audit_date": "2026-11-04",
+  "audit_date": "2026-11-05",
   "automated_regression": {
     "report": "QA-Evidence.json",
-    "latest_run": "Nov04-Onboarding",
+    "latest_run": "Nov05-LogicalCrossing",
     "succeeded_suites": 3,
     "failed_suites": 0,
     "test_errors": 0,
     "test_warnings": 0,
-    "scope": "Three current Editor suites; same suites pass in standalone stdout. Controlled placements, boundary tests, engine-frame platform ride; not a human full playthrough.",
+    "scope": "Current Editor and standalone boundary tests, active-route visibility/collision, eight capsule routes, three-order controlled flow and engine-frame lift ride. Not a human full playthrough.",
     "capsule_routes": 8
   },
   "small_window": "1024x640_pause_and_gameplay_visually_checked",
   "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
   "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "previous_v03_runtime_checks": [
     "default_english_opening",
     "optional_chinese_glyphs",
@@ -116,7 +116,7 @@
     "v04_checkpoint": "72e02a2",
     "v05": "b2578df gameplay; fd018a2 packaged startup/finale; later documentation/launch checkpoint in git log",
     "backup_note": "nosync working copy is not an iCloud backup; authored changes mirrored to outer Project3",
-    "history_backup": "Outer Project3/VersionHistory/LastMinuteCourier-v0.5.bundle; verified after local commit"
+    "history_backup": "Outer Project3/VersionHistory/LastMinuteCourier-v0.5.3.bundle; verified after this iteration commit."
   },
   "v05_runtime_checks": [
     "fresh_english_opening",
@@ -144,7 +144,7 @@
     "automatic_build_on_launch": false,
     "local_game_image": "Runtime.nosync/CourierBuildMac.sparseimage",
     "note": "Image contains only completed local app and residual tiny assembly metadata; failed build trees and duplicate staging removed.",
-    "targeted_fix_builds": "Nov04 user requested implementation. Editor/Game modules compiled; unchanged cooked assets reused; no full UAT resource recook."
+    "targeted_fix_builds": "Nov05 user requested practice-rule and route clarity changes. Editor/Game compiled; unchanged cooked assets reused. Current playtest window left alone."
   },
   "graduate_requirements": {
     "confirmed": true,
@@ -218,6 +218,34 @@
         "method": "Controlled state/positions, boundary cases and engine-frame platform ride; no report export requested; stdout retained.",
         "not_a_human_or_full_normal_input_run": true
       }
+    }
+  },
+  "completed_human_playtests": 0,
+  "human_feedback_scope": "Owner partial practice session; Q-rule confusion and faint route markings. No duration, full completion, comfort or listening result.",
+  "v053": {
+    "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
+    "rule": "Safe cart-lane crossings accepted with or without Q; no instructional respawn. Actual cart hits still recover with a specific collision message.",
+    "route_guide": "Continuous high-contrast orange lines, broad arrows about every five metres, stationary next-waypoint ring/pointer, larger HUD heading; only current practice/order markings shown; no collision.",
+    "editor_report": "Saved/QA/Nov05-LogicalCrossing/index.json",
+    "standalone_report": "Saved/QA/Nov05-PackagedSummary.json",
+    "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
+    "native_evidence": "Saved/Logs/FirstPlayable.log and chat tool screenshots; ordinary keyboard crossing observed with full 3.0-second Q charge and the next lesson, no fixture mutation.",
+    "native_limits": "Editor preview partial input check, not standalone full journey. Tool subsequently reported user changed the window; stopped sending input.",
+    "human_feedback_sessions": 1,
+    "completed_human_runs": 0,
+    "distribution": "Builds/Mac-v0.5.3/LastMinuteCourier-0.5.3-Mac-arm64.dmg",
+    "distribution_verification": {
+      "version": "0.5.3",
+      "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
+      "sha256": "1a43fd18450e209a99bce3fde106ad089d447f29f0c7f4de476d8e00f0c216e6",
+      "bytes": 515233150,
+      "checksum": "hdiutil verify passed",
+      "signature": "Strict/deep verification passed for app mounted read-only from this DMG.",
+      "native_render": "Editor preview route and no-Q crossing observed; no current full normal-input standalone playthrough.",
+      "source_manifest": "Saved/QA/Nov05-CompiledSource.json",
+      "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
+      "read_only_image_regression": "Three suites succeeded, exit 0. Final image only clarifies Read Me wording; tested app program and runtime-data hashes match the mounted final image.",
+      "regression_summary": "Saved/QA/Nov05-DmgSummary.json"
     }
   }
 }

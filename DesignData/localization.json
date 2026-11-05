@@ -1057,6 +1057,54 @@
       "es": "Q se está recargando. Cuando la barra esté llena, mantén Q mientras cruzas el carril azul.",
       "fr": "Q se recharge. Quand la jauge est pleine, maintenez Q pour traverser la voie bleue.",
       "de": "Q lädt auf. Wenn der Balken voll ist, halte Q beim Überqueren der blauen Spur."
+    },
+    "Safe crossing. Follow the orange arrows to the parcel desk.": {
+      "zh": "安全通过！沿橙色箭头走到取件台。",
+      "ja": "無事に渡れました。オレンジの矢印に沿って荷物の受付へ進みましょう。",
+      "ko": "안전하게 건넜어요. 주황색 화살표를 따라 소포 데스크로 가세요.",
+      "es": "Has cruzado con seguridad. Sigue las flechas naranjas hasta el mostrador de paquetes.",
+      "fr": "Vous avez traversé sans danger. Suivez les flèches orange jusqu’au comptoir des colis.",
+      "de": "Sicher überquert. Folge den orangefarbenen Pfeilen zum Paketschalter."
+    },
+    "The cart hit you. Back at the checkpoint. Wait for a clear gap; Q can keep it open longer.": {
+      "zh": "你被运输车撞到了，已回到检查点。等空隙出现再通过；Q 可以让空隙保持更久。",
+      "ja": "カートに当たったためチェックポイントに戻りました。道が空くのを待ちましょう。Qで隙間を長く保てます。",
+      "ko": "수레에 부딪혀 체크포인트로 돌아왔어요. 길이 빌 때까지 기다리세요. Q로 빈틈을 더 오래 유지할 수 있어요.",
+      "es": "El carro te ha golpeado. Has vuelto al punto de control. Espera un hueco libre; Q puede mantenerlo abierto más tiempo.",
+      "fr": "Le chariot vous a heurté. Retour au point de contrôle. Attendez un passage libre ; Q peut le prolonger.",
+      "de": "Der Wagen hat dich getroffen. Zurück am Kontrollpunkt. Warte auf eine freie Lücke; Q hält sie länger offen."
+    },
+    "Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe.": {
+      "zh": "等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。",
+      "ja": "カートが道を空けたら渡りましょう。時間が欲しければQを長押し。どちらでも渡れます。",
+      "ko": "수레가 비켜나면 건너세요. 더 긴 시간이 필요하면 Q를 누르세요. 두 방법 모두 괜찮아요.",
+      "es": "Cruza cuando el carro se aparte. Mantén Q si quieres un hueco más largo. Ambas formas son válidas.",
+      "fr": "Traversez quand le chariot s’écarte. Maintenez Q pour prolonger le passage. Les deux méthodes conviennent.",
+      "de": "Geh hindurch, wenn der Wagen zur Seite fährt. Halte Q für eine längere Lücke. Beide Wege sind möglich."
+    },
+    "Q is recharging. You can still cross when the cart moves aside.": {
+      "zh": "Q 正在充能。运输车让开时，你仍然可以直接通过。",
+      "ja": "Qは充電中です。カートが道を空ければ、そのまま渡れます。",
+      "ko": "Q가 충전 중이에요. 수레가 비켜나면 그대로 건너도 돼요.",
+      "es": "Q se está recargando. Puedes cruzar cuando el carro se aparte.",
+      "fr": "Q se recharge. Vous pouvez quand même traverser quand le chariot s’écarte.",
+      "de": "Q lädt auf. Du kannst trotzdem hindurchgehen, wenn der Wagen zur Seite fährt."
+    },
+    "NEXT ORANGE MARKER": {
+      "zh": "下一个橙色标记",
+      "ja": "次のオレンジの目印",
+      "ko": "다음 주황색 표시",
+      "es": "SIGUIENTE SEÑAL NARANJA",
+      "fr": "PROCHAIN REPÈRE ORANGE",
+      "de": "NÄCHSTE ORANGE MARKIERUNG"
+    },
+    "Follow the orange arrows to the parcel desk.": {
+      "zh": "沿橙色箭头前往取件台。",
+      "ja": "オレンジの矢印に沿って荷物の受付へ進みましょう。",
+      "ko": "주황색 화살표를 따라 소포 데스크로 가세요.",
+      "es": "Sigue las flechas naranjas hasta el mostrador de paquetes.",
+      "fr": "Suivez les flèches orange jusqu’au comptoir des colis.",
+      "de": "Folge den orangefarbenen Pfeilen zum Paketschalter."
     }
   }
 }

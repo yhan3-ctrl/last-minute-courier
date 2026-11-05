@@ -127,6 +127,7 @@ void ACourierGameMode::BeginPlay()
     LoadCopy();
     ConfigureOrder(0);
     Checkpoint=FVector(100,0,120);
+    BuildRouteGuide();
     BuildPracticeRoute();
     BuildDeliveryDistricts();
     GetWorld()->SpawnActor<ACourierCampusScene>();
@@ -221,6 +222,7 @@ void ACourierGameMode::LoadTranslations()
 void ACourierGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
     if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))
     {
@@ -281,13 +283,10 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         }
         if (Tutorial == 2 && Position.X > 1900.f)
         {
-            if(Carts.Num()>0 && Carts[0]->bSlowedOnce)Tutorial=3;
-            else
-            {
-                Notify(TEXT("Hold Q while walking across the blue lane. Release Q after you cross."),TEXT("走过蓝色车道时持续按住 Q，过完车道再松开。"));
-                RestoreCheckpoint();
-                return;
-            }
+            // Safe timing is valid with or without Q. Teaching never impersonates a collision.
+            Tutorial=3;
+            Checkpoint=FVector(2000,0,120);
+            Notify(TEXT("Safe crossing. Follow the orange arrows to the parcel desk."),TEXT("安全通过！沿橙色箭头走到取件台。"));
         }
         if (Tutorial == 3 && FVector::Dist2D(Position, Pickup) < 240.f)
         {
@@ -346,7 +345,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         {
             if (Cart && Cart->Touching(Position))
             {
-                Notify(TEXT("Cart ahead! Back at your checkpoint. Wait for a gap or hold Q."),TEXT("注意运输车！已回到检查点，等待空隙或按住 Q。"));
+                Notify(TEXT("The cart hit you. Back at the checkpoint. Wait for a clear gap; Q can keep it open longer."),TEXT("你被运输车撞到了，已回到检查点。等空隙出现再通过；Q 可以让空隙保持更久。"));
                 RestoreCheckpoint();
                 break;
             }
@@ -581,6 +580,7 @@ FString ACourierGameMode::StatusNotice() const
 
 void ACourierGameMode::RefreshInput()
 {
+    UpdateRouteGuide();
     if (auto* Controller = UGameplayStatics::GetPlayerController(this, 0))
     {
         Controller->SetIgnoreMoveInput(false);
@@ -618,9 +618,9 @@ void ACourierGameMode::LoadCopy()
                     TEXT("按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"),
                     TEXT("沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。")};
     TutorialText = {TEXT("WASD to move. Move the mouse to look around. Reach the marked spot."), TEXT("Space to jump. Cross the low step."),
-                    TEXT("Wait for a gap. Keep Q held while walking across the blue lane. Release Q on the other side."), TEXT("Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.")};
+                    TEXT("Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.")};
     TutorialTextZh = {TEXT("WASD 移动，鼠标转动视角。走到标记位置。"), TEXT("按空格跳过低台阶。"),
-                      TEXT("先等运输车让开。走过蓝色车道时持续按住 Q，到另一侧后再松开。"), TEXT("走到取件台。E 阅读简报，Enter 确认接单后才开始计时。")};
+                      TEXT("等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"), TEXT("走到取件台。E 阅读简报，Enter 确认接单后才开始计时。")};
     FString Json;
     if (!FFileHelper::LoadFileToString(Json, *(FPaths::ProjectDir() / TEXT("DesignData/game_content.json"))))
     {
@@ -677,9 +677,8 @@ void ACourierGameMode::BuildPracticeRoute()
         Box(World,FVector(4100,Side*565,12),FVector(8800,24,24),Cream);
         Box(World,FVector(4100,Side*590,-8),FVector(8800,28,16),Ink,false);
     }
-    // Quiet, widely spaced route dashes avoid high-frequency floor patterns.
-    for(float X=350;X<8000;X+=650)
-        Box(World,FVector(X,0,2),FVector(90,22,4),Orange,false);
+    AddRouteGuideSpan(-1,FVector(100,0,0),FVector(2400,0,0));
+    AddRouteGuideSpan(0,FVector(2400,0,0),FVector(8000,0,0));
 
     // Parcel depot sits to the side so the route and the next landmark stay visible.
     Box(World,FVector(2400,-400,66),FVector(270,120,132),Teal);
@@ -1082,27 +1081,12 @@ void ACourierCart::Tick(float DeltaSeconds)
     if(!bEnabled) return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
     if(ClockHand)ClockHand->SetRelativeRotation(FRotator(0,0,Clock*360.f/Period));
-    if(bTraining && Mode->Tutorial==2 && !bSlowedOnce)
-    {
-        // Learn the actual crossing, rather than remembering an unrelated Q tap.
-        // The 130 cm edges include the lane and the courier's capsule radius.
-        if(const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0))
-        {
-            const FVector P=Player->GetActorLocation();
-            if(!Mode->bSlowing || Mode->RecoverySeconds>0.f || FMath::Abs(P.Y-Origin.Y)>500.f)
-                bTrainingSlowEntry=false;
-            else if(P.X>=Origin.X-600.f && P.X<=Origin.X-130.f)
-                bTrainingSlowEntry=true;
-            else if(bTrainingSlowEntry && P.X>=Origin.X+130.f && P.X<Origin.X+500.f)
-                bSlowedOnce=true;
-        }
-    }
     SetActorLocation(Origin+FVector(0,FMath::Sin(Clock*2.f*PI/Period+InitialPhase)*Amplitude,0));
     Material->SetVectorParameterValue(TEXT("Color"),Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
 }
 void ACourierCart::Reset()
 {
-    Clock=0.f; bSlowedOnce=false; bTrainingSlowEntry=false;
+    Clock=0.f;
     SetActorLocation(Origin+FVector(0,FMath::Sin(InitialPhase)*Amplitude,0));
 }
 bool ACourierCart::Touching(const FVector& Player) const

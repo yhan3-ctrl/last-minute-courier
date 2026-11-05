@@ -1,5 +1,5 @@
 {
-  "kind": "agent_operated_engine_regression_and_native_input_checks_not_completed_human_playtest",
+  "kind": "agent_engine_and_native_checks_plus_partial_user_practice_feedback_not_completed_human_playthrough",
   "engine": "5.8.4",
   "runs": [
     {
@@ -469,6 +469,31 @@
           "warnings": 0
         }
       ]
+    },
+    {
+      "name": "Nov05-LogicalCrossing",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
     }
   ],
   "guardrail_followup": {
@@ -607,6 +632,32 @@
         "method": "Controlled state/positions, boundary cases and engine-frame platform ride; no report export requested; stdout retained.",
         "not_a_human_or_full_normal_input_run": true
       }
+    }
+  },
+  "v053": {
+    "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
+    "rule": "Safe cart-lane crossings accepted with or without Q; no instructional respawn. Actual cart hits still recover with a specific collision message.",
+    "route_guide": "Continuous high-contrast orange lines, broad arrows about every five metres, stationary next-waypoint ring/pointer, larger HUD heading; only current practice/order markings shown; no collision.",
+    "editor_report": "Saved/QA/Nov05-LogicalCrossing/index.json",
+    "standalone_report": "Saved/QA/Nov05-PackagedSummary.json",
+    "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
+    "native_evidence": "Saved/Logs/FirstPlayable.log and chat tool screenshots; ordinary keyboard crossing observed with full 3.0-second Q charge and the next lesson, no fixture mutation.",
+    "native_limits": "Editor preview partial input check, not standalone full journey. Tool subsequently reported user changed the window; stopped sending input.",
+    "human_feedback_sessions": 1,
+    "completed_human_runs": 0,
+    "distribution": "Builds/Mac-v0.5.3/LastMinuteCourier-0.5.3-Mac-arm64.dmg",
+    "distribution_verification": {
+      "version": "0.5.3",
+      "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
+      "sha256": "1a43fd18450e209a99bce3fde106ad089d447f29f0c7f4de476d8e00f0c216e6",
+      "bytes": 515233150,
+      "checksum": "hdiutil verify passed",
+      "signature": "Strict/deep verification passed for app mounted read-only from this DMG.",
+      "native_render": "Editor preview route and no-Q crossing observed; no current full normal-input standalone playthrough.",
+      "source_manifest": "Saved/QA/Nov05-CompiledSource.json",
+      "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
+      "read_only_image_regression": "Three suites succeeded, exit 0. Final image only clarifies Read Me wording; tested app program and runtime-data hashes match the mounted final image.",
+      "regression_summary": "Saved/QA/Nov05-DmgSummary.json"
     }
   }
 }

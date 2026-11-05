@@ -1,6 +1,7 @@
 #include "CourierPrototype.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/PointLight.h"
@@ -39,12 +40,6 @@ namespace
         auto* Floor=Block(W,(A+B)*.5f-FVector(0,0,25),FVector(D.Size()+80,Width,50),TEXT("C5BBA4"),true);
         Floor->SetActorRotation(D.Rotation());Floor->Tags.Add(TEXT("CourierWalkable"));
         Spans.Add({A,B,Width,Rails});
-        const int32 Marks=FMath::FloorToInt(D.Size()/650.f);
-        for(int32 I=1;I<=Marks;++I)
-        {
-            auto* Dash=Block(W,FMath::Lerp(A,B,float(I)/(Marks+1))+FVector(0,0,4),FVector(80,24,6),TEXT("C86C43"));
-            Dash->SetActorRotation(D.Rotation());
-        }
     }
     void Way(UWorld* W,TArray<FRailSpan>& Spans,std::initializer_list<FVector> Points,float Width=760,bool Rails=false)
     {
@@ -282,6 +277,11 @@ void ACourierGameMode::BuildDeliveryDistricts()
     for(const auto& Actor:FinaleActors)if(Actor)Actor->Tags.Add(TEXT("CourierFinale"));
 
     AddGuardrails(W,RailSpans);
+    for(const auto& Span:RailSpans)
+    {
+        const float X=(Span.A.X+Span.B.X)*.5f;
+        AddRouteGuideSpan(X<7900.f?0:(X<25999.f?1:2),Span.A,Span.B);
+    }
 
     const auto Atmosphere=[W](FVector At,FVector Size,const TCHAR* MaterialName,const TCHAR* Tint=nullptr)
     {
@@ -312,6 +312,89 @@ void ACourierGameMode::BuildDeliveryDistricts()
     {
         Fog->SetVolumetricFog(false);Fog->SetFogDensity(.0008f);Fog->SetStartDistance(8000.f);
         Fog->SetFogMaxOpacity(.18f);Fog->SetFogInscatteringColor(Color(TEXT("DBC7BF")));
+    }
+}
+
+void ACourierGameMode::BuildRouteGuide()
+{
+    for(int32 I=0;I<4;++I)
+    {
+        auto* Group=GetWorld()->SpawnActor<AActor>();
+        Group->Tags.Add(TEXT("CourierRouteGuide"));
+        Group->Tags.Add(I==0?FName(TEXT("CourierRoutePractice")):FName(*FString::Printf(TEXT("CourierRoute%d"),I-1)));
+        for(int32 Layer=0;Layer<2;++Layer)
+        {
+            auto* Mesh=NewObject<UInstancedStaticMeshComponent>(Group);
+            if(Layer==0)Group->SetRootComponent(Mesh);else Mesh->SetupAttachment(Group->GetRootComponent());
+            Mesh->ComponentTags.Add(Layer==0?TEXT("RouteOutline"):TEXT("RoutePaint"));
+            Mesh->SetMobility(EComponentMobility::Movable);
+            Mesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
+            Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            Mesh->SetCanEverAffectNavigation(false);Mesh->SetCastShadow(false);Mesh->RegisterComponent();
+            Finish(Mesh,Layer==0?TEXT("FFF0CB"):TEXT("D45B20"));
+        }
+        RouteGuideGroups.Add(Group);
+    }
+    RouteBeacon=GetWorld()->SpawnActor<AActor>();RouteBeacon->Tags.Add(TEXT("CourierNextMarker"));
+    auto* Root=NewObject<USceneComponent>(RouteBeacon);RouteBeacon->SetRootComponent(Root);Root->RegisterComponent();
+    const auto Part=[this](FVector At,FVector Size,const TCHAR* Hex,const TCHAR* Shape)
+    {
+        auto* A=Block(GetWorld(),At,Size,Hex,false,Shape);
+        A->GetStaticMeshComponent()->SetCastShadow(false);
+        A->AttachToActor(RouteBeacon,FAttachmentTransformRules::KeepRelativeTransform);return A;
+    };
+    // A stationary high-contrast ring and downward pointer identify the next waypoint.
+    // Every piece is visual only, so it cannot introduce another invisible roadblock.
+    Part(FVector(0,0,-94),FVector(190,190,4),TEXT("FFF0CB"),TEXT("Cylinder"));
+    Part(FVector(0,0,-91),FVector(158,158,4),TEXT("D45B20"),TEXT("Cylinder"));
+    Part(FVector(0,0,-88),FVector(105,105,4),TEXT("FFF0CB"),TEXT("Cylinder"));
+    Part(FVector(0,0,95),FVector(80,80,100),TEXT("ED762C"),TEXT("Cone"))->SetActorRelativeRotation(FRotator(180,0,0));
+    Part(FVector(0,0,155),FVector(18,18,60),TEXT("FFF0CB"),TEXT("Cylinder"));
+}
+
+void ACourierGameMode::AddRouteGuideSpan(int32 Order,const FVector& A,const FVector& B)
+{
+    if(!RouteGuideGroups.IsValidIndex(Order+1))return;
+    auto* Group=RouteGuideGroups[Order+1].Get();
+    UInstancedStaticMeshComponent* Outline=nullptr;UInstancedStaticMeshComponent* Paint=nullptr;
+    TArray<UInstancedStaticMeshComponent*> Meshes;Group->GetComponents(Meshes);
+    for(auto* M:Meshes){if(M->ComponentHasTag(TEXT("RoutePaint")))Paint=M;else Outline=M;}
+    if(!Outline || !Paint)return;
+    const FVector Delta=B-A;const float Length=Delta.Size();if(Length<1.f)return;
+    const FQuat Rotation=Delta.Rotation().Quaternion();
+    const auto Piece=[&](FVector At,FVector Size,float Yaw=0.f)
+    {
+        const FQuat R=Rotation*FRotator(0,Yaw,0).Quaternion();
+        Outline->AddInstance(FTransform(R,At+FVector(0,0,7),FVector(Size.X+10,Size.Y+12,3)/100.f),true);
+        Paint->AddInstance(FTransform(R,At+FVector(0,0,10),FVector(Size.X,Size.Y,3)/100.f),true);
+    };
+    Piece((A+B)*.5f,FVector(Length,18,3));
+    // Broad arrows at a calm five-metre spacing also show the intended direction.
+    const int32 Count=FMath::Max(1,FMath::FloorToInt(Length/500.f));
+    for(int32 I=0;I<Count;++I)
+    {
+        const FVector At=FMath::Lerp(A,B,(I+.5f)/Count);
+        Piece(At+Rotation.RotateVector(FVector(-53,0,0)),FVector(85,18,3));
+        Piece(At+Rotation.RotateVector(FVector(-10,22,0)),FVector(70,18,3),-40.f);
+        Piece(At+Rotation.RotateVector(FVector(-10,-22,0)),FVector(70,18,3),40.f);
+    }
+}
+
+void ACourierGameMode::UpdateRouteGuide()
+{
+    const ECourierPhase ViewPhase=Phase==ECourierPhase::Paused?BeforePause:Phase;
+    const bool bShow=ViewPhase==ECourierPhase::Practice || ViewPhase==ECourierPhase::AwaitPickup ||
+        ViewPhase==ECourierPhase::Briefing || ViewPhase==ECourierPhase::Delivery;
+    const int32 Active=ViewPhase==ECourierPhase::Practice?0:CurrentOrder+1;
+    for(int32 I=0;I<RouteGuideGroups.Num();++I)if(RouteGuideGroups[I])
+        RouteGuideGroups[I]->SetActorHiddenInGame(!bShow || I!=Active);
+    if(RouteBeacon)
+    {
+        RouteBeacon->SetActorHiddenInGame(!bShow);
+        // Pause freezes the existing waypoint instead of resolving a different route.
+        if(bShow && Phase!=ECourierPhase::Paused)RouteBeacon->SetActorLocation(NavigationTarget());
+        TArray<AActor*> Parts;RouteBeacon->GetAttachedActors(Parts);
+        for(auto* Part:Parts)Part->SetActorHiddenInGame(!bShow);
     }
 }
 

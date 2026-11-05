@@ -1,6 +1,6 @@
 # Graduate Mechanics and Balance Analysis
 
-Last Minute Courier | v0.5.1 | November 1, 2026
+Last Minute Courier | v0.5.2 | November 4, 2026
 
 Required for this student's graduate submission. Based on lecture deck 4, The Art of Game Design: mechanics 1-7 and the balance lenses on slides 104, 112 and 118. The following answers refer to implemented rules. Statements about player feelings are hypotheses until genuine player observation is recorded.
 
@@ -52,7 +52,7 @@ These categories describe different aspects of the same interaction. For example
 
 **3. What emergent interactions arise?** Slowing a cart extends a crossing window but still spends real order time; slowing a lift helps boarding but delays travel if held; a longer ramp avoids precision but costs travel time. Releasing Q can therefore be strategically useful. These interactions are implemented; whether novices independently discover them must be observed.
 
-**4. Is anything too simple?** If players always choose bypasses, they may finish without transferring Q or jumping to a new context. The full agent run verifies those accessible routes, not learning transfer. The next genuine playtest must record route choices and later ability use. If transfer is absent, revise the first lift's instruction/route incentive and retest before claiming the rubric's highest mechanics band. Do not add a hidden gate or unrelated busywork merely to force longer play.
+**4. Is anything too simple?** If players always choose bypasses, they may finish without transferring Q or jumping to a new context. The full agent run verifies those accessible routes, not learning transfer. The v0.5.2 tutorial now checks a crossing while Q stays held, and the lift prompts explicitly cover waiting, jumping aboard, releasing Q and stepping off. The next genuine playtest must record route choices and later ability use. If transfer is absent, revise the first lift's instruction/route incentive and retest before claiming the rubric's highest mechanics band. Do not add a hidden gate or unrelated busywork merely to force longer play.
 
 ## Evidence and submission relationship
 

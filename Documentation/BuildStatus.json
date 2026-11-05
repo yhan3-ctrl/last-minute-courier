@@ -6,13 +6,13 @@
   "metal_toolchain": "installed_and_version_command_passed",
   "map_generation": "succeeded",
   "visual_material_generation": "succeeded_zero_errors_zero_warnings",
-  "runtime_playtest": "agent_complete_normal_keyboard_run_in_editor_preview_plus_packaged_startup_checks",
+  "runtime_playtest": "v052_editor_and_standalone_controlled_regressions_plus_native_opening_practice_checks; historical_v051_editor_full_input_run",
   "human_playtests": 0,
   "full_delivery_flow": "normal_keyboard_run_from_opening_to_three_orders_and_complete_ending",
   "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
   "comfort_validation": "requires_human_playtest",
   "platform_builds": {
-    "mac": "arm64_development_packaged_signed_and_startup_CJK_verified_full_packaged_run_and_other_hardware_pending",
+    "mac": "v052_arm64_Development_DMG_checksum_and_mounted_signature_verified; native_English_opening_from_DMG_verified; full_normal_input_run_and_other_hardware_pending",
     "windows": "not_built",
     "linux": "not_built"
   },
@@ -27,7 +27,7 @@
     "de"
   ],
   "translation_coverage": {
-    "runtime_strings": 101,
+    "runtime_strings": 106,
     "optional_languages": 6,
     "check": "passed"
   },
@@ -45,21 +45,21 @@
     "de"
   ],
   "native_speaker_review": "not_completed",
-  "audit_date": "2026-11-01",
+  "audit_date": "2026-11-04",
   "automated_regression": {
     "report": "QA-Evidence.json",
-    "latest_run": "RubricV051Final",
+    "latest_run": "Nov04-Onboarding",
     "succeeded_suites": 3,
     "failed_suites": 0,
     "test_errors": 0,
     "test_warnings": 0,
-    "scope": "controlled states/positions and engine-frame moving-platform ride; not human play time",
+    "scope": "Three current Editor suites; same suites pass in standalone stdout. Controlled placements, boundary tests, engine-frame platform ride; not a human full playthrough.",
     "capsule_routes": 8
   },
   "small_window": "1024x640_pause_and_gameplay_visually_checked",
   "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
   "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "previous_v03_runtime_checks": [
     "default_english_opening",
     "optional_chinese_glyphs",
@@ -143,7 +143,8 @@
     "packaging_minimum_free_gib": 12,
     "automatic_build_on_launch": false,
     "local_game_image": "Runtime.nosync/CourierBuildMac.sparseimage",
-    "note": "Image contains only completed local app and residual tiny assembly metadata; failed build trees and duplicate staging removed."
+    "note": "Image contains only completed local app and residual tiny assembly metadata; failed build trees and duplicate staging removed.",
+    "targeted_fix_builds": "Nov04 user requested implementation. Editor/Game modules compiled; unchanged cooked assets reused; no full UAT resource recook."
   },
   "graduate_requirements": {
     "confirmed": true,
@@ -155,5 +156,45 @@
     ],
     "document": "GraduateAnalysis.md",
     "lecture_structure_checked": true
+  },
+  "v052": {
+    "training": "Q must stay active from near lane edge to far edge; early release, side bypass and recovery covered by regression",
+    "platform_hints": [
+      "wait_for_lowering_without_Q",
+      "hold_Q_and_Space_to_board",
+      "release_Q_to_ride",
+      "walk_forward_at_landing"
+    ],
+    "editor_report": "Saved/QA/Nov04-Onboarding/index.json",
+    "packaged_report": "Saved/QA/Nov04-Packaged/summary.json",
+    "packaged_report_warning": "Standalone sandbox blocked direct JSON export; stdout retained and completed-test records parsed. Three suites succeeded, exit 0.",
+    "native_checks": [
+      "fresh_English_opening",
+      "four_cards",
+      "real_jump_to_Q_lesson",
+      "new_Q_instruction_fits",
+      "untrained_bypass_returns_with_specific_instruction"
+    ],
+    "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
+    "human_playtests": 0,
+    "full_normal_input_packaged_run": "pending",
+    "new_Q_simultaneous_keyboard": "requires_human_check; tool cannot hold Q and W together",
+    "distribution": "Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64.dmg",
+    "distribution_verification": {
+      "version": "0.5.2",
+      "architecture": "arm64",
+      "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
+      "sha256": "784292e2d7b8bd09d92c4f7262c44c35ddecce6ab09a6caaa8284f3cbca4b230",
+      "bytes": 515353491,
+      "dmg_checksum": "hdiutil verify passed",
+      "mounted_app_signature": "codesign --verify --deep --strict passed",
+      "mounted_image_native_opening": "English first card observed in standalone app from read-only DMG",
+      "normal_input_complete_run": false,
+      "human_playtest": false,
+      "notarization": "not performed",
+      "source_manifest": "Saved/QA/Nov04-CompiledSource.json",
+      "compile_log": "Saved/Logs/Nov04-GameCompile.log",
+      "assembly": "Reused unchanged v0.5.1 cooked assets; new program, two DesignData JSON files, updated bundle version; local signing with unchanged entitlements."
+    }
   }
 }

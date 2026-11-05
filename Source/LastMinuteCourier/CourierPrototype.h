@@ -203,6 +203,7 @@ public:
     bool bTraining = false;
     int32 OrderIndex = 0;
     bool bSlowedOnce = false;
+    bool bTrainingSlowEntry = false;
     void Reset();
     bool Touching(const FVector& Player) const;
 };

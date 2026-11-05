@@ -114,6 +114,18 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             for(TActorIterator<ACourierLift> It(World);It;++It)if(It->OrderIndex==1){Lift=*It;break;}
             if(TestNotNull(TEXT("Garden moving lift exists"),Lift))
             {
+                Place(FVector(12150,0,88));Mode->Tick(4.f);Lift->Reset();
+                TestTrue(TEXT("Low platform prompt explicitly teaches the jump"),Mode->ContextHint().Contains(TEXT("Space")));
+                Mode->StartSlow();
+                TestTrue(TEXT("Active Q does not hide boarding instructions"),Mode->ContextHint().Contains(TEXT("Space")));
+                Lift->SetActorLocation(Lift->Origin+Lift->Travel);
+                TestTrue(TEXT("Raised lift prompt explains to release Q and wait"),Mode->ContextHint().Contains(TEXT("come down")));
+                Player->SetBase(Lift->Mesh);
+                TestTrue(TEXT("Upper landing prompts the rider to step off"),Mode->ContextHint().Contains(TEXT("Walk forward")));
+                Lift->Reset();
+                TestTrue(TEXT("Boarded rider is taught to release Q"),Mode->ContextHint().Contains(TEXT("Release Q")));
+                Player->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
+                Mode->EndSlow();Mode->Cooldown=0.f;Mode->SlowRemaining=3.f;
                 Lift->Reset();const float Initial=Lift->Clock;
                 Mode->StartSlow();Lift->Tick(1.f);
                 TestTrue(TEXT("Platform uses quarter device time"),FMath::IsNearlyEqual(Lift->Clock-Initial,.25f));

@@ -70,10 +70,10 @@
     },
     {
       "id": "slow",
-      "completion": "activate_slow_and_cross_training_lane",
+      "completion": "hold_slow_from_near_edge_to_far_edge_of_training_lane",
       "text": {
-        "en": "Wait until the cart moves aside. Hold Q to keep the gap open, then cross.",
-        "zh": "先等运输车让开，再按住 Q 延长空隙，趁机通过。"
+        "en": "Wait for a gap. Keep Q held while walking across the blue lane. Release Q on the other side.",
+        "zh": "先等运输车让开。走过蓝色车道时持续按住 Q，到另一侧后再松开。"
       }
     },
     {

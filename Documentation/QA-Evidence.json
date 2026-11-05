@@ -444,6 +444,31 @@
           "warnings": 0
         }
       ]
+    },
+    {
+      "name": "Nov04-Onboarding",
+      "succeeded_suites": 3,
+      "failed_suites": 0,
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success",
+          "errors": 0,
+          "warnings": 0
+        }
+      ]
     }
   ],
   "guardrail_followup": {
@@ -520,5 +545,45 @@
     "full_packaged_run": "pending",
     "signature_validation": "strict deep passed",
     "startup_log": "Saved/Logs/PackagedMacStartupFixed.log"
+  },
+  "v052": {
+    "training": "Q must stay active from near lane edge to far edge; early release, side bypass and recovery covered by regression",
+    "platform_hints": [
+      "wait_for_lowering_without_Q",
+      "hold_Q_and_Space_to_board",
+      "release_Q_to_ride",
+      "walk_forward_at_landing"
+    ],
+    "editor_report": "Saved/QA/Nov04-Onboarding/index.json",
+    "packaged_report": "Saved/QA/Nov04-Packaged/summary.json",
+    "packaged_report_warning": "Standalone sandbox blocked direct JSON export; stdout retained and completed-test records parsed. Three suites succeeded, exit 0.",
+    "native_checks": [
+      "fresh_English_opening",
+      "four_cards",
+      "real_jump_to_Q_lesson",
+      "new_Q_instruction_fits",
+      "untrained_bypass_returns_with_specific_instruction"
+    ],
+    "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
+    "human_playtests": 0,
+    "full_normal_input_packaged_run": "pending",
+    "new_Q_simultaneous_keyboard": "requires_human_check; tool cannot hold Q and W together",
+    "distribution": "Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64.dmg",
+    "distribution_verification": {
+      "version": "0.5.2",
+      "architecture": "arm64",
+      "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
+      "sha256": "784292e2d7b8bd09d92c4f7262c44c35ddecce6ab09a6caaa8284f3cbca4b230",
+      "bytes": 515353491,
+      "dmg_checksum": "hdiutil verify passed",
+      "mounted_app_signature": "codesign --verify --deep --strict passed",
+      "mounted_image_native_opening": "English first card observed in standalone app from read-only DMG",
+      "normal_input_complete_run": false,
+      "human_playtest": false,
+      "notarization": "not performed",
+      "source_manifest": "Saved/QA/Nov04-CompiledSource.json",
+      "compile_log": "Saved/Logs/Nov04-GameCompile.log",
+      "assembly": "Reused unchanged v0.5.1 cooked assets; new program, two DesignData JSON files, updated bundle version; local signing with unchanged entitlements."
+    }
   }
 }

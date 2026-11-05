@@ -1001,6 +1001,62 @@
       "es": "HAS LLEGADO",
       "fr": "VOUS ÊTES ARRIVÉ",
       "de": "ANGEKOMMEN"
+    },
+    "Hold Q while walking across the blue lane. Release Q after you cross.": {
+      "zh": "走过蓝色车道时持续按住 Q，过完车道再松开。",
+      "ja": "青い車線を渡る間はQを押し続け、渡り終えたら離しましょう。",
+      "ko": "파란 차선을 건너는 동안 Q를 계속 누르고, 다 건넌 뒤 놓으세요.",
+      "es": "Mantén Q mientras cruzas el carril azul. Suelta Q al terminar de cruzar.",
+      "fr": "Maintenez Q en traversant la voie bleue. Relâchez Q une fois de l’autre côté.",
+      "de": "Halte Q beim Überqueren der blauen Spur. Lass Q erst auf der anderen Seite los."
+    },
+    "Wait for a gap. Keep Q held while walking across the blue lane. Release Q on the other side.": {
+      "zh": "先等运输车让开。走过蓝色车道时持续按住 Q，到另一侧后再松开。",
+      "ja": "道が空くまで待ちましょう。青い車線を渡る間はQを押し続け、反対側で離しましょう。",
+      "ko": "길이 빌 때까지 기다리세요. 파란 차선을 건너는 동안 Q를 계속 누르고, 반대편에서 놓으세요.",
+      "es": "Espera a que haya un hueco. Sigue manteniendo Q mientras cruzas el carril azul. Suelta Q al otro lado.",
+      "fr": "Attendez un passage libre. Gardez Q enfoncé en traversant la voie bleue. Relâchez Q de l’autre côté.",
+      "de": "Warte auf eine Lücke. Halte Q beim Überqueren der blauen Spur gedrückt. Lass Q auf der anderen Seite los."
+    },
+    "Lane cleared. Release Q and follow the marker to the parcel desk.": {
+      "zh": "车道通过！松开 Q，沿标记走到取件台。",
+      "ja": "車線を渡れました。Qを離して、目印に沿って荷物の受付へ進みましょう。",
+      "ko": "차선을 건넜어요. Q를 놓고 표시를 따라 소포 데스크로 가세요.",
+      "es": "Carril superado. Suelta Q y sigue la señal hasta el mostrador de paquetes.",
+      "fr": "Voie traversée. Relâchez Q et suivez le repère jusqu’au comptoir des colis.",
+      "de": "Spur überquert. Lass Q los und folge der Markierung zum Paketschalter."
+    },
+    "Q is recharging. Wait for READY, then hold Q while crossing the blue lane.": {
+      "zh": "Q 正在充能。等到就绪后，按住 Q 走过蓝色车道。",
+      "ja": "Qは充電中です。準備完了を待ち、Qを押し続けて青い車線を渡りましょう。",
+      "ko": "Q가 충전 중이에요. 준비가 되면 Q를 누른 채 파란 차선을 건너세요.",
+      "es": "Q se está recargando. Espera a que esté listo y mantén Q mientras cruzas el carril azul.",
+      "fr": "Q se recharge. Attendez qu’il soit prêt, puis maintenez Q pour traverser la voie bleue.",
+      "de": "Q lädt auf. Warte, bis es bereit ist, und halte dann Q beim Überqueren der blauen Spur."
+    },
+    "At the landing. Walk forward to step off.": {
+      "zh": "到站了。向前走，离开平台。",
+      "ja": "乗り場に着きました。前に進んで降りましょう。",
+      "ko": "도착했어요. 앞으로 걸어 발판에서 내리세요.",
+      "es": "Has llegado. Camina hacia delante para bajar.",
+      "fr": "Vous êtes arrivé. Avancez pour descendre.",
+      "de": "Angekommen. Geh nach vorn, um abzusteigen."
+    },
+    "The lift is above you. Release Q and wait here for it to come down.": {
+      "zh": "升降台还在上方。松开 Q，在这里等它降下来。",
+      "ja": "リフトはまだ上にあります。Qを離し、ここで下りてくるのを待ちましょう。",
+      "ko": "승강기가 위에 있어요. Q를 놓고 여기서 내려올 때까지 기다리세요.",
+      "es": "El ascensor está arriba. Suelta Q y espera aquí a que baje.",
+      "fr": "La plateforme est en hauteur. Relâchez Q et attendez ici qu’elle redescende.",
+      "de": "Der Lift ist noch oben. Lass Q los und warte hier, bis er herunterkommt."
+    },
+    "When the blue platform reaches your side, hold Q and press Space to jump aboard.": {
+      "zh": "等蓝色平台来到你这一侧，按住 Q，再按空格跳上去。",
+      "ja": "青い足場がこちらに来たら、Qを押しながらスペースキーで飛び乗りましょう。",
+      "ko": "파란 발판이 이쪽으로 오면 Q를 누른 채 스페이스로 뛰어올라 타세요.",
+      "es": "Cuando la plataforma azul llegue a tu lado, mantén Q y pulsa Espacio para saltar a bordo.",
+      "fr": "Quand la plateforme bleue arrive de votre côté, maintenez Q et appuyez sur Espace pour sauter dessus.",
+      "de": "Wenn die blaue Plattform bei dir ist, halte Q und spring mit der Leertaste darauf."
     }
   }
 }

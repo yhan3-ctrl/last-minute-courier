@@ -1,6 +1,6 @@
 # Last Minute Courier
 
-High Concept | v0.5.1 | November 1, 2026
+High Concept | v0.5.2 | November 4, 2026
 
 ## High concept statement
 

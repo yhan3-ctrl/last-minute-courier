@@ -284,7 +284,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
             if(Carts.Num()>0 && Carts[0]->bSlowedOnce)Tutorial=3;
             else
             {
-                Notify(TEXT("Use Q near the blue cart before crossing its lane."),TEXT("先在蓝色运输车附近按住 Q，再通过车道。"));
+                Notify(TEXT("Hold Q while walking across the blue lane. Release Q after you cross."),TEXT("走过蓝色车道时持续按住 Q，过完车道再松开。"));
                 RestoreCheckpoint();
                 return;
             }
@@ -618,9 +618,9 @@ void ACourierGameMode::LoadCopy()
                     TEXT("按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"),
                     TEXT("沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。")};
     TutorialText = {TEXT("WASD to move. Move the mouse to look around. Reach the marked spot."), TEXT("Space to jump. Cross the low step."),
-                    TEXT("Wait until the cart moves aside. Hold Q to keep the gap open, then cross."), TEXT("Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.")};
+                    TEXT("Wait for a gap. Keep Q held while walking across the blue lane. Release Q on the other side."), TEXT("Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.")};
     TutorialTextZh = {TEXT("WASD 移动，鼠标转动视角。走到标记位置。"), TEXT("按空格跳过低台阶。"),
-                      TEXT("先等运输车让开，再按住 Q 延长空隙，趁机通过。"), TEXT("走到取件台。E 阅读简报，Enter 确认接单后才开始计时。")};
+                      TEXT("先等运输车让开。走过蓝色车道时持续按住 Q，到另一侧后再松开。"), TEXT("走到取件台。E 阅读简报，Enter 确认接单后才开始计时。")};
     FString Json;
     if (!FFileHelper::LoadFileToString(Json, *(FPaths::ProjectDir() / TEXT("DesignData/game_content.json"))))
     {
@@ -1082,15 +1082,27 @@ void ACourierCart::Tick(float DeltaSeconds)
     if(!bEnabled) return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
     if(ClockHand)ClockHand->SetRelativeRotation(FRotator(0,0,Clock*360.f/Period));
-    if(Mode->bSlowing)
+    if(bTraining && Mode->Tutorial==2 && !bSlowedOnce)
+    {
+        // Learn the actual crossing, rather than remembering an unrelated Q tap.
+        // The 130 cm edges include the lane and the courier's capsule radius.
         if(const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0))
-            if(FMath::Abs(Player->GetActorLocation().X-Origin.X)<600.f)bSlowedOnce=true;
+        {
+            const FVector P=Player->GetActorLocation();
+            if(!Mode->bSlowing || Mode->RecoverySeconds>0.f || FMath::Abs(P.Y-Origin.Y)>500.f)
+                bTrainingSlowEntry=false;
+            else if(P.X>=Origin.X-600.f && P.X<=Origin.X-130.f)
+                bTrainingSlowEntry=true;
+            else if(bTrainingSlowEntry && P.X>=Origin.X+130.f && P.X<Origin.X+500.f)
+                bSlowedOnce=true;
+        }
+    }
     SetActorLocation(Origin+FVector(0,FMath::Sin(Clock*2.f*PI/Period+InitialPhase)*Amplitude,0));
     Material->SetVectorParameterValue(TEXT("Color"),Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
 }
 void ACourierCart::Reset()
 {
-    Clock=0.f; bSlowedOnce=false;
+    Clock=0.f; bSlowedOnce=false; bTrainingSlowEntry=false;
     SetActorLocation(Origin+FVector(0,FMath::Sin(InitialPhase)*Amplitude,0));
 }
 bool ACourierCart::Touching(const FVector& Player) const

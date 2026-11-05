@@ -191,6 +191,10 @@ FString ACourierGameMode::ContextHint() const
     const FString Prompt=InteractionPrompt();if(!Prompt.IsEmpty())return Prompt;
     if(Phase==ECourierPhase::Practice)
     {
+        if(Tutorial==2 && Carts.Num()>0 && Carts[0]->bSlowedOnce)
+            return Copy(TEXT("Lane cleared. Release Q and follow the marker to the parcel desk."),TEXT("车道通过！松开 Q，沿标记走到取件台。"));
+        if(Tutorial==2 && Cooldown>0.f)
+            return Copy(TEXT("Q is recharging. Wait for READY, then hold Q while crossing the blue lane."),TEXT("Q 正在充能。等到就绪后，按住 Q 走过蓝色车道。"));
         const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
     }
     if(Phase==ECourierPhase::AwaitPickup)
@@ -198,10 +202,14 @@ FString ACourierGameMode::ContextHint() const
     const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);if(!Player)return FString();
     const FVector P=Player->GetActorLocation();
     for(const auto& Lift:Platforms)if(Lift && Player->GetMovementBaseObject()==Lift->Mesh.Get())
+    {
+        const FVector End=Lift->Origin+Lift->Travel;
+        if(FVector::Dist(Lift->GetActorLocation(),End)<45.f)
+            return Copy(TEXT("At the landing. Walk forward to step off."),TEXT("到站了。向前走，离开平台。"));
         return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
+    }
     if(CurrentOrder==0 && P.X>4260 && P.X<4840 && FMath::Abs(P.Y)<340)
         return Copy(TEXT("Space jumps over the planters. You can also walk around them."),TEXT("按空格跳过花箱，也可以从旁边绕过。"));
-    if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
     const ACourierCart* NextCart=nullptr;
     for(const auto& Cart:Carts)if(Cart && !Cart->bTraining && Cart->OrderIndex==CurrentOrder &&
         Cart->Origin.X>=P.X-120.f && Cart->Origin.X-P.X<900.f && FMath::Abs(P.Y)<570.f &&
@@ -211,10 +219,11 @@ FString ACourierGameMode::ContextHint() const
     for(const auto& Lift:Platforms)if(Lift && Lift->OrderIndex==CurrentOrder &&
         FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f)
     {
-        if(Player->GetMovementBaseObject()==Lift->Mesh.Get())
-            return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
-        return Copy(TEXT("Wait for the blue platform to reach your side. Hold Q to make boarding easier."),TEXT("等蓝色平台来到你这一侧，再按住 Q 延长登台时机。"));
+        if(Lift->Travel.Z>0.f && P.Z<Lift->Origin.Z+160.f && Lift->GetActorLocation().Z>P.Z+20.f)
+            return Copy(TEXT("The lift is above you. Release Q and wait here for it to come down."),TEXT("升降台还在上方。松开 Q，在这里等它降下来。"));
+        return Copy(TEXT("When the blue platform reaches your side, hold Q and press Space to jump aboard."),TEXT("等蓝色平台来到你这一侧，按住 Q，再按空格跳上去。"));
     }
+    if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
     if(FVector::Dist2D(P,Destination)<1800.f)
         return Copy(TEXT("Walk onto the orange square. Press E to deliver."),TEXT("走到橙色方形标记上，按 E 交付。"));
     return Copy(TEXT("Follow the orange route markers. C gently recenters your view."),TEXT("沿橙色路线标记前进。C 可平缓地将镜头回正。"));

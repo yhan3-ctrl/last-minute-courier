@@ -194,7 +194,7 @@ FString ACourierGameMode::ContextHint() const
         if(Tutorial==2 && Carts.Num()>0 && Carts[0]->bSlowedOnce)
             return Copy(TEXT("Lane cleared. Release Q and follow the marker to the parcel desk."),TEXT("车道通过！松开 Q，沿标记走到取件台。"));
         if(Tutorial==2 && Cooldown>0.f)
-            return Copy(TEXT("Q is recharging. Wait for READY, then hold Q while crossing the blue lane."),TEXT("Q 正在充能。等到就绪后，按住 Q 走过蓝色车道。"));
+            return Copy(TEXT("Q is recharging. When the bar is full, hold Q while crossing the blue lane."),TEXT("Q 正在充能。等能量条充满后，按住 Q 走过蓝色车道。"));
         const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
     }
     if(Phase==ECourierPhase::AwaitPickup)

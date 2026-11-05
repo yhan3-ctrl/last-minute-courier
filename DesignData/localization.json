@@ -1026,14 +1026,6 @@
       "fr": "Voie traversée. Relâchez Q et suivez le repère jusqu’au comptoir des colis.",
       "de": "Spur überquert. Lass Q los und folge der Markierung zum Paketschalter."
     },
-    "Q is recharging. Wait for READY, then hold Q while crossing the blue lane.": {
-      "zh": "Q 正在充能。等到就绪后，按住 Q 走过蓝色车道。",
-      "ja": "Qは充電中です。準備完了を待ち、Qを押し続けて青い車線を渡りましょう。",
-      "ko": "Q가 충전 중이에요. 준비가 되면 Q를 누른 채 파란 차선을 건너세요.",
-      "es": "Q se está recargando. Espera a que esté listo y mantén Q mientras cruzas el carril azul.",
-      "fr": "Q se recharge. Attendez qu’il soit prêt, puis maintenez Q pour traverser la voie bleue.",
-      "de": "Q lädt auf. Warte, bis es bereit ist, und halte dann Q beim Überqueren der blauen Spur."
-    },
     "At the landing. Walk forward to step off.": {
       "zh": "到站了。向前走，离开平台。",
       "ja": "乗り場に着きました。前に進んで降りましょう。",
@@ -1057,6 +1049,14 @@
       "es": "Cuando la plataforma azul llegue a tu lado, mantén Q y pulsa Espacio para saltar a bordo.",
       "fr": "Quand la plateforme bleue arrive de votre côté, maintenez Q et appuyez sur Espace pour sauter dessus.",
       "de": "Wenn die blaue Plattform bei dir ist, halte Q und spring mit der Leertaste darauf."
+    },
+    "Q is recharging. When the bar is full, hold Q while crossing the blue lane.": {
+      "zh": "Q 正在充能。等能量条充满后，按住 Q 走过蓝色车道。",
+      "ja": "Qは充電中です。ゲージが満タンになったら、Qを押し続けて青い車線を渡りましょう。",
+      "ko": "Q가 충전 중이에요. 막대가 가득 차면 Q를 누른 채 파란 차선을 건너세요.",
+      "es": "Q se está recargando. Cuando la barra esté llena, mantén Q mientras cruzas el carril azul.",
+      "fr": "Q se recharge. Quand la jauge est pleine, maintenez Q pour traverser la voie bleue.",
+      "de": "Q lädt auf. Wenn der Balken voll ist, halte Q beim Überqueren der blauen Spur."
     }
   }
 }

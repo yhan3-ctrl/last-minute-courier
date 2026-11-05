@@ -166,8 +166,8 @@
       "walk_forward_at_landing"
     ],
     "editor_report": "Saved/QA/Nov04-Onboarding/index.json",
-    "packaged_report": "Saved/QA/Nov04-Packaged/summary.json",
-    "packaged_report_warning": "Standalone sandbox blocked direct JSON export; stdout retained and completed-test records parsed. Three suites succeeded, exit 0.",
+    "packaged_report": "Saved/QA/Nov04-FinalImageRegression.json",
+    "packaged_report_warning": "Earlier candidate runs could not export JSON through the app sandbox. Final read-only DMG test deliberately uses captured stdout, with all three suites successful and exit 0.",
     "native_checks": [
       "fresh_English_opening",
       "four_cards",
@@ -175,26 +175,49 @@
       "new_Q_instruction_fits",
       "untrained_bypass_returns_with_specific_instruction"
     ],
-    "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
+    "binary_uuid": "D5573103-C998-3A4B-8F89-BFBD5D4DF15D",
     "human_playtests": 0,
     "full_normal_input_packaged_run": "pending",
     "new_Q_simultaneous_keyboard": "requires_human_check; tool cannot hold Q and W together",
-    "distribution": "Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64.dmg",
+    "distribution": "Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64-Final.dmg",
     "distribution_verification": {
       "version": "0.5.2",
       "architecture": "arm64",
-      "binary_uuid": "35141D10-4E64-3D42-8A5F-4910E72F1535",
-      "sha256": "784292e2d7b8bd09d92c4f7262c44c35ddecce6ab09a6caaa8284f3cbca4b230",
-      "bytes": 515353491,
+      "binary_uuid": "D5573103-C998-3A4B-8F89-BFBD5D4DF15D",
+      "sha256": "9e8ffba71cba619b2786a76db332b5b58dc201accf991ce6ac31aa1d36a88c1b",
+      "bytes": 515235729,
       "dmg_checksum": "hdiutil verify passed",
       "mounted_app_signature": "codesign --verify --deep --strict passed",
-      "mounted_image_native_opening": "English first card observed in standalone app from read-only DMG",
+      "native_opening": "Observed earlier v0.5.2 DMG before final recharge wording adjustment; no new graphical full playthrough.",
+      "final_change": "Recharge hint now refers to the visible full ability bar; removes reference to a nonexistent READY label.",
       "normal_input_complete_run": false,
       "human_playtest": false,
-      "notarization": "not performed",
-      "source_manifest": "Saved/QA/Nov04-CompiledSource.json",
-      "compile_log": "Saved/Logs/Nov04-GameCompile.log",
-      "assembly": "Reused unchanged v0.5.1 cooked assets; new program, two DesignData JSON files, updated bundle version; local signing with unchanged entitlements."
+      "source_manifest": "Saved/QA/Nov04-FinalCompiledSource.json",
+      "compile_log": "Saved/Logs/Nov04-FinalGame.log",
+      "final_image_test_stdout": "Saved/Logs/Nov04-FinalImageRegression.log",
+      "final_image_regression": {
+        "tests": [
+          {
+            "state": "Success",
+            "name": "FirstOrderBoundaries",
+            "path": "Courier.Regression.FirstOrderBoundaries"
+          },
+          {
+            "state": "Success",
+            "name": "PlatformRide",
+            "path": "Courier.Regression.PlatformRide"
+          },
+          {
+            "state": "Success",
+            "name": "ThreeOrderJourney",
+            "path": "Courier.Regression.ThreeOrderJourney"
+          }
+        ],
+        "exit_code": 0,
+        "executable_from": "Read-only final distribution DMG",
+        "method": "Controlled state/positions, boundary cases and engine-frame platform ride; no report export requested; stdout retained.",
+        "not_a_human_or_full_normal_input_run": true
+      }
     }
   }
 }

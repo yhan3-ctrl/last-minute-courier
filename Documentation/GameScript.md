@@ -12,22 +12,22 @@ Learn moving and looking; physically jump over a low obstacle; recognize blue cl
 
 ## Rules and modes
 
-Four untimed opening cards explain identity, ability, the delivery plan and controls. A practice yard teaches the three actions. WASD moves, mouse looks, Space jumps, Q slows marked devices, E interacts, C recenters, H opens help, Esc pauses, and R restarts the current unfinished order.
+Three untimed opening cards explain the evening, the ability and the controls (drawn as key caps). A practice yard teaches the three actions. WASD moves, mouse looks, Space jumps, Q slows marked devices, E interacts, C recenters, H opens help, Esc pauses, and R asks whether to restart the current unfinished order.
 
-At each desk, E opens a brief. The player reads the parcel, destination and budget, then presses Enter to accept; Back cancels. Only acceptance starts the order clock. Orders have 60, 150 and 160 seconds. Q grants at most 3 seconds at 0.25 device speed, followed by 4 seconds of recharge. The courier and order clock do not slow. Pausing freezes gameplay; releasing Q while paused is resolved on resume.
+At each desk, E opens a brief. The player reads the parcel, destination and budget, then presses E again or Enter to accept; Esc or Back closes the brief. Only acceptance starts the order clock. Orders have 60, 150 and 160 seconds. Q grants at most 3 seconds at 0.25 device speed, followed by 4 seconds of recharge. The courier and order clock do not slow. Pausing freezes gameplay; releasing Q while paused is resolved on resume.
 
-A cart collision or fall returns the courier to a grounded checkpoint with a 0.3-second recovery fade and short collision immunity. The current order remains active. Timeout offers retry and route help. R restarts only the unfinished order, its devices and ability; earlier deliveries and stamps remain. Delivered and final states cannot be undone by R. Play Again starts a fresh run.
+A cart collision or fall returns the courier to a grounded checkpoint with a 0.3-second recovery fade and short collision immunity. The current order remains active. Timeout offers retry and route help. R first asks "Restart this order?" (Enter confirms, Esc keeps going) so a stray key press never discards a run; a confirmed restart reopens that order's brief at its desk. Earlier deliveries and stamps remain. Delivered and final states cannot be undone by R. Play Again starts a fresh run.
 
 ## Scene and interaction sequence
 
-1. Read the four cards, select an optional language, and practice in a safe yard with no delivery clock.
+1. Read the three cards, select an optional language, and practice in a safe yard with no delivery clock.
 2. Accept coffee at the parcel desk. Cross cart traffic or use the arcade; jump or steer around planters. E delivers at the coffee stand and its warm light turns on.
 3. Read and accept the lens at the same stand. Turn into the garden, use or bypass the first lift, cross the raised beds and stepping stones (or use the side route), then reach the projection booth via the second lift or ramp. The projector appears after delivery.
 4. Read and accept the reel at the booth. Navigate traffic, ride or bypass a horizontal shuttle, ascend to the upper walk and negotiate planters. Follow the central cinema aisle, then turn left toward the roofless clocktower console and its orange square. The screening lights and landscape screen reveal; a cinema ticket shows three stamps and the run statistics.
 
 ## Feedback and presentation
 
-Cream paper panels, ink text, orange route markings and teal clock tags establish distinct roles. The HUD identifies the current parcel, destination, distance/direction, clock and Q charge. Failed actions have explicit messages and recovery. Each completed delivery changes the world, plays a stamp cue and preserves progress. Warm sunset, stationary soft clouds and distant hills support orientation. A 48-second original musical base gains synchronized strings after coffee and bells after the lens; all three layers and interaction sounds share the sound switch. English is the startup language; six optional languages are selected from one menu.
+Menus are courier slips: a coloured header band, paper body, perforation and key-cap buttons. The in-play HUD uses compact dark plates in the corners: order and destination (top left), the delivery clock that turns red and pulses under 20 seconds plus a rotating compass arrow and distance (top centre), the Q key and charge meter that flashes red when Q is pressed without charge (bottom left), and a single contextual line with the E prompt (bottom centre). Lilita One sets display type and Nunito interface text; Chinese, Japanese and Korean use Noto Sans CJK. Failed actions have explicit messages and recovery. Each completed delivery changes the world, plays a stamp cue and preserves progress. Warm sunset, stationary soft clouds and distant hills support orientation. A 48-second original musical base gains synchronized strings after coffee and bells after the lens; all three layers and interaction sounds share the sound switch. English is the startup language; six optional languages are selected from one menu.
 
 ## Comfort and accessibility
 
@@ -57,17 +57,17 @@ The expected player uses a keyboard and mouse and may be unfamiliar with timing 
 
 | Mode or shell screen | Available decisions and actions | Clock and devices | Exit |
 |---|---|---|---|
-| Opening shell | Four story/control cards; continue/back; language; quit | No delivery timer; devices inactive | Continue after card four enters practice |
+| Opening shell | Three story/control cards; continue/back; language; quit | No delivery timer; devices inactive | Continue after card three enters practice |
 | Practice gameplay | Move, look, jump, hold/release Q, C, pause/help | No delivery deadline; active training devices | Actual jump and safe cart-lane crossing with or without Q, then reach parcel desk |
 | Await-pickup gameplay | Walk to current desk; E reads brief; pause/help | No delivery deadline; delivery devices inactive | E at reachable desk enters briefing |
-| Briefing shell | Read parcel, destination, route and budget; Enter accepts; Back cancels | No budget consumed | Accept enters delivery; cancel returns to pickup |
-| Delivery gameplay (primary) | Move/look/jump/Q; E delivers; C; help/pause; R retries current order | Current budget and marked devices advance in real time, with selective Q slowdown | Valid E delivery, timeout, or pause |
+| Briefing shell | Read parcel, destination, route and budget; E or Enter accepts; Esc/Back closes | No budget consumed | Accept enters delivery; cancel returns to pickup |
+| Delivery gameplay (primary) | Move/look/jump/Q; E delivers; C; help/pause; R asks to restart the current order | Current budget and marked devices advance in real time, with selective Q slowdown | Valid E delivery, timeout, or pause |
 | Pause/help shell | Resume; story/route help; sound, camera and language settings; retry when available; quit | Clock, devices, charge and recovery are frozen | Resume returns to the exact preceding gameplay state |
 | Delivered shell | View outcome/stamp; read next brief; language | Completed delivery fixed; next timer has not started | Read next opens next brief at the same counter |
-| Timeout shell | Retry unfinished order; view route help; language | No ongoing delivery or device movement | Retry returns to that order's pickup |
+| Timeout shell | Retry unfinished order; view route help | No ongoing delivery or device movement | Retry reopens that order's brief at its pickup |
 | Completion shell | Read ticket and statistics; language; Play Again | Three deliveries complete; ending animation plays | Play Again returns to opening and resets progress |
 
-Practice and delivery share the same avatar, camera and action vocabulary. Shell screens restrict world actions so reading and settings do not accidentally move the courier. Menu Tab selects controls; Space activates a focused toggle; Enter continues or accepts; sliders use Enter and arrows. A language change does not restart the order. Progress is session-only: quitting does not save a campaign. Play Again preserves selected presentation preferences in the current process; a fresh launch defaults to English.
+Practice and delivery share the same avatar, camera and action vocabulary. Shell screens restrict world actions so reading and settings do not accidentally move the courier. Menu Tab selects controls; Space activates a focused toggle; Enter continues or accepts; sliders use Enter and arrows. A language change does not restart the order; the L shortcut works only on menu screens so it cannot fire mid-delivery. Progress is session-only: quitting does not save a campaign. Play Again preserves selected presentation preferences in the current process; a fresh launch defaults to English.
 
 ## Operational rules and edge cases
 
@@ -77,7 +77,7 @@ Practice and delivery share the same avatar, camera and action vocabulary. Shell
 - E only reads or delivers within the marked area at a compatible height; standing underneath or far above a desk is invalid. An invalid E does not lose a parcel or advance an order. A reachable destination says ARRIVED and shows the delivery action.
 - Coffee, lens and reel must be completed in that order. Accepting gives 60, 150 and 160 seconds respectively (v0.5.4; the earlier 140/170/200 allowed an expert run to finish with over two thirds of every clock unused). Reading a brief never starts its clock. Delivery succeeds when E is used at the destination before the order reaches zero. An expired order must be retried.
 - A fall, leaving the playable route or cart contact returns the courier to a safe grounded checkpoint. No stamp or parcel is removed. A brief recovery fade and collision protection prevent an immediate repeated hit. Timers and devices pause during the brief recovery itself; otherwise the order continues. Side-route landings also save checkpoints. Guidance moves back with the courier after recovery.
-- R and the Retry control reset the current unfinished order to its pickup, including its deadline, device positions and Q allowance. Earlier completed orders, stamps, cups, audience and music progression remain. Retry is unavailable during untimed practice and does not undo delivered or completed states.
+- R (after confirmation) and the Retry control reset the current unfinished order to its pickup, including its deadline, device positions and Q allowance. Earlier completed orders, stamps, cups, audience and music progression remain. Retry is unavailable during untimed practice and does not undo delivered or completed states.
 - The ending's delivery time is the sum of the three successful-order clocks. It excludes story reading, practice, pause, brief recovery and discarded attempts. The Retry counter counts explicit order restarts, not individual falls/cart recoveries. Neither statistic is a complete first-time wall-clock duration.
 - There is no life limit, combat, inventory puzzle, hidden score threshold, random failure roll, currency, paid unlock or permanently lost progress within a running session. No special ending requires a fast time.
 

@@ -126,7 +126,13 @@ void ACourierCampusScene::BeginPlay()
     for(float X:{650.f,1240.f,2000.f,2940.f,4890.f})
     {
         Decor(TEXT("Cylinder"),FVector(X,0,4),FVector(200,200,5),TEXT("EBCB91"));
-        for(float Y:{-28.f,28.f})Decor(TEXT("Sphere"),FVector(X,Y,8),FVector(45,21,3),TEXT("A46B48"));
+        // A pair of shoe prints (sole + heel) pointing down the route. Two plain
+        // ovals read as a giant face from the chase camera.
+        for(float Y:{-19.f,19.f})
+        {
+            Decor(TEXT("Sphere"),FVector(X+12,Y,8),FVector(34,15,2),TEXT("B4805C"));
+            Decor(TEXT("Sphere"),FVector(X-19,Y,8),FVector(17,13,2),TEXT("B4805C"));
+        }
     }
     // A striped awning and a cup silhouette identify the destination before text is readable.
     for(int32 I=0;I<9;++I)

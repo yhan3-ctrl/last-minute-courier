@@ -148,7 +148,11 @@ void ACourierGameMode::BeginPlay()
             Controller->SetControlRotation(FRotator(-22, 0, 0));
     }
     RefreshInput();
-    if(FParse::Param(FCommandLine::Get(),TEXT("CourierAutoplay")))Autopilot=MakeShared<FCourierAutopilot>();
+    if(FParse::Param(FCommandLine::Get(),TEXT("CourierAutoplay")))
+    {
+        Autopilot=MakeShared<FCourierAutopilot>();
+        SetTickableWhenPaused(true); // QA only: lets the autopilot inspect and leave menus.
+    }
 }
 
 bool ACourierGameMode::IsPlaying() const
@@ -225,6 +229,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if(Autopilot)Autopilot->Tick(*this,DeltaSeconds);
+    QDenied=FMath::Max(0.f,QDenied-DeltaSeconds);
     UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
     if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))
@@ -366,7 +371,7 @@ void ACourierGameMode::Continue()
     else if(Phase==ECourierPhase::Delivered)NextOrder();
     else if(Phase==ECourierPhase::Complete)RestartRun();
     else if(Phase==ECourierPhase::Failed)Retry();
-    else if(Phase==ECourierPhase::Paused)TogglePause();
+    else if(Phase==ECourierPhase::Paused){if(bConfirmRetry)Retry();else TogglePause();}
     RefreshInput();
 }
 
@@ -381,7 +386,12 @@ void ACourierGameMode::Interact()
 {
     auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
     if(!Player)return;
-    if(Phase==ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
+    if(Phase==ECourierPhase::Briefing)
+    {
+        // Pressing E again at the desk takes the parcel, same as Enter.
+        AcceptOrder();
+    }
+    else if(Phase==ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
     {
         Phase=ECourierPhase::Briefing;
         Sound(TEXT("Paper"),.22f);
@@ -404,7 +414,7 @@ void ACourierGameMode::AcceptOrder()
 {
     if(Phase!=ECourierPhase::Briefing || !CanInteractAt(Pickup))return;
     Phase=ECourierPhase::Delivery;
-    Remaining=OrderBudget();OrderElapsed=0.f;RecoverySeconds=0.f;
+    Remaining=OrderBudget();OrderElapsed=0.f;RecoverySeconds=0.f;NoticeSeconds=0.f; // No practice notices leak into an order.
     Checkpoint=Pickup+FVector(0,0,20);
     ResetDevices();
     if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->ShowPackage(true);
@@ -440,6 +450,7 @@ void ACourierGameMode::StartSlow()
 {
     if (IsPlaying() && RecoverySeconds<=0.f && Cooldown <= 0.f && SlowRemaining > 0.f && !bSlowing)
     {bSlowing=true;Sound(TEXT("Borrow"),.18f);}
+    else if(IsPlaying() && !bSlowing)QDenied=.6f; // Visible "not ready" answer instead of silence.
 }
 
 void ACourierGameMode::EndSlow()
@@ -454,11 +465,13 @@ void ACourierGameMode::EndSlow()
 void ACourierGameMode::TogglePause()
 {
     auto* Controller = UGameplayStatics::GetPlayerController(this, 0);
-    if (!Controller || Phase==ECourierPhase::Opening || Phase==ECourierPhase::Briefing || Phase==ECourierPhase::Complete || Phase==ECourierPhase::Delivered || Phase==ECourierPhase::Failed)return;
+    if(Phase==ECourierPhase::Briefing){Back();return;} // Esc closes the brief like any dialog.
+    if (!Controller || Phase==ECourierPhase::Opening || Phase==ECourierPhase::Complete || Phase==ECourierPhase::Delivered || Phase==ECourierPhase::Failed)return;
     if (Phase == ECourierPhase::Paused)
     {
         Controller->SetPause(false);
         Phase = BeforePause;
+        bConfirmRetry = false;
         // A release during pause should take effect on resume, without consuming charge while paused.
         if (bSlowing && !Controller->IsInputKeyDown(EKeys::Q)) EndSlow();
         bHelp = false;
@@ -467,7 +480,7 @@ void ACourierGameMode::TogglePause()
     {
         BeforePause = Phase;
         Phase = ECourierPhase::Paused;
-        bHelp = false;
+        bHelp = false;bConfirmRetry = false;
         Controller->SetPause(true);
     }
     RefreshInput();
@@ -482,6 +495,7 @@ void ACourierGameMode::ToggleHelp()
 
 void ACourierGameMode::ToggleLanguage()
 {
+    if(CanMove())return; // A stray L mid-run must never change the language.
     const auto& Codes=Languages();
     SetLanguage(Codes[(Codes.Find(Language)+1)%Codes.Num()]);
 }
@@ -536,8 +550,8 @@ void ACourierGameMode::Retry()
         (Phase==ECourierPhase::Paused && BeforePause==ECourierPhase::Practice)) return;
     if (Phase == ECourierPhase::Paused)
         if (auto* PC = UGameplayStatics::GetPlayerController(this, 0)) PC->SetPause(false);
-    Phase = ECourierPhase::AwaitPickup;
-    bHelp = false;
+    Phase = ECourierPhase::Briefing; // Back at the desk with the brief open.
+    bHelp = false;bConfirmRetry=false;
     NoticeSeconds=0;
     ++Retries;
     Remaining = OrderBudget();
@@ -550,6 +564,21 @@ void ACourierGameMode::Retry()
     if (auto* Player = Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
         Player->ShowPackage(false);
     RefreshInput();
+}
+
+void ACourierGameMode::RequestRetry()
+{
+    // R sits beside E and Q; a single stray press must not discard a delivery.
+    if(Phase==ECourierPhase::Delivery){TogglePause();bConfirmRetry=Phase==ECourierPhase::Paused;return;}
+    Retry();
+}
+
+FString ACourierGameMode::InteractionLabel() const
+{
+    // Prompts are stored as "E  label"; the HUD draws the key separately.
+    FString Prompt=InteractionPrompt();
+    if(Prompt.StartsWith(TEXT("E")))Prompt=Prompt.RightChop(1).TrimStart();
+    return Prompt;
 }
 
 FString ACourierGameMode::InteractionPrompt() const
@@ -621,9 +650,9 @@ void ACourierGameMode::LoadCopy()
                     TEXT("按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"),
                     TEXT("沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。")};
     TutorialText = {TEXT("WASD to move. Move the mouse to look around. Reach the marked spot."), TEXT("Space to jump. Cross the low step."),
-                    TEXT("Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk. E reads the brief; Enter accepts and starts the clock.")};
+                    TEXT("Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk and press E to read your first order.")};
     TutorialTextZh = {TEXT("WASD 移动，鼠标转动视角。走到标记位置。"), TEXT("按空格跳过低台阶。"),
-                      TEXT("等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"), TEXT("走到取件台。E 阅读简报，Enter 确认接单后才开始计时。")};
+                      TEXT("等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"), TEXT("走到取件台，按 E 查看第一份订单。")};
     FString Json;
     if (!FFileHelper::LoadFileToString(Json, *(FPaths::ProjectDir() / TEXT("DesignData/game_content.json"))))
     {
@@ -1035,7 +1064,7 @@ void ACourierController::Interact() { if(Game(this))Game(this)->Interact(); }
 void ACourierController::SlowPressed() { if(Game(this))Game(this)->StartSlow(); }
 void ACourierController::SlowReleased() { if(Game(this) && Game(this)->IsPlaying())Game(this)->EndSlow(); }
 void ACourierController::PausePressed() { if(Game(this))Game(this)->TogglePause(); }
-void ACourierController::RetryPressed() { if(Game(this))Game(this)->Retry(); }
+void ACourierController::RetryPressed() { if(Game(this))Game(this)->RequestRetry(); }
 void ACourierController::HelpPressed() { if(Game(this))Game(this)->ToggleHelp(); }
 void ACourierController::LanguagePressed() { if(Game(this))Game(this)->ToggleLanguage(); }
 void ACourierController::RecenterPressed() { if(Game(this))Game(this)->RecenterCamera(); }

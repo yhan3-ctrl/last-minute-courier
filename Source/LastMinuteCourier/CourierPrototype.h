@@ -50,6 +50,8 @@ public:
     bool bLockCamera = false;
     bool bTrainingJumped = false;
     bool bAudioEnabled = true;
+    bool bConfirmRetry = false; // R during a delivery asks before discarding progress.
+    float QDenied = 0.f;        // Brief HUD flash when Q is pressed without charge.
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 60.f;
@@ -89,6 +91,7 @@ public:
     void ToggleLanguage();
     void RecenterCamera();
     void Retry();
+    void RequestRetry();
     void RestartRun();
     void NextOrder();
     void SetAudioEnabled(bool bEnabled);
@@ -97,6 +100,8 @@ public:
     FString OrderDestination() const;
     FString OrderOutcome() const;
     FString OrderLabel() const;
+    FString OrderPackage() const;
+    FString InteractionLabel() const;
     FString RouteHint() const;
     FString NavigationText() const;
     FString ProgressText() const;

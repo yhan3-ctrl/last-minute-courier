@@ -2,15 +2,17 @@
 
 ## Fonts
 
-These font binaries are bundled without modification. Each uses the SIL Open Font License 1.1. Corresponding license texts are included both in `Documentation/Licenses` and in the staged `Content/Fonts` directory.
+Each font uses the SIL Open Font License 1.1. Corresponding license texts are included both in `Documentation/Licenses` and in the staged `Content/Fonts` directory.
 
 | Font | Use | Official source | License file |
 | --- | --- | --- | --- |
-| Atkinson Hyperlegible Regular / Bold | English interface text | [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible) | Atkinson-OFL.txt |
-| Bree Serif Regular | English display headings | [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/breeserif) | BreeSerif-OFL.txt |
+| Lilita One Regular | Display headings, clock and numbers | [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/lilitaone) | LilitaOne-OFL.txt |
+| Nunito Bold / ExtraBold / Black | Latin interface text | [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/nunito) | Nunito-OFL.txt |
 | Noto Sans CJK SC Regular | Simplified Chinese text | [Noto CJK repository](https://github.com/notofonts/noto-cjk/tree/main/Sans/OTF/SimplifiedChinese) | NotoSansSC-OFL.txt |
 | Noto Sans CJK JP Regular | Japanese text | [Noto CJK repository](https://github.com/notofonts/noto-cjk/tree/main/Sans/OTF/Japanese) | NotoSansSC-OFL.txt |
 | Noto Sans CJK KR Regular | Korean text | [Noto CJK repository](https://github.com/notofonts/noto-cjk/tree/main/Sans/OTF/Korean) | NotoSansSC-OFL.txt |
+
+Lilita One is bundled unmodified. Nunito is published only as a variable font whose default instance is ExtraLight; `Nunito-Bold.ttf`, `Nunito-ExtraBold.ttf` and `Nunito-Black.ttf` are static instances at weights 700, 800 and 900 generated with fontTools `varLib.instancer` (the OFL permits modified versions; Nunito declares no Reserved Font Name). Atkinson Hyperlegible and Bree Serif were used through v0.5.3 and removed in v0.5.4.
 
 The Noto binaries are stored as `NotoSansSC-Regular.otf`, `NotoSansJP-Regular.otf` and `NotoSansKR-Regular.otf`; their font data is unchanged. The same Noto CJK license covers all three regional variants. Copyright and reserved font name notices remain in the bundled license files.
 

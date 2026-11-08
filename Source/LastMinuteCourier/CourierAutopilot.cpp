@@ -8,6 +8,8 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "UnrealClient.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 namespace
 {
@@ -19,7 +21,8 @@ FCourierAutopilot::FCourierAutopilot()
 {
     RunDir=FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir()/TEXT("AutoPlay")/FDateTime::Now().ToString(TEXT("%Y%m%d-%H%M%S")));
     WallStart=FPlatformTime::Seconds();
-    Log(TEXT("autoplay started"));
+    bTour=FParse::Param(FCommandLine::Get(),TEXT("CourierUITour"));
+    Log(bTour?TEXT("autoplay started with UI tour"):TEXT("autoplay started"));
 }
 
 FString FCourierAutopilot::PhaseName(uint8 Phase)
@@ -78,6 +81,7 @@ void FCourierAutopilot::Tick(ACourierGameMode& Mode,float DeltaSeconds)
         Log(TEXT("RESULT: gave up after 20 minutes"));Shot(TEXT("gave-up"));
         FPlatformMisc::RequestExit(false,TEXT("CourierAutoplay"));return;
     }
+    if(bTour && Tour(Mode,DeltaSeconds))return;
     switch(Mode.Phase)
     {
     case ECourierPhase::Opening:
@@ -128,6 +132,50 @@ void FCourierAutopilot::Tick(ACourierGameMode& Mode,float DeltaSeconds)
     if(Mode.RecoverySeconds>0.f)return;
     if(ShotClock>15.f){ShotClock=0.f;Shot(FString::Printf(TEXT("play-%s-%d"),*PhaseName(Phase),Mode.CurrentOrder+1));}
     Drive(Mode,*Player,DeltaSeconds);
+}
+
+// Visits every menu state once so each can be inspected in a screenshot.
+// Returns true while it is holding control of the run.
+bool FCourierAutopilot::Tour(ACourierGameMode& Mode,float DeltaSeconds)
+{
+    TourClock+=DeltaSeconds;
+    const auto Step=[&](float After,TFunction<void()> Action)
+    {
+        if(TourClock<After)return true;
+        Action();++TourStep;TourClock=0.f;return true;
+    };
+    switch(TourStep)
+    {
+    // Every screenshot gets its own step; state changes happen a beat later so a
+    // capture never races a widget rebuild.
+    case 0:if(Mode.Phase!=ECourierPhase::Opening || PhaseClock<1.f)return false;
+        return Step(0.f,[&](){Mode.SetLanguage(TEXT("zh"));});
+    case 1:return Step(1.2f,[&](){Shot(TEXT("tour-card1-zh"));});
+    case 2:return Step(.6f,[&](){Mode.SetLanguage(TEXT("de"));});
+    case 3:return Step(1.2f,[&](){Shot(TEXT("tour-card1-de"));});
+    case 4:return Step(.6f,[&](){Mode.SetLanguage(TEXT("en"));PhaseClock=0.f;});
+    case 5:if(Mode.Phase!=ECourierPhase::Practice || PhaseClock<1.f)return false;
+        return Step(0.f,[&](){Mode.TogglePause();Mode.SetLanguage(TEXT("de"));});
+    case 6:return Step(1.2f,[&](){Shot(TEXT("tour-pause"));});
+    case 7:return Step(.6f,[&](){Mode.ToggleHelp();});
+    case 8:return Step(1.2f,[&](){Shot(TEXT("tour-help"));});
+    case 9:return Step(.6f,[&](){Mode.TogglePause();Mode.SetLanguage(TEXT("en"));});
+    case 10:if(Mode.Phase!=ECourierPhase::Delivery || PhaseClock<2.f)return false;
+        return Step(0.f,[&](){Mode.RequestRetry();});
+    case 11:return Step(1.2f,[&](){Shot(TEXT("tour-confirm-retry"));});
+    case 12:return Step(.6f,[&](){Mode.TogglePause();});
+    case 13:return Step(.3f,[&](){Mode.Remaining=.2f;});
+    case 14:if(Mode.Phase!=ECourierPhase::Failed)return TourClock<3.f;
+        return Step(1.2f,[&](){Shot(TEXT("tour-timeout"));});
+    case 15:return Step(.6f,[&](){Mode.Continue();});
+    case 16:return Step(1.6f,[&](){Shot(TEXT("tour-retry-brief"));});
+    case 17:return Step(.6f,[&](){Mode.SetLanguage(TEXT("zh"));});
+    case 18:return Step(1.2f,[&](){Shot(TEXT("tour-brief-zh"));});
+    case 19:return Step(.6f,[&](){Mode.Continue();});
+    case 20:return Step(3.f,[&](){Shot(TEXT("tour-hud-zh"));});
+    case 21:return Step(.6f,[&](){Mode.SetLanguage(TEXT("en"));});
+    default:return false;
+    }
 }
 
 bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector& Direction,bool& bHold)

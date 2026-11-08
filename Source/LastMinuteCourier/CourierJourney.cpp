@@ -78,6 +78,7 @@ float ACourierGameMode::OrderBudget() const {return Orders.IsValidIndex(CurrentO
 FString ACourierGameMode::OrderTitle() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Title,*O.TitleZh);}
 FString ACourierGameMode::OrderDestination() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Destination,*O.DestinationZh);}
 FString ACourierGameMode::OrderOutcome() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Delivered,*O.DeliveredZh);}
+FString ACourierGameMode::OrderPackage() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Package,*O.PackageZh);}
 FString ACourierGameMode::OrderLabel() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Label,*O.LabelZh);}
 FString ACourierGameMode::OrderBrief() const
 {
@@ -188,7 +189,7 @@ void ACourierGameMode::UpdateCelebration()
 FString ACourierGameMode::ContextHint() const
 {
     const FString Notice=StatusNotice();if(!Notice.IsEmpty())return Notice;
-    const FString Prompt=InteractionPrompt();if(!Prompt.IsEmpty())return Prompt;
+    if(!InteractionPrompt().IsEmpty())return FString();
     if(Phase==ECourierPhase::Practice)
     {
         if(Tutorial==2 && Cooldown>0.f)
@@ -196,7 +197,7 @@ FString ACourierGameMode::ContextHint() const
         const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
     }
     if(Phase==ECourierPhase::AwaitPickup)
-        return Copy(TEXT("E reads the brief. Enter accepts. The clock waits for you."),TEXT("E 阅读简报，Enter 确认接单。现在尚未计时。"));
+        return Copy(TEXT("Walk to the parcel desk and press E. The clock waits for you."),TEXT("走到取件台按 E。倒计时还没开始。"));
     const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);if(!Player)return FString();
     const FVector P=Player->GetActorLocation();
     for(const auto& Lift:Platforms)if(Lift && Player->GetMovementBaseObject()==Lift->Mesh.Get())
@@ -225,5 +226,7 @@ FString ACourierGameMode::ContextHint() const
     if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
     if(FVector::Dist2D(P,Destination)<1800.f)
         return Copy(TEXT("Walk onto the orange square. Press E to deliver."),TEXT("走到橙色方形标记上，按 E 交付。"));
+    // A quiet screen once the player is underway; the reminder shows briefly per order.
+    if(Phase==ECourierPhase::Delivery && OrderElapsed>7.f)return FString();
     return Copy(TEXT("Follow the orange route markers. C gently recenters your view."),TEXT("沿橙色路线标记前进。C 可平缓地将镜头回正。"));
 }

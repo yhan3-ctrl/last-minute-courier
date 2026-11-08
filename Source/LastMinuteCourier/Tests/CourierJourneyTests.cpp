@@ -96,12 +96,30 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     {
         TestEqual(TEXT("Correct active order"),Mode->CurrentOrder,Order);
         TestTrue(TEXT("Budget matches runtime order data"),Mode->Remaining==Mode->OrderBudget());
+        // After a delivery the next brief opens by itself; close it to test reopening.
+        if(Mode->Phase==ECourierPhase::Briefing)Mode->Back();
         Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();
         TestTrue(TEXT("E opens a brief, not a running clock"),Mode->Phase==ECourierPhase::Briefing);
         Mode->StartSlow();const float BeforeBrief=Mode->Remaining;Mode->Tick(20.f);
         TestFalse(TEXT("Borrower inactive while reading"),Mode->bSlowing);
         TestEqual(TEXT("Reading does not use delivery time"),Mode->Remaining,BeforeBrief);
         Mode->Back();TestTrue(TEXT("Can cancel brief"),Mode->Phase==ECourierPhase::AwaitPickup);
+        Mode->Interact();Mode->TogglePause();
+        TestTrue(TEXT("Esc closes an open brief instead of doing nothing"),Mode->Phase==ECourierPhase::AwaitPickup);
+        Mode->Interact();Mode->Interact();
+        TestTrue(TEXT("Pressing E again at the brief takes the parcel"),Mode->Phase==ECourierPhase::Delivery);
+        {
+            const FString Before=Mode->Language;Mode->ToggleLanguage();
+            TestEqual(TEXT("L cannot change language mid-delivery"),Mode->Language,Before);
+            const float Clock=Mode->Remaining;Mode->RequestRetry();
+            TestTrue(TEXT("R mid-delivery asks before restarting"),Mode->Phase==ECourierPhase::Paused && Mode->bConfirmRetry && Mode->Remaining==Clock);
+            Mode->TogglePause();
+            TestTrue(TEXT("Declining keeps the delivery running"),Mode->Phase==ECourierPhase::Delivery && !Mode->bConfirmRetry);
+            Mode->Cooldown=2.f;Mode->StartSlow();
+            TestTrue(TEXT("Q without charge gives visible feedback"),!Mode->bSlowing && Mode->QDenied>0.f);
+            Mode->Cooldown=0.f;Mode->SlowRemaining=3.f;Mode->QDenied=0.f;
+        }
+        Mode->Retry();Place(Mode->Pickup-FVector(0,0,12));
         Mode->Interact();Mode->Continue();
         TestTrue(TEXT("Accept starts the current delivery"),Mode->Phase==ECourierPhase::Delivery);
         ActiveGuides=0;
@@ -172,7 +190,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             TestEqual(TEXT("Retry keeps earlier stamp"),Mode->CompletedOrders,1);
             TestEqual(TEXT("Retry keeps earlier delivery time"),Mode->DeliveryTimes[0],SavedFirst);
             TestEqual(TEXT("Retry remains on order two"),Mode->CurrentOrder,1);
-            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==150 && Mode->Phase==ECourierPhase::AwaitPickup);
+            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==150 && Mode->Phase==ECourierPhase::Briefing);
             Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();Mode->Continue();
         }
         if(Order==2)

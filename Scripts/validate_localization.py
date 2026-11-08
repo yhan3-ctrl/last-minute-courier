@@ -33,11 +33,11 @@ for order in content["orders"]:
             required.add(value["en"])
 assert not required - strings.keys(), f"Untranslated runtime copy: {required - strings.keys()}"
 
-for name in ("AtkinsonHyperlegible-Regular.ttf", "BreeSerif-Regular.ttf", "NotoSansSC-Regular.otf",
+for name in ("LilitaOne-Regular.ttf", "Nunito-Bold.ttf", "Nunito-ExtraBold.ttf", "Nunito-Black.ttf", "NotoSansSC-Regular.otf",
              "NotoSansJP-Regular.otf", "NotoSansKR-Regular.otf"):
     with (root / "Content/Fonts" / name).open("rb") as font:
         assert font.read(4) in (b"OTTO", b"\x00\x01\x00\x00"), f"Invalid font: {name}"
-for name in ("Atkinson-OFL.txt", "BreeSerif-OFL.txt", "NotoSansSC-OFL.txt"):
+for name in ("NotoSansSC-OFL.txt", "LilitaOne-OFL.txt", "Nunito-OFL.txt"):
     assert b"SIL OPEN FONT LICENSE" in (root / "Content/Fonts" / name).read_bytes(), name
 
 print(f"PASS: {len(required)} runtime strings; {len(optional)} optional languages; fonts and licenses present.")

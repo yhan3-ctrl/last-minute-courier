@@ -12,8 +12,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'output/pdf'
 OUT.mkdir(parents=True,exist_ok=True)
-pdfmetrics.registerFont(TTFont('CourierBody',str(ROOT/'Content/Fonts/AtkinsonHyperlegible-Regular.ttf')))
-pdfmetrics.registerFont(TTFont('CourierTitle',str(ROOT/'Content/Fonts/BreeSerif-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('CourierBody',str(ROOT/'SourceAssets/Fonts/Nunito-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('CourierTitle',str(ROOT/'Content/Fonts/LilitaOne-Regular.ttf')))
 INK=colors.HexColor('#263F43');TEAL=colors.HexColor('#39746F');ORANGE=colors.HexColor('#BE6343')
 styles={
  'p':ParagraphStyle('Body',fontName='CourierBody',fontSize=10.2,leading=14.2,textColor=INK,spaceAfter=8),

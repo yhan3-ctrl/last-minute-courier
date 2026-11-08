@@ -38,7 +38,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     };
     const auto Act=[Mode](){Mode->Interact();if(Mode->Phase==ECourierPhase::Briefing)Mode->Continue();};
     TestEqual(TEXT("Fresh run defaults to English"),Mode->Language,FString(TEXT("en")));
-    TestEqual(TEXT("Four focused opening cards"),Mode->CardTitles.Num(),4);
+    TestEqual(TEXT("Three focused opening cards"),Mode->CardTitles.Num(),3);
     Mode->Back();TestEqual(TEXT("Back on first card stays at zero"),Mode->Card,0);
     Mode->StartSlow();Act();Mode->Tick(2.f);
     TestFalse(TEXT("Ability cannot start during opening"),Mode->bSlowing);
@@ -140,7 +140,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Timeout reaches failure state"),Mode->Phase==ECourierPhase::Failed);
     TestFalse(TEXT("Failure blocks player movement"),Mode->CanMove());
     const int32 RetriesBefore=Mode->Retries;Mode->Retry();
-    TestTrue(TEXT("Retry restores pickup without starting timer"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Remaining==60.f);
+    TestTrue(TEXT("Retry reopens the brief at the desk without starting timer"),Mode->Phase==ECourierPhase::Briefing && Mode->Remaining==60.f);
     TestEqual(TEXT("Retry increments count once"),Mode->Retries,RetriesBefore+1);
     TestFalse(TEXT("Retry hides package"),Player->Bag->IsVisible());
     TestTrue(TEXT("Retry resets ability and all cooldown"),!Mode->bSlowing && Mode->Cooldown==0 && Mode->SlowRemaining==3.f);

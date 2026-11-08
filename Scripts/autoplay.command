@@ -9,6 +9,6 @@ export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Develope
 exec env "UE-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "$COURIER_ENGINE_ROOT/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
     "$COURIER_PROJECT_ROOT/LastMinuteCourier.uproject" /Game/Maps/L_Courier -game \
-    -CourierAutoplay -CourierTelemetry -windowed -ResX=1280 -ResY=800 -nosplash -NoLiveCoding -nosound \
+    -CourierAutoplay -CourierTelemetry ${COURIER_AUTOPLAY_EXTRA:-} -windowed -ResX=1280 -ResY=800 -nosplash -NoLiveCoding -nosound \
     "-LocalDataCachePath=$COURIER_PROJECT_ROOT/Runtime.nosync/DerivedDataCache" \
     "-abslog=$COURIER_PROJECT_ROOT/Saved/Logs/AutoPlay.log"

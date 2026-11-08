@@ -12,7 +12,7 @@ You control one courier in a connected 3D campus, using an avatar-based interact
 
 ## Audience
 
-For players who understand a keyboard and mouse but may be new to 3D action games. Four readable opening cards and an untimed practice yard precede the first deadline. Wide paths, nearby recovery points and longer alternative paths support cautious players; lifts, stepping stones and a shuttle offer more demanding routes. English is the default, with Chinese, Japanese, Korean, Spanish, French and German available from a language selector. Translation coverage is checked; native-speaker review is pending.
+For players who understand a keyboard and mouse but may be new to 3D action games. Three short opening cards (story, ability, key-cap controls) and an untimed practice yard precede the first deadline. Wide paths, nearby recovery points and longer alternative paths support cautious players; lifts, stepping stones and a shuttle offer more demanding routes. English is the default, with Chinese, Japanese, Korean, Spanish, French and German available from a language selector. Translation coverage is checked; native-speaker review is pending.
 
 ## Distinctive experience
 

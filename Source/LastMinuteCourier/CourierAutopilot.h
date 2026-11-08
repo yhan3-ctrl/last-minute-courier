@@ -45,6 +45,10 @@ private:
     TArray<TWeakObjectPtr<ACourierLift>> LiftsDone;
     ELiftStep LiftStep=ELiftStep::None;
     bool bReleasedSlowAfterBoard=false;
+    bool bTour=false;
+    int32 TourStep=0;
+    float TourClock=0.f;
+    bool Tour(ACourierGameMode& Mode,float DeltaSeconds);
     void Log(const FString& Event) const;
     void Shot(const FString& Name);
     void Drive(ACourierGameMode& Mode,ACourierCharacter& Player,float DeltaSeconds);

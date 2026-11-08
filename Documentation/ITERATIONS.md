@@ -25,7 +25,7 @@ The user restricted file operations to the game development folder, then explici
 
 ## v0.2 — First playable visual preview — 2026-10-29
 
-Implementation commit: `7eb78c6` (campus preview, seven-language UI and camera comfort controls).
+Implementation commit: `e1dd7f1` (campus preview, seven-language UI and camera comfort controls).
 
 This is agent-operated technical validation and user-requested refinement, not a first-time human playtest or a claim of assignment-compliant playtest iteration.
 
@@ -53,7 +53,7 @@ Human playtests and feedback-driven revisions; camera comfort; frame-time stabil
 
 ## v0.3 — First-order boundary audit — 2026-10-29
 
-Source baseline: `f97bdbf`. Implementation is the commit titled `Fix courier tutorial and interaction boundaries; audit first-order flow`.
+Source baseline: `040b95d`. Implementation is the commit titled `Fix courier tutorial and interaction boundaries; audit first-order flow`.
 
 This remains developer/agent technical validation, not human playtest feedback.
 
@@ -96,16 +96,16 @@ Actual input found a jump prompt/acceptance mismatch, a backward lesson target, 
 
 Native verification is partial: fresh opening/tutorial input, controlled Coffee start then walking/E delivery/Enter next brief, and controlled Cinema start then aisle walk/E ending. These do not establish a complete playthrough or 5–10 minute timing. Human playtests, comfort/listening assessment, native-speaker review and platform release packages remain outstanding.
 
-The original .git was preserved. Bulk restoration was rejected and did not execute. An independent checkout inside Project3/Runtime.nosync/CampusV05Work retains history, with 72e02a2 checkpointing prior staged v0.4 and this iteration saved as a normal local commit. Authored changes are mirrored into outer Project3; nosync is a local working area, not a cloud backup.
+The original .git was preserved. Bulk restoration was rejected and did not execute. An independent checkout inside Project3/Runtime.nosync/CampusV05Work retains history, with 2488abe checkpointing prior staged v0.4 and this iteration saved as a normal local commit. Authored changes are mirrored into outer Project3; nosync is a local working area, not a cloud backup.
 
 
 ## v0.5.1 - November 1, 2026: native journey, rubric, packaged startup
 
-- Ordinary input exposed an awning crossing the coffee camera, continuous decorative curbs at intersections and side-ramp recovery/guidance losing progress. Shortened the awning, omitted interior curb/rail seams at supported merges, saved side landings and rewound guidance with recovery. Capsule and checkpoint regressions passed. Gameplay checkpoint: **b2578df**.
+- Ordinary input exposed an awning crossing the coffee camera, continuous decorative curbs at intersections and side-ramp recovery/guidance losing progress. Shortened the awning, omitted interior curb/rail seams at supported merges, saved side landings and rewound guidance with recovery. Capsule and checkpoint regressions passed. Gameplay checkpoint: **48d651a**.
 - A fresh ordinary-input run completed opening, practice, all three orders and the ending. It used pause/camera lock and read-only telemetry; no fixture, position, phase or clock mutation. Evidence: Saved/QA/FullInputV05/Attempt3.log and Previews/CinemaV051-FullInput.png. Successful-order clock total 4:07; not a first-time human wall-clock duration, and not proof of every ability transfer.
 - German result review exposed awkward stamp wrapping; spacing/type and separate time/retry lines were revised. Pause now clears held-key/pending movement state; native immediate pause/resume stayed still. Finale spring-arm collision is disabled only during the concluding pullback so chairs cannot collapse the view.
 - Re-read Project 3.pdf all pages and lecture decks 3/4. Rewrote High Concept as current implementation, made shell/gameplay mode transitions and complete operational rules explicit, and added graduate seven-category mapping and complete answers to Reward, Punishment and Simplicity/Complexity questions. Two English PDF exports were rendered and all ten pages visually checked.
-- The first Mac standalone build compiled/signed but crashed at startup. The user also reported repeated failure and supplied a crash screenshot. Crash stack points to SCourierOverlay::Rebuild during HUD BeginPlay reading empty card arrays. Guarding data readiness and retrying before caching UI state fixed the independent application's startup. **fd018a2** records the fix and finale camera change. Native independent launch then showed the English opening and Chinese/Japanese/Korean fonts. Full packaged input playthrough and other hardware remain pending; signing/build success alone was explicitly insufficient.
+- The first Mac standalone build compiled/signed but crashed at startup. The user also reported repeated failure and supplied a crash screenshot. Crash stack points to SCourierOverlay::Rebuild during HUD BeginPlay reading empty card arrays. Guarding data readiness and retrying before caching UI state fixed the independent application's startup. **d754ed5** records the fix and finale camera change. Native independent launch then showed the English opening and Chinese/Japanese/Korean fonts. Full packaged input playthrough and other hardware remain pending; signing/build success alone was explicitly insufficient.
 - Build evidence: final engine regression RubricV051Final has 3 successful suites, 0 failed, 0 errors/warnings (before the final UI-only readiness guard). Editor and Game modules compiled after that guard, Xcode app assembly succeeded, and strict/deep codesign passed. Several earlier packaging attempts failed from iCloud metadata, path resolution and temporary capacity; those are not counted as successful release tests.
 - Disk became critically low. User chose to keep Unreal and pause large builds. Removed only generated project duplicates/caches, compacted the project sparse image, and uninstalled explicitly authorized unused Godot/Unity Hub and Unity Hub templates. Kept all project source/content/documents and current UE/Xcode. Launcher opens the existing standalone app without building; wrappers refuse Editor builds below 8 GiB and packaging below 12 GiB free. These thresholds are project safeguards, not measured engine minimum requirements.
 - Human first-time learning/fun/comfort/listening evidence, first-time 5-10 minutes, Windows/Linux packages, Mac full packaged journey and GitHub/Box/Blackboard delivery remain open. Local commits and a history bundle are not GitHub pushes.

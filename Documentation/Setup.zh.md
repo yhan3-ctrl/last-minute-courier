@@ -75,7 +75,7 @@ SDK/Metal 检查因尚未同意 Xcode 许可而被阻止。已打开 Xcode，显
 
 ## 第一单视觉预览与七语言菜单（2026-10-29）
 
-实现提交 `7eb78c6`。Editor 模块编译成功；`Scripts/play_prototype.command` 可以启动第一单预览。`Scripts/build_visual_materials.py` 已生成项目材质，运行成功，0 errors / 0 warnings。
+实现提交 `e1dd7f1`。Editor 模块编译成功；`Scripts/play_prototype.command` 可以启动第一单预览。`Scripts/build_visual_materials.py` 已生成项目材质，运行成功，0 errors / 0 warnings。
 
 代理已从故事卡、练习、取件运行至第一单成功交付，并验证 R 回到取件点。途中碰撞触发检查点恢复后仍可继续。语言下拉菜单提供英文（默认）、简体中文、日语、韩语、西班牙语、法语和德语。已实际查看日/韩/西/法/德的开场，以及中文与德语的暂停帮助页；用键盘完成了下拉列表选日语的测试。
 

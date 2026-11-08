@@ -559,7 +559,7 @@
   "packaged_startup": {
     "user_feedback": "User screenshot and statement that app repeatedly cannot open.",
     "cause": "HUD constructed before opening arrays populated, verified in crash stack.",
-    "fix_commit": "fd018a2",
+    "fix_commit": "d754ed5",
     "native_after_fix": [
       "fresh_independent_process_alive",
       "default_English_opening",

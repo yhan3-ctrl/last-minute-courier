@@ -113,8 +113,8 @@
  "source_control": {
   "original_git": "preserved; bulk restoration was rejected and not executed",
   "active_checkout": "Project3/Runtime.nosync/CampusV05Work",
-  "v04_checkpoint": "72e02a2",
-  "v05": "b2578df gameplay; fd018a2 packaged startup/finale; later documentation/launch checkpoint in git log",
+  "v04_checkpoint": "2488abe",
+  "v05": "48d651a gameplay; d754ed5 packaged startup/finale; later documentation/launch checkpoint in git log",
   "backup_note": "nosync working copy is not an iCloud backup; authored changes mirrored to outer Project3",
   "history_backup": "Outer Project3/VersionHistory/LastMinuteCourier-v0.5.3.bundle; verified after this iteration commit."
  },
@@ -131,7 +131,7 @@
  "v05_native_limits": "Full agent input run includes pauses, camera lock and read-only trace; successful-order time 4:07 is not first-time human wall time. Packaged app startup and CJK switching verified after startup crash fix; packaged full run, human comfort/listening/native-language review remain incomplete.",
  "packaged_startup_fix": {
   "problem": "User reported app cannot open; crash stack confirmed HUD Rebuild read empty card arrays before GameMode loaded content.",
-  "commit": "fd018a2",
+  "commit": "d754ed5",
   "verification": "Fresh independent executable remains running, English opening and Chinese/Japanese/Korean opening render verified through native UI. No Editor or uproject launch arguments.",
   "assembly_log": "Saved/Logs/MacStartupFixAssembly.log",
   "signature": "codesign --verify --deep --strict passed",

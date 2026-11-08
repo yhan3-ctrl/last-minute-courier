@@ -58,7 +58,7 @@ def footer(c,doc):
  c.drawString(56,29,'LAST MINUTE COURIER  |  Design v0.5.4  |  November 7, 2026')
  c.drawRightString(556,29,str(doc.page))
 def export(name,paths):
- doc=SimpleDocTemplate(str(OUT/name),pagesize=(612,792),leftMargin=56,rightMargin=56,topMargin=48,bottomMargin=59,title=name.replace('.pdf',''),author='Last Minute Courier Project')
+ doc=SimpleDocTemplate(str(OUT/name),pagesize=(612,792),leftMargin=56,rightMargin=56,topMargin=48,bottomMargin=59,title=name.replace('.pdf',''),author='Yu Han')
  flow=[]
  for i,path in enumerate(paths):
   if i:flow.append(PageBreak())

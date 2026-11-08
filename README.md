@@ -47,7 +47,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.5.1` | Nov 1 | A complete ordinary-input run exposed an awning blocking the camera and side ramps losing progress; the first packaged build crashed at startup (UI read data before it loaded). All fixed |
 | `v0.5.2` | Nov 4 | A short Q tap "passed" the Q lesson without learning it: lesson and lift guidance rewritten |
 | `v0.5.3` | Nov 5 | Playtester: waiting for a gap and crossing felt natural but caused respawns, and the route was hard to see. Forced-Q reset removed; continuous route arrows added |
-| `v0.5.4` | Nov 7–8 | Full real-speed playthrough timed out at the shuttle (a rail blocked boarding) and found a gap at the last lift: both fixed. Time limits tightened after the run left most of each clock unused. Interface redesigned and controls changed to match first instinct after the playtester called the UI "AI-looking" |
+| `v0.5.4` | Nov 7–8 | Full real-speed playthrough timed out at the shuttle (a rail blocked boarding) and found a gap at the last lift: both fixed. Time limits tightened after the run left most of each clock unused. Interface redesigned and controls changed to match first instinct after the playtester found the UI generic and template-like |
 
 ## Build and test (developers)
 

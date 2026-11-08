@@ -128,7 +128,7 @@
   "arrived_prompt_in_reachable_delivery_area",
   "ending_wide_view_ticket_and_movie_reveal_from_controlled_start"
  ],
- "v05_native_limits": "Full agent input run includes pauses, camera lock and read-only trace; successful-order time 4:07 is not first-time human wall time. Packaged app startup and CJK switching verified after startup crash fix; packaged full run, human comfort/listening/native-language review remain incomplete.",
+ "v05_native_limits": "Full scripted-input run includes pauses, camera lock and read-only trace; successful-order time 4:07 is not first-time human wall time. Packaged app startup and CJK switching verified after startup crash fix; packaged full run, human comfort/listening/native-language review remain incomplete.",
  "packaged_startup_fix": {
   "problem": "User reported app cannot open; crash stack confirmed HUD Rebuild read empty card arrays before GameMode loaded content.",
   "commit": "d754ed5",

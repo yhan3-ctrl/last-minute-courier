@@ -1,5 +1,5 @@
 {
-  "kind": "agent_engine_and_native_checks_plus_partial_user_practice_feedback_not_completed_human_playthrough",
+  "kind": "automated_engine_and_native_checks_plus_partial_user_practice_feedback_not_completed_human_playthrough",
   "engine": "5.8.4",
   "runs": [
     {
@@ -520,7 +520,7 @@
     "CinemaV051-FullInput.png": "Actual ending from complete normal keyboard input run; time is successful-order clock sum, not first-time wall time. Before final stamp typography/finale collision polish."
   },
   "v05": {
-    "scope": "Full agent normal-input Editor run plus separate packaged startup checks; no completed first-time human playtest.",
+    "scope": "Full scripted normal-input Editor run plus separate packaged startup checks; no completed first-time human playtest.",
     "native_findings_fixed": [
       "Jump was prompted at x550 but accepted only beyond x600; callback now accepts x500–1100.",
       "Practice targets were behind lesson exits; targets moved ahead.",

@@ -22,7 +22,7 @@ These categories describe different aspects of the same interaction. For example
 
 **1. What rewards exist, and what other forms are possible?** Each successful delivery gives a visible stamp, an explicit delivery result, a short sound and a persistent world change. Coffee adds cups/steam and strings; the lens prepares the projector, audience and bells; the reel reveals the screen and combines the stamps into a cinema ticket. These are implemented. A numerical score or cosmetic shop is not implemented and is not needed for the current cooperative story.
 
-**2. Are rewards exciting or boring, and why?** The design hypothesis is that an inhabited scene and a seat at the event make the task feel consequential. An agent can verify that objects, result text and music-layer state change; it cannot establish excitement. Ask first-time players what changed after each delivery and which moment they cared about, recording contrary responses as well.
+**2. Are rewards exciting or boring, and why?** The design hypothesis is that an inhabited scene and a seat at the event make the task feel consequential. Automated checks can verify that objects, result text and music-layer state change; it cannot establish excitement. Ask first-time players what changed after each delivery and which moment they cared about, recording contrary responses as well.
 
 **3. Do players understand the reward?** A completion count, named parcel stamp, written outcome and changed destination communicate the same event through several channels. The final card explains that three stamps form one admission ticket. Comprehension remains a playtest criterion: the tester should explain why the ticket appears without coaching.
 

@@ -12,7 +12,7 @@
  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
  "comfort_validation": "requires_human_playtest",
  "platform_builds": {
-  "mac": "v054_arm64_Development_DMG sha256 e8d37c5b1afb89b2fcfad38e188c1e608b89d583a3d4477bc7c365fdc11f19af; mounted strict/deep signature valid; DMG app passed three suites; packaged autoplay complete",
+  "mac": "v054_arm64_Development_DMG sha256 bee5f2b80a10e30ab85049297c8ca8053b9d2cc7f5bf16f849fdbdd0d104e45f; mounted strict/deep signature valid; DMG app passed three suites; packaged autoplay complete",
   "windows": "not_built",
   "linux": "not_built"
  },

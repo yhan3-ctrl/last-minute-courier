@@ -1,5 +1,6 @@
 #include "CourierPrototype.h"
 #include "CourierCampusScene.h"
+#include "CourierAutopilot.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Camera/CameraComponent.h"
@@ -147,6 +148,7 @@ void ACourierGameMode::BeginPlay()
             Controller->SetControlRotation(FRotator(-22, 0, 0));
     }
     RefreshInput();
+    if(FParse::Param(FCommandLine::Get(),TEXT("CourierAutoplay")))Autopilot=MakeShared<FCourierAutopilot>();
 }
 
 bool ACourierGameMode::IsPlaying() const
@@ -222,6 +224,7 @@ void ACourierGameMode::LoadTranslations()
 void ACourierGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if(Autopilot)Autopilot->Tick(*this,DeltaSeconds);
     UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
     if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))

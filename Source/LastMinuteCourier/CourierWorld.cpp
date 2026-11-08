@@ -32,6 +32,7 @@ namespace
         Finish(M,Hex);return A;
     }
     struct FRailSpan {FVector A,B;float Width;bool Guard;};
+    constexpr float LiftHalfX=325.f,LiftHalfY=400.f; // ACourierLift mesh scale 6.5 x 8 metres.
     void Deck(UWorld* W,FVector At,FVector2D Size,const TCHAR* Hex=TEXT("C5BBA4"))
     {auto* Floor=Block(W,At-FVector(0,0,25),FVector(Size.X,Size.Y,50),Hex,true);Floor->Tags.Add(TEXT("CourierWalkable"));}
     void Road(UWorld* W,TArray<FRailSpan>& Spans,FVector A,FVector B,float Width=760,bool Rails=false)
@@ -54,7 +55,7 @@ namespace
             if(!RampBefore && !RampAfter)Deck(W,Nodes[I],FVector2D(Width,Width));
         }
     }
-    void AddGuardrails(UWorld* W,const TArray<FRailSpan>& Spans)
+    void AddGuardrails(UWorld* W,const TArray<FRailSpan>& Spans,const TArray<FBox2D>& KeepClear)
     {
         // Evaluate the finished walkways before adding rails. A continuous rail on
         // each segment would put a gate across corners and side-path junctions.
@@ -76,6 +77,11 @@ namespace
             {
                 const FVector At=FMath::Lerp(Span.A,Span.B,(I+.5f)/Count)+Side*Sign*(Span.Width*.5f-15.f);
                 if(Supported(At+Side*85.f) && Supported(At-Side*85.f))continue;
+                // Never fence a boarding edge or the stepping-stone line: a side
+                // path's rail must not block the main route's intended crossing.
+                bool bClear=false;
+                for(const auto& Box:KeepClear)if(Box.IsInside(FVector2D(At.X,At.Y))){bClear=true;break;}
+                if(bClear)continue;
                 Curbs.Add(FTransform(D.Rotation().Quaternion(),At+FVector(0,0,12),FVector(D.Size()/Count,22,24)/100.f));
                 if(Span.Guard)Pieces.Add(FTransform(D.Rotation().Quaternion(),At+FVector(0,0,55),FVector(D.Size()/Count,20,30)/100.f));
             }
@@ -198,6 +204,9 @@ void ACourierGameMode::BuildDeliveryDistricts()
     Way(W,RailSpans,{FVector(38900,0,0),FVector(39600,-1100,0),FVector(39800,0,0)},900);
     Deck(W,FVector(39900,0,0),FVector2D(650,1050));
     Lift(FVector(40300,0,-20),FVector(0,0,420),2,10);
+    // Landing lip: the raised lift's far edge meets the terrace, so stepping
+    // forward at the top works exactly as the on-screen hint says.
+    Deck(W,FVector(40740,0,420),FVector2D(250,1100));
     Way(W,RailSpans,{FVector(41400,0,420),FVector(42000,0,420),FVector(43200,0,420),FVector(46000,0,420)},1100,true);
     Way(W,RailSpans,{FVector(39700,0,0),FVector(39900,2200,0),FVector(42200,2200,420),FVector(43000,2200,420),FVector(43000,0,420)},750,true);
     Block(W,FVector(40400,0,-70),FVector(2000,5000,30),TEXT("709EA4"));
@@ -276,7 +285,15 @@ void ACourierGameMode::BuildDeliveryDistricts()
     for(const auto& Actor:ProjectionActors)if(Actor)Actor->Tags.Add(TEXT("CourierProjection"));
     for(const auto& Actor:FinaleActors)if(Actor)Actor->Tags.Add(TEXT("CourierFinale"));
 
-    AddGuardrails(W,RailSpans);
+    TArray<FBox2D> KeepClear;
+    for(const auto& Platform:Platforms)if(Platform)
+    {
+        const FVector A=Platform->Origin,B=Platform->Origin+Platform->Travel;
+        KeepClear.Add(FBox2D(FVector2D(FMath::Min(A.X,B.X)-LiftHalfX-120.f,FMath::Min(A.Y,B.Y)-LiftHalfY-120.f),
+            FVector2D(FMath::Max(A.X,B.X)+LiftHalfX+120.f,FMath::Max(A.Y,B.Y)+LiftHalfY+120.f)));
+    }
+    KeepClear.Add(FBox2D(FVector2D(18300,-450),FVector2D(21100,450)));
+    AddGuardrails(W,RailSpans,KeepClear);
     for(const auto& Span:RailSpans)
     {
         const float X=(Span.A.X+Span.B.X)*.5f;

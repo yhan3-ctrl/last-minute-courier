@@ -57,6 +57,17 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     WalkClear(FVector(43000,2200,510),FVector(43000,0,510),TEXT("Final terrace ramp joins upper walk"));
     WalkClear(FVector(7600,0,90),FVector(8000,0,90),TEXT("Coffee counter approach is clear"));
     WalkClear(FVector(45300,-950,510),FVector(46000,-950,510),TEXT("Cinema side console approach is clear"));
+    // Nov 7 autoplay: a side-path rail fenced the shuttle's boarding edge.
+    WalkClear(FVector(33950,-60,95),FVector(34450,-60,95),TEXT("Shuttle boarding edge has no side-path rail"));
+    WalkClear(FVector(33950,60,95),FVector(34450,60,95),TEXT("Shuttle boarding edge is open on both halves"));
+    WalkClear(FVector(18450,-60,95),FVector(18650,-60,95),TEXT("Stepping-stone takeoff has no side-path rail"));
+    {
+        // Nov 7 autoplay: the raised final lift ended 2.25 m short of the terrace.
+        FHitResult Floor;
+        const bool bLanding=World->LineTraceSingleByChannel(Floor,FVector(40740,0,620),FVector(40740,0,250),ECC_Visibility,WalkParams);
+        TestTrue(TEXT("Final lift landing has a walkable lip"),bLanding && Floor.GetActor() &&
+            Floor.GetActor()->ActorHasTag(TEXT("CourierWalkable")) && FMath::Abs(Floor.ImpactPoint.Z-420.f)<5.f);
+    }
     PC->SetControlRotation(FRotator(-22,179,0));Player->RecenterView(-179.f);Player->Tick(.2f);
     TestTrue(TEXT("Recenter takes the short arc across 180 degrees"),FMath::Abs(FMath::FindDeltaAngleDegrees(179.f,PC->GetControlRotation().Yaw))<2.1f);
     Player->Tick(.5f);

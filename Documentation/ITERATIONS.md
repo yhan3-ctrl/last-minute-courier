@@ -139,3 +139,14 @@ Nov05-LogicalCrossing passes all three suites with zero test errors/warnings. Ne
 Versioned rules, concept, graduate Punishment/Simplicity analyses and partial-feedback record were updated. Both PDF exports were rendered and all ten pages visually inspected. Editor and Game modules compiled; unchanged cooked assets were reused. Candidate binary UUID D4071D65-5B65-3B14-B0B3-8743EA9BD13F, local signature strict/deep verification passed. Windows/Linux, a full normal-input standalone run, complete human pacing/comfort/listening and online submissions remain open.
 
 Distribution: compressed v0.5.3 DMG checksum and strict/deep app signature after read-only mounting pass. Three read-only-image suites pass, exit 0. The final Read Me clarifies that no Q does not cause reset while the low step still teaches jumping. App program/runtime data hashes match the tested image. Current launcher path now contains v0.5.3; no active user window was closed or relaunched during publishing.
+
+
+## v0.5.4 - November 7, 2026: full ordinary-input autoplay finds two blocked crossings
+
+Earlier tools could not hold movement and Q at the same time, so no complete ordinary-input run existed. A QA-only autopilot (`-CourierAutoplay`, `Scripts/autoplay.command`) now plays at real speed with only player verbs: move toward the game's own next marker, look, jump, hold/release Q, E and Enter. It never teleports or edits state; it logs events and saves in-engine screenshots to `Saved/AutoPlay/<time>/`. Normal launches never construct it.
+
+Run 1 (Nov 7, 23:12) completed coffee and lens, then timed out twice on the final reel: at the horizontal shuttle the courier walked into a teal rail. The rail belonged to the southern market side path, whose junction sits on the shuttle's boarding edge; the rail generator saw the empty pond beside it and fenced it. Only a player who happened to jump would pass. The same rule also fenced half of the stepping-stone takeoff. Geometry review found a second fault on the same route: the raised final lift's far edge stopped 2.25 m short of the terrace although the hint says "Walk forward to step off".
+
+Fix: rails are never generated inside any moving platform's full travel footprint (plus margin) or along the stepping-stone line; a 2.5 m walkable lip joins the final lift's top position to the terrace. Regression adds three capsule sweeps (both shuttle halves, stepping-stone takeoff) and a landing-floor trace. All three suites pass.
+
+Run 2 completed all three orders with 0 recoveries, 0 timeouts, 0 stuck events, 7 Q holds and 7 jumps: wall time 3:00 from first card to final stamp, clock used 12.3 / 62.8 / 63.0 s of 140 / 170 / 200 s. The autopilot reads each card for 3 s and each brief for 5 s and already knows when to cross, so this is a lower bound for an expert, not a first-time player's time; human timing remains open.

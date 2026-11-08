@@ -104,6 +104,8 @@ public:
     float OrderBudget() const;
     float RecoverySeconds = 0.f;
 private:
+    friend class FCourierAutopilot;
+    TSharedPtr<class FCourierAutopilot> Autopilot;
     UPROPERTY() TArray<TObjectPtr<class ACourierCart>> Carts;
     UPROPERTY() TObjectPtr<AActor> CoffeeLamp;
     UPROPERTY() TArray<TObjectPtr<class ACourierLift>> Platforms;

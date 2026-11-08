@@ -172,7 +172,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             TestEqual(TEXT("Retry keeps earlier stamp"),Mode->CompletedOrders,1);
             TestEqual(TEXT("Retry keeps earlier delivery time"),Mode->DeliveryTimes[0],SavedFirst);
             TestEqual(TEXT("Retry remains on order two"),Mode->CurrentOrder,1);
-            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==170 && Mode->Phase==ECourierPhase::AwaitPickup);
+            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==150 && Mode->Phase==ECourierPhase::AwaitPickup);
             Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();Mode->Continue();
         }
         if(Order==2)

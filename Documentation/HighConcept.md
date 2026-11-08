@@ -1,6 +1,6 @@
 # Last Minute Courier
 
-High Concept | v0.5.3 | November 5, 2026
+High Concept | v0.5.4 | November 7, 2026
 
 ## High concept statement
 
@@ -28,6 +28,6 @@ A small, stylized campus connects a parcel desk, coffee plaza, garden, projectio
 
 One local single-player campaign; no multiplayer, competitive mode or separate time-trial mode. Timed delivery is the primary gameplay mode; untimed practice and collection are preparation modes. Story, briefing, pause/help, results, timeout and completion are shell screens. Target releases are Windows x86-family, macOS and Linux x86-family; exact Windows/Linux bitness must be confirmed if the instructor means 32-bit specifically. Mac is the current development and validation platform.
 
-One complete level is implemented. The target first completed run is 5-10 minutes without filler. An agent-operated full keyboard run reached the ending with 4:07 of successful-order delivery time, excluding reading, practice and pauses; this does not establish first-time player duration. Genuine first-time timing, learning transfer, enjoyment and comfort remain acceptance checks.
+One complete level is implemented. The target first completed run is 5-10 minutes without filler. A real-speed autoplay using only player controls reached the ending in 3:00 from the first story card (Nov 7, v0.5.4). It already knows every route, so this is an expert lower bound and does not establish first-time player duration. Genuine first-time timing, learning transfer, enjoyment and comfort remain acceptance checks.
 
 Course structure checked against lecture deck 3, slides 19-23, 35, 47, 55 and 80-82. Monetary and licensed-IP pitches are omitted as permitted for this class. No minimum hardware specification is claimed without independent build tests.

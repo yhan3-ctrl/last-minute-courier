@@ -40,7 +40,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
                     Pair(TEXT("brief"),Order.Brief,Order.BriefZh);
                     Pair(TEXT("label"),Order.Label,Order.LabelZh);
                     Pair(TEXT("delivered"),Order.Delivered,Order.DeliveredZh);
-                    double Seconds=140+I*30;
+                    const double Defaults[]={60,150,160};double Seconds=Defaults[I];
                     Row->TryGetNumberField(TEXT("seconds"),Seconds);
                     Order.Seconds=FMath::Clamp(float(Seconds),60.f,600.f);
                 }
@@ -51,7 +51,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
         for(int32 I=0;I<3;++I)if(Orders[I].Title.IsEmpty())
         {
             Orders[I].Title=Titles[I];Orders[I].TitleZh=Titles[I];
-            Orders[I].Destination=Titles[I];Orders[I].Seconds=140+I*30;
+            Orders[I].Destination=Titles[I];Orders[I].Seconds=I==0?60.f:(I==1?150.f:160.f);
             Orders[I].Brief=TEXT("Follow the orange route markers. E collects and delivers; Q slows blue-tagged devices.");
             UE_LOG(LogTemp,Warning,TEXT("Courier order data missing: release data check required."));
         }
@@ -64,17 +64,17 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
     if(CurrentOrder==0)
         Route={FVector(4500,0,100),FVector(6500,0,100),Destination};
     else if(CurrentOrder==1)
-        Route={FVector(8000,1100,100),FVector(9200,1100,100),FVector(11700,0,100),FVector(14000,0,420),
+        Route={FVector(8000,1100,100),FVector(9200,1100,100),FVector(10500,1100,100),FVector(11700,0,100),FVector(14000,0,420),
                FVector(16400,0,420),FVector(18100,-1400,100),FVector(18300,0,100),
                FVector(21100,0,100),FVector(22500,0,100),FVector(24800,0,500),Destination};
     else
-        Route={FVector(26000,1100,500),FVector(27400,1100,500),FVector(30000,0,100),FVector(32700,0,100),
+        Route={FVector(26000,1100,500),FVector(27400,1100,500),FVector(28900,1100,100),FVector(30000,0,100),FVector(32700,0,100),
                FVector(33900,0,100),FVector(36300,0,100),FVector(38900,0,100),
                FVector(39600,-1100,100),FVector(39800,0,100),FVector(42000,0,520),FVector(46100,0,520),Destination};
     if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->SetParcelStyle(CurrentOrder);
 }
 
-float ACourierGameMode::OrderBudget() const {return Orders.IsValidIndex(CurrentOrder)?Orders[CurrentOrder].Seconds:140.f;}
+float ACourierGameMode::OrderBudget() const {return Orders.IsValidIndex(CurrentOrder)?Orders[CurrentOrder].Seconds:60.f;}
 FString ACourierGameMode::OrderTitle() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Title,*O.TitleZh);}
 FString ACourierGameMode::OrderDestination() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Destination,*O.DestinationZh);}
 FString ACourierGameMode::OrderOutcome() const {const auto& O=Orders[CurrentOrder];return Copy(*O.Delivered,*O.DeliveredZh);}
@@ -206,7 +206,8 @@ FString ACourierGameMode::ContextHint() const
             return Copy(TEXT("At the landing. Walk forward to step off."),TEXT("到站了。向前走，离开平台。"));
         return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
     }
-    if(CurrentOrder==0 && P.X>4260 && P.X<4840 && FMath::Abs(P.Y)<340)
+    if((CurrentOrder==0 && P.X>4260 && P.X<4840 && FMath::Abs(P.Y)<340) ||
+       (CurrentOrder==2 && P.X>42700 && P.X<44700 && FMath::Abs(P.Y)<600 && P.Z>400))
         return Copy(TEXT("Space jumps over the planters. You can also walk around them."),TEXT("按空格跳过花箱，也可以从旁边绕过。"));
     const ACourierCart* NextCart=nullptr;
     for(const auto& Cart:Carts)if(Cart && !Cart->bTraining && Cart->OrderIndex==CurrentOrder &&
@@ -219,7 +220,7 @@ FString ACourierGameMode::ContextHint() const
     {
         if(Lift->Travel.Z>0.f && P.Z<Lift->Origin.Z+160.f && Lift->GetActorLocation().Z>P.Z+20.f)
             return Copy(TEXT("The lift is above you. Release Q and wait here for it to come down."),TEXT("升降台还在上方。松开 Q，在这里等它降下来。"));
-        return Copy(TEXT("When the blue platform reaches your side, hold Q and press Space to jump aboard."),TEXT("等蓝色平台来到你这一侧，按住 Q，再按空格跳上去。"));
+        return Copy(TEXT("When the blue platform reaches your side, hold Q and walk aboard. Space also works."),TEXT("等蓝色平台来到你这一侧，按住 Q 走上去；也可以按空格跳上去。"));
     }
     if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
     if(FVector::Dist2D(P,Destination)<1800.f)

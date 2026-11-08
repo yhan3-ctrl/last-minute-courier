@@ -1,6 +1,6 @@
 # Graduate Mechanics and Balance Analysis
 
-Last Minute Courier | v0.5.3 | November 5, 2026
+Last Minute Courier | v0.5.4 | November 7, 2026
 
 Required for this student's graduate submission. Based on lecture deck 4, The Art of Game Design: mechanics 1-7 and the balance lenses on slides 104, 112 and 118. The following answers refer to implemented rules. November 5 practice feedback is recorded explicitly; other player-feeling claims remain hypotheses.
 
@@ -9,7 +9,7 @@ Required for this student's graduate submission. Based on lecture deck 4, The Ar
 | Course mechanic | Implemented model and example | What the player decides |
 |---|---|---|
 | 1. Space | A continuous, bounded 3D campus with ground, raised landings, ramps, gaps and connected routes. Desks and delivery zones are meaningful subspaces. Height matters: E from beneath a desk is invalid. | Choose a connected route, align with a landing, and reach the correct interaction area. |
-| 2. Time | Continuous movement; separate 140/170/200-second order clocks; Q slows active blue-tagged machinery to 0.25 speed for up to three real seconds, followed by four seconds of recharge. Reading is untimed; pause suspends simulation. | Spend the window after observing a gap; release Q after boarding; balance longer safe travel against a deadline. |
+| 2. Time | Continuous movement; separate 60/150/160-second order clocks; Q slows active blue-tagged machinery to 0.25 speed for up to three real seconds, followed by four seconds of recharge. Reading is untimed; pause suspends simulation. | Spend the window after observing a gap; release Q after boarding; balance longer safe travel against a deadline. |
 | 3. Objects, attributes and states | Courier: position, grounded/jumping/recovering, held parcel. Cart: lane position and time phase. Platform: location and boarding/riding state. Order: unread, accepted, delivered or expired. Borrower: ready, active or recharging. Desks, stamps and the cinema have persistent delivered states within a run. | Read visible cart/platform motion, charge bar, delivery count and clock to choose the next action. |
 | 4. Actions | Basic actions: move, look, jump, hold/release Q and interact. Strategic actions: wait for a gap, preserve a charge for boarding, release it during travel, choose a bypass, or retry an order after learning its route. | Combine a small set of verbs in different sequences. Settings and help are shell actions, not additional courier powers. |
 | 5. Rules | Three ordered parcels, reachable-height interaction, limited Q use, grounded checkpoints, order-specific timeouts and retries, and a three-delivery completion condition. The game enforces these rules; the script states their consequences. | Complete the current goal within its budget, recover from a mistake, and understand which progress persists. |
@@ -30,7 +30,7 @@ These categories describe different aspects of the same interaction. For example
 
 **5. How are rewards connected?** They are preparation for one film night: audience comfort, projection capability and film content. The same delivery stamps become the final ticket, and musical layers accumulate rather than replacing unrelated tracks. This connection is part of both the implemented world and the opening story.
 
-**6. Does the reward build too quickly or slowly?** The sequence grows from a local coffee response to a populated terrace and then the screening. The agent's full run has 4:07 of successful-order clock time, excluding reading, practice and pause; this is insufficient to establish reward pacing for first-time humans. Record each delivery's wall time and response before changing route length or adding rewards.
+**6. Does the reward build too quickly or slowly?** The sequence grows from a local coffee response to a populated terrace and then the screening. The Nov 7 real-speed autoplay (ordinary player verbs, no teleporting) reached the ending in 3:00 wall time using 12.3 / 62.8 / 63.0 s of order clock. It knows every crossing in advance, so this is an expert lower bound and is insufficient to establish reward pacing for first-time humans. Record each delivery's wall time and response before changing route length or adding rewards.
 
 ## Balance lens 2: Punishment (deck 4, slide 112)
 
@@ -42,7 +42,7 @@ These categories describe different aspects of the same interaction. For example
 
 **4. Could a reward produce the same or better effect?** Safe progress is already rewarded by new checkpoints and preserved delivery stamps. The game avoids subtracting delivered stamps or adding an arbitrary time penalty. A cleaner crossing naturally leaves more deadline time, without an extra score system. Removing every setback would make machinery less meaningful; the current compromise keeps the local challenge and limits repeated work.
 
-**5. Are strong penalties matched by strong rewards?** The strongest current setback is replaying one order, not the whole campaign. Its reward is a persistent contribution to the screening, with the final parcel opening the event. Whether the order budgets and repetition are proportionate is a first-time test question. Do not justify a frustrating timeout solely by saying the ending is a reward.
+**5. Are strong penalties matched by strong rewards?** The strongest current setback is replaying one order, not the whole campaign. Its reward is a persistent contribution to the screening, with the final parcel opening the event. Budgets were tightened in v0.5.4 from 140/170/200 to 60/150/160 s, about 2.5-5x the expert autoplay time, so the deadline matters without demanding mastery. Whether the budgets and repetition are proportionate for a first-time player is still a test question. Do not justify a frustrating timeout solely by saying the ending is a reward.
 
 ## Balance lens 3: Simplicity and complexity (deck 4, slide 118)
 

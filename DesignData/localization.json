@@ -274,14 +274,6 @@
       "fr": "Réessayez. Le compte à rebours commence à la récupération du colis.",
       "de": "Versuch es noch einmal. Die Uhr startet erst bei der Paketabholung."
     },
-    "E  Collect coffee box - 140 second delivery": {
-      "zh": "E 领取咖啡保温箱 · 限时 140 秒",
-      "ja": "E コーヒーボックスを受取 — 制限時間 140 秒",
-      "ko": "E 커피 보온 상자 수령 — 제한 시간 140초",
-      "es": "E Recoger caja de café — entrega en 140 segundos",
-      "fr": "E Récupérer le café — livraison en 140 secondes",
-      "de": "E Kaffeebox abholen — Lieferzeit 140 Sekunden"
-    },
     "E  Deliver the coffee box": {
       "zh": "E 交付咖啡保温箱",
       "ja": "E コーヒーボックスを届ける",
@@ -1042,14 +1034,6 @@
       "fr": "La plateforme est en hauteur. Relâchez Q et attendez ici qu’elle redescende.",
       "de": "Der Lift ist noch oben. Lass Q los und warte hier, bis er herunterkommt."
     },
-    "When the blue platform reaches your side, hold Q and press Space to jump aboard.": {
-      "zh": "等蓝色平台来到你这一侧，按住 Q，再按空格跳上去。",
-      "ja": "青い足場がこちらに来たら、Qを押しながらスペースキーで飛び乗りましょう。",
-      "ko": "파란 발판이 이쪽으로 오면 Q를 누른 채 스페이스로 뛰어올라 타세요.",
-      "es": "Cuando la plataforma azul llegue a tu lado, mantén Q y pulsa Espacio para saltar a bordo.",
-      "fr": "Quand la plateforme bleue arrive de votre côté, maintenez Q et appuyez sur Espace pour sauter dessus.",
-      "de": "Wenn die blaue Plattform bei dir ist, halte Q und spring mit der Leertaste darauf."
-    },
     "Q is recharging. When the bar is full, hold Q while crossing the blue lane.": {
       "zh": "Q 正在充能。等能量条充满后，按住 Q 走过蓝色车道。",
       "ja": "Qは充電中です。ゲージが満タンになったら、Qを押し続けて青い車線を渡りましょう。",
@@ -1105,6 +1089,14 @@
       "es": "Sigue las flechas naranjas hasta el mostrador de paquetes.",
       "fr": "Suivez les flèches orange jusqu’au comptoir des colis.",
       "de": "Folge den orangefarbenen Pfeilen zum Paketschalter."
+    },
+    "When the blue platform reaches your side, hold Q and walk aboard. Space also works.": {
+      "zh": "等蓝色平台来到你这一侧，按住 Q 走上去；也可以按空格跳上去。",
+      "ja": "青い台がこちら側に来たら、Q を押したまま歩いて乗ろう。スペースで跳び乗ってもいい。",
+      "ko": "파란 발판이 이쪽에 오면 Q를 누른 채 걸어서 올라타세요. 스페이스로 뛰어올라도 됩니다.",
+      "es": "Cuando la plataforma azul llegue a tu lado, mantén Q y sube caminando. También puedes saltar con Espacio.",
+      "fr": "Quand la plateforme bleue arrive de ton côté, maintiens Q et monte à pied. Tu peux aussi sauter avec Espace.",
+      "de": "Wenn die blaue Plattform auf deiner Seite ist, halte Q und geh hinauf. Mit der Leertaste kannst du auch aufspringen."
     }
   }
 }

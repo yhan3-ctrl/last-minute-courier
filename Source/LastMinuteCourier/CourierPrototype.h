@@ -52,7 +52,7 @@ public:
     bool bAudioEnabled = true;
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
-    float Remaining = 140.f;
+    float Remaining = 60.f;
     float OrderElapsed = 0.f;
     float CollisionProtection = 0.f;
     float MouseSensitivity = .6f;

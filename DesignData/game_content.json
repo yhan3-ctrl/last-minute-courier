@@ -89,7 +89,7 @@
     {
       "id": "coffee",
       "number": 1,
-      "seconds": 140,
+      "seconds": 60,
       "title": {
         "en": "A Little Warmth",
         "zh": "把暖意送到"
@@ -118,7 +118,7 @@
     {
       "id": "lens",
       "number": 2,
-      "seconds": 170,
+      "seconds": 150,
       "title": {
         "en": "Light Up the Screen",
         "zh": "让银幕亮起来"
@@ -147,7 +147,7 @@
     {
       "id": "reel",
       "number": 3,
-      "seconds": 200,
+      "seconds": 160,
       "title": {
         "en": "The Final Reel",
         "zh": "最后一卷"

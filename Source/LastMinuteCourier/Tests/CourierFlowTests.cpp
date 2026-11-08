@@ -42,7 +42,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Mode->Back();TestEqual(TEXT("Back on first card stays at zero"),Mode->Card,0);
     Mode->StartSlow();Act();Mode->Tick(2.f);
     TestFalse(TEXT("Ability cannot start during opening"),Mode->bSlowing);
-    TestTrue(TEXT("Opening does not start clock"),FMath::IsNearlyEqual(Mode->Remaining,140.f));
+    TestTrue(TEXT("Opening does not start clock"),FMath::IsNearlyEqual(Mode->Remaining,60.f));
     Mode->Continue();Mode->Continue();Mode->Back();
     TestEqual(TEXT("Card back navigation"),Mode->Card,1);
     for(const FString& Code:Mode->Languages())
@@ -94,7 +94,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestEqual(TEXT("Can complete the safe crossing after a collision"),Mode->Tutorial,3);
     Place(FVector(2400,0,88));Mode->Tick(.01f);
     TestTrue(TEXT("Practice reaches pickup"),Mode->Phase==ECourierPhase::AwaitPickup);
-    Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,140.f));
+    Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,60.f));
     Place(FVector(2400,0,-100),false);Act();
     TestTrue(TEXT("Cannot collect a package from under the ground"),Mode->Phase==ECourierPhase::AwaitPickup);
     // Restore a valid pickup state even when running this test against an old build.
@@ -140,7 +140,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Timeout reaches failure state"),Mode->Phase==ECourierPhase::Failed);
     TestFalse(TEXT("Failure blocks player movement"),Mode->CanMove());
     const int32 RetriesBefore=Mode->Retries;Mode->Retry();
-    TestTrue(TEXT("Retry restores pickup without starting timer"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Remaining==140.f);
+    TestTrue(TEXT("Retry restores pickup without starting timer"),Mode->Phase==ECourierPhase::AwaitPickup && Mode->Remaining==60.f);
     TestEqual(TEXT("Retry increments count once"),Mode->Retries,RetriesBefore+1);
     TestFalse(TEXT("Retry hides package"),Player->Bag->IsVisible());
     TestTrue(TEXT("Retry resets ability and all cooldown"),!Mode->bSlowing && Mode->Cooldown==0 && Mode->SlowRemaining==3.f);

@@ -10,9 +10,9 @@ The Game Script includes seven mechanic categories and all questions for three b
 
 Repository: https://github.com/yhan3-ctrl/last-minute-courier
 
-Published Mac release: https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10
+Published Mac release: https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1
 
-Local v0.10.1: shutter-camera fix, seven-language comfort copy, version metadata and synchronized documents. Publish as a new version after review; preserve v0.10.
+Release v0.10.1 includes the shutter-camera fix, seven-language comfort copy, version metadata and synchronized documents. The release assets include the Mac DMG, checksum and three PDFs. Earlier releases are preserved.
 
 Verify existing Windows/Mac/Linux files and their actual Project 3 Box link before submitting. The owner says Windows was already prepared; inspect that build rather than assuming it is absent. The feedback screenshot contains Project 2 links; do not reuse those links for this project.
 

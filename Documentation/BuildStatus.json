@@ -95,7 +95,7 @@
   },
   "disk_policy": "Keep Unreal; targeted compile only, no downloads or cleanup",
   "evidence": "DeliveryAudit-Nov08.md; historical runs remain in QA-Evidence.json",
-  "public_release": "v0.10.1 not published; public action requires approval",
+  "public_release": "v0.10.1",
   "distribution": {
     "path": "Builds/Mac-v0.10.1/LastMinuteCourier-0.10.1-Mac-arm64.dmg",
     "bytes": 515723065,
@@ -109,5 +109,7 @@
     "font": "Arial/Arial Bold",
     "author": "Yu Han",
     "visual_review": "all final pages inspected"
-  }
+  },
+  "release_url": "https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1",
+  "publication_authorization": "User confirmed now publish on 2026-11-08"
 }

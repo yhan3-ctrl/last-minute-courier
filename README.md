@@ -13,13 +13,14 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 - **High Concept:** [PDF](output/pdf/LastMinuteCourier-HighConcept.pdf) · [source](Documentation/HighConcept.md)
 - **Game Script** (rules, modes, what the game teaches, player, background, iteration history, graduate mechanics and balance lenses): [PDF](output/pdf/LastMinuteCourier-GameScript-Graduate.pdf) · sources [GameScript.md](Documentation/GameScript.md), [GraduateAnalysis.md](Documentation/GraduateAnalysis.md)
+- **Project Report:** [PDF](output/pdf/LastMinuteCourier-Report.pdf) · [source](Documentation/Report.md)
 - **Iteration log** (what changed between versions, why, and which playtest observation caused it): [ITERATIONS.md](Documentation/ITERATIONS.md)
 
 ## Play
 
-The public Mac v0.10 build is attached to its GitHub Release. Course Box download links are to be verified before submission. No Unreal Editor is needed.
+The Mac v0.10.1 build and three independent design PDFs are attached to [GitHub Release v0.10.1](https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1). Course Box download links are to be verified before submission. No Unreal Editor is needed.
 
-- **Mac:** open `LastMinuteCourier-0.10-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
+- **Mac:** open `LastMinuteCourier-0.10.1-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
 - Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). The owner reports an existing Windows build; its file and Box link will be verified later. Linux and Box status remain unverified in this audit.
 
 | Key | Action |
@@ -55,6 +56,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.8` | Nov 8 | Owner: monotonous, and much did not make sense. Carts became one-way traffic between depot sheds; a cart now knocks you aside instead of teleporting you; the coffee cools and the lens case cracks after three knocks, each judged by its own stars; golden clocks became Borrower cells (+1 Q use); hedges mark the edge; briefs explain who handed over each parcel. The owner also saw the orange line lead to a ramp while the marker led to a lift: only the recommended route is painted now, with arrows riding on the lifts |
 | `v0.9` | Nov 8 | Owner: the Borrower cell looked like a hazard (people avoided it), the game was boring and too easy; suggested parkour games. Added sprint, slide, ledge climb and forgiving jumps; rolling shutters and turnstiles that combine Q with the new moves; a springboard, crate walls and a market roof; gold hourglasses and lines of gold sparks with close-call bonuses; a slide lesson in practice; time limits 40/120/130 s. A full re-check also fixed stale cart hints, overlapping key hints on buttons and 42 unused translations |
 | `v0.10` | Nov 8 | Owner played v0.9: the turnstile spun too fast to pass, it should be impossible to walk around, and the new keys seemed not to respond. Turnstiles turn about 2.5x slower inside hedge-to-hedge gate walls with gentler hit zones; C slides (Ctrl still works; Command unbound because Command+Q quits); a slide pressed mid-air fires on landing; V recenters; a HUD key plate lights up for sprint, jump and slide; the lift hint no longer shows on the upper deck |
+| `v0.10.1` | Nov 8 | Screenshot review found the projection-booth shutter obscuring the camera: added camera-only collision, synchronized seven-language comfort copy and version metadata, and finalized separate Arial concept/script/report PDFs |
 
 ## Build and test (developers)
 
@@ -74,6 +76,6 @@ python3 Scripts/validate_localization.py                                # 7-lang
 Original procedural campus built from engine basic shapes; original synthesized music and sound effects. Fonts: Lilita One, Nunito and Noto Sans CJK under the SIL Open Font License 1.1. See [ASSET_CREDITS.md](Documentation/ASSET_CREDITS.md).
 
 
-### Local v0.10.1 revision
+### v0.10.1 release
 
-The camera now stays in front of the projection-booth shutter instead of inside it. Comfort copy and application version metadata are synchronized. Four regression suites and a complete packaged journey pass. The course documents are separate Arial PDFs: [High Concept](output/pdf/LastMinuteCourier-HighConcept.pdf), [Game Script and Graduate Analysis](output/pdf/LastMinuteCourier-GameScript-Graduate.pdf), and [Project Report](output/pdf/LastMinuteCourier-Report.pdf). See [submission checklist](Documentation/SubmissionChecklist.md). The published download above remains v0.10 until the new release is published.
+The camera now stays in front of the projection-booth shutter instead of inside it. Comfort copy and application version metadata are synchronized. Four regression suites and a complete packaged journey pass. The course documents are separate Arial PDFs: [High Concept](output/pdf/LastMinuteCourier-HighConcept.pdf), [Game Script and Graduate Analysis](output/pdf/LastMinuteCourier-GameScript-Graduate.pdf), and [Project Report](output/pdf/LastMinuteCourier-Report.pdf). See [submission checklist](Documentation/SubmissionChecklist.md). The release includes the Mac DMG, SHA-256 checksum and all three PDFs; earlier releases are preserved.

@@ -162,7 +162,7 @@ Feedback from four players on v0.9/v0.10 informed the latest revisions. The tabl
 
 ### Revision history and verification
 
-The repository retains fourteen published iteration tags from v0.1 to v0.10. ITERATIONS.md records the problem, the revision and the check for each stage; README provides a shorter index. The v0.10.1 revision adds the camera and documentation corrections described here.
+The repository retains fifteen iteration tags from v0.1 to v0.10.1. ITERATIONS.md records the problem, the revision and the check for each stage; README provides a shorter index. The v0.10.1 revision adds the camera and documentation corrections described here.
 
 Verification combines engine regression for boundaries, parkour, platform riding and three-order progression; localization coverage; and a packaged journey reviewed through screenshots. Feedback guides the design, while these checks verify that the corresponding behavior is implemented. The feedback record is retained in PlaytestFeedback-Nov08.md.
 
@@ -180,7 +180,7 @@ Verification combines engine regression for boundaries, parkour, platform riding
 | Detailed, understandable rules | Section 3 states clocks, inputs, Q, pickups, collisions, stars and progress; the Game Script expands edge cases. |
 | All experienced modes defined | Section 3 distinguishes practice and delivery from cards, briefs, pause/help, confirmation, results, failure and completion. |
 | Concept, player and background | Section 1 identifies the courier role, campus movie night, audience, interaction model and intended experience. |
-| Iteration descriptions match repository history | Section 8, ITERATIONS.md and the fourteen published tags trace development from v0.1 through v0.10. |
+| Iteration descriptions match repository history | Section 8, ITERATIONS.md and the fifteen tags trace development from v0.1 through v0.10.1. |
 
 ### Graduate requirements
 
@@ -192,9 +192,9 @@ The separate Game Script and Graduate Analysis retain the more detailed descript
 
 **Repository:** https://github.com/yhan3-ctrl/last-minute-courier
 
-**Published Mac release:** https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10
+**Published Mac release:** https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1
 
-The repository contains the Unreal project, source, design data, build scripts, asset credits, iteration history and documentation. Published tags v0.1-v0.10 preserve the earlier stages. ITERATIONS.md explains the changes in each version.
+The repository contains the Unreal project, source, design data, build scripts, asset credits, iteration history and documentation. Tags v0.1-v0.10.1 preserve the development stages. ITERATIONS.md explains the changes in each version.
 
 ### Files to submit together
 

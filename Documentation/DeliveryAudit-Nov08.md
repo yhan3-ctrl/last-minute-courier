@@ -43,3 +43,7 @@ Xcode 27.2 lacks the Editor Metal toolchain; NullRHI Editor tests and packaged M
 v0.10.1 DMG: 515723065 bytes; SHA-256 fe1ddfa6fc747fd6f9046746d52954178b063d6ce5973917e8e5e89bffee7abf. hdiutil checksum is valid. The read-only mounted app passes strict/deep signature verification, reports version 0.10.1 and matches the tested launcher app's executable and two design-data hashes. All four mounted regression suites succeeded; process exit 0 (DMGRegression.log). The launcher points to the corrected app; v0.10 is retained in ReleaseMac/PreviousV010.
 
 Three independent PDFs: High Concept 2 pages; Game Script and Graduate Analysis 8 pages; Report 10 pages. All final pages were rendered and visually inspected. Actual glyph fonts are embedded ArialMT and Arial-BoldMT; author/creator Yu Han. Formal text contains no tool branding or internal expert-duration discussion. FinalPDFManifest.json records the output hashes. Format follows the owner's supplied plain academic reference with the explicitly requested Arial font.
+
+## Authorized publication
+
+The owner authorized publishing v0.10.1 to the existing public repository on November 8, 2026, including code, the new tag, Mac DMG/checksum and all three PDFs. The report and repository links were synchronized to the new release before publishing. The existing published tags and assets are preserved. Remote verification records are retained in Saved/QA/HandoffNov08/Publication.

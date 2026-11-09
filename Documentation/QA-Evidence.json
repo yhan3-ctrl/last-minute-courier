@@ -1,5 +1,5 @@
 {
-  "kind": "automated_engine_and_native_checks_plus_partial_user_practice_feedback_not_completed_human_playthrough",
+  "kind": "historical_and_current_automated_checks_with_owner_reported_aggregate_feedback",
   "engine": "5.8.4",
   "runs": [
     {
@@ -494,6 +494,52 @@
           "warnings": 0
         }
       ]
+    },
+    {
+      "name": "HandoffNov08-v0101",
+      "created_local": "2026-11-08",
+      "succeeded_suites": 4,
+      "failed_suites": 0,
+      "test_errors": 0,
+      "test_warnings": 0,
+      "scope": "Fixed Editor, final packaged candidate, read-only final DMG; ordinary-input real-speed journey and seven-language opening review",
+      "tests": [
+        {
+          "path": "Courier.Regression.FirstOrderBoundaries",
+          "state": "Success"
+        },
+        {
+          "path": "Courier.Regression.Parkour",
+          "state": "Success"
+        },
+        {
+          "path": "Courier.Regression.PlatformRide",
+          "state": "Success"
+        },
+        {
+          "path": "Courier.Regression.ThreeOrderJourney",
+          "state": "Success"
+        }
+      ],
+      "reports": [
+        "Saved/QA/HandoffNov08Fixed/index.json",
+        "Saved/QA/HandoffNov08/PackagedFinalRegression.log",
+        "Saved/QA/HandoffNov08/DMGRegression.log"
+      ],
+      "ordinary_journey": {
+        "seconds": 143.0,
+        "recoveries": 0,
+        "timeouts": 0,
+        "retries": 0,
+        "stuck": 0,
+        "stars": [
+          3,
+          3,
+          3
+        ],
+        "not_human_pacing": true
+      },
+      "pdf_review": "Saved/QA/HandoffNov08/ArialFinal/FinalPDFManifest.json"
     }
   ],
   "guardrail_followup": {
@@ -659,5 +705,6 @@
       "read_only_image_regression": "Three suites succeeded, exit 0. Final image only clarifies Read Me wording; tested app program and runtime-data hashes match the mounted final image.",
       "regression_summary": "Saved/QA/Nov05-DmgSummary.json"
     }
-  }
+  },
+  "latest_audit": "DeliveryAudit-Nov08.md"
 }

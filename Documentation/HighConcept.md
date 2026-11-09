@@ -1,6 +1,6 @@
 # Last Minute Courier
 
-High Concept | v0.8 | November 8, 2026
+High Concept | Yu Han | v0.10.1 | November 8, 2026
 
 ## High concept statement
 
@@ -12,7 +12,7 @@ You control one courier in a connected 3D campus, using an avatar-based interact
 
 ## Audience
 
-For players who understand a keyboard and mouse but may be new to 3D action games. Three short opening cards (story, ability, key-cap controls) and an untimed practice yard precede the first deadline. Wide paths, nearby recovery points and longer alternative paths support cautious players; lifts, stepping stones, crate walls, rolling shutters, turnstiles, a shuttle, a market roof and a springboard offer more demanding routes. English is the default, with Chinese, Japanese, Korean, Spanish, French and German available from a language selector. Translation coverage is checked; native-speaker review is pending.
+For players who understand a keyboard and mouse but may be new to 3D action games. Three short opening cards (story, ability, key-cap controls) and an untimed practice yard precede the first deadline. Wide paths, nearby recovery points and longer alternative paths support cautious players; lifts, stepping stones, crate walls, rolling shutters, turnstiles, a shuttle, a market roof and a springboard offer more demanding routes. English is the default, with Chinese, Japanese, Korean, Spanish, French and German available from a language selector.
 
 ## Distinctive experience
 
@@ -22,12 +22,12 @@ Each parcel changes the same evening: coffee brings warm cups and a musical laye
 
 ## World and progression
 
-A small, stylized campus connects a parcel desk, coffee plaza, garden, projection booth and clocktower cinema. Cream buildings, terracotta details, blue clock tags and orange route markers make roles recognizable. Read the story, practice movement/jumping/time control, then complete coffee, lens and reel orders in sequence. Read each untimed brief before accepting its deadline. A collision or fall returns to a nearby checkpoint; an order retry preserves earlier deliveries. Completion reveals the screening and offers Play Again.
+A small, stylized campus connects a parcel desk, coffee plaza, garden, projection booth and clocktower cinema. Cream buildings, terracotta details, blue clock tags and orange route markers make roles recognizable. Read the story, practice movement/jumping/time control, then complete coffee, lens and reel orders in sequence. Read each untimed brief before accepting its deadline. A cart or moving-obstacle hit knocks the courier aside; a fall returns to a nearby checkpoint; an order retry preserves earlier deliveries. Completion reveals the screening and offers Play Again.
 
 ## Modes, platform and scope
 
-One local single-player campaign; no multiplayer, competitive mode or separate time-trial mode. Timed delivery is the primary gameplay mode; untimed practice and collection are preparation modes. Story, briefing, pause/help, results, timeout and completion are shell screens. Target releases are Windows x86-family, macOS and Linux x86-family; exact Windows/Linux bitness must be confirmed if the instructor means 32-bit specifically. Mac is the current development and validation platform.
+One local single-player campaign; no multiplayer, competitive mode or separate time-trial mode. Timed delivery is the primary gameplay mode; untimed practice and collection are preparation modes. Story, briefing, pause/help, results, timeout and completion are shell screens. Target platforms are Windows and Linux on Intel/AMD hardware, and macOS on Apple silicon.
 
-One complete level is implemented. The target first completed run is 5-10 minutes without filler. A real-speed autoplay using only player controls reached the ending in 3:00 from the first story card (Nov 7, v0.5.4). It already knows every route, so this is an expert lower bound and does not establish first-time player duration. Genuine first-time timing, learning transfer, enjoyment and comfort remain acceptance checks.
+One complete level is implemented. The target first completed run is 5-10 minutes without filler. The three deliveries have distinct purposes and build toward the screening. Feedback from four v0.9/v0.10 players and earlier practice sessions has shaped route clarity, pickup recognition, traversal variety and obstacle difficulty.
 
-Course structure checked against lecture deck 3, slides 19-23, 35, 47, 55 and 80-82. Monetary and licensed-IP pitches are omitted as permitted for this class. No minimum hardware specification is claimed without independent build tests.
+Course structure checked against lecture deck 3, slides 19-23, 35, 47, 55 and 80-82.

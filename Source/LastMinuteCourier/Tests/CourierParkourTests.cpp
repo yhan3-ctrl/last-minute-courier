@@ -87,6 +87,12 @@ public:
                 if(!Shutter)return true;
                 Shutter->Clock=ShutterClock(Shutter,.70f);Shutter->Pose();
                 Test->TestTrue(TEXT("Shut door sits at the floor"),Shutter->DoorBottom(Shutter->Clock)<1.f);
+                FHitResult CameraHit;
+                const FVector DoorMid=Shutter->Origin+FVector(0,0,150);
+                Test->TestTrue(TEXT("Opaque shutter protects the following camera from clipping inside"),
+                    World->LineTraceSingleByChannel(CameraHit,DoorMid-FVector(300,0,0),DoorMid+FVector(300,0,0),ECC_Camera));
+                if(CameraHit.GetComponent())Test->TestTrue(TEXT("Camera-facing shutter geometry does not add a pawn wall"),
+                    CameraHit.GetComponent()->GetCollisionResponseToChannel(ECC_Pawn)==ECR_Ignore);
             }
             Put(FVector(6050,0,90));Stage=4;return false;
         case 4:

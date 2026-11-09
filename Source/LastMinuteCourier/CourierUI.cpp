@@ -410,7 +410,7 @@ private:
                                 Player->SetCameraFov(Mode->CameraFov);
                         }))]
             +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)
-                [Text(Copy(TEXT("Steady camera. No head bob, camera shake, speed zoom or motion blur."),TEXT("稳定镜头；无走路晃动、震屏、速度变焦或运动模糊。")),15,EFace::Bold,CourierPalette::Muted,700)];
+                [Text(Copy(TEXT("No head bob, shake or motion blur. Sprint and slide gently widen the view."),TEXT("无走路晃动、震屏或运动模糊。冲刺和滑铲时视野轻微变宽。")),15,EFace::Bold,CourierPalette::Muted,700)];
     }
 
     TSharedRef<SWidget> InfoCell(const FText& Label,TSharedRef<SWidget> Value) const

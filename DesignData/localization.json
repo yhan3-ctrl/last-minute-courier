@@ -42,14 +42,6 @@
       "fr": "Champ de vision (80–100)",
       "de": "Sichtfeld (80–100)"
     },
-    "Steady camera. No head bob, camera shake, speed zoom or motion blur.": {
-      "zh": "稳定镜头；无走路晃动、震屏、速度变焦或运动模糊。",
-      "ja": "歩行時の揺れ、画面振動、速度によるズーム、モーションブラーはありません。",
-      "ko": "걷기 흔들림, 화면 흔들림, 속도에 따른 확대, 모션 블러가 없습니다.",
-      "es": "Cámara estable: sin balanceo, sacudidas, zoom por velocidad ni desenfoque de movimiento.",
-      "fr": "Caméra stable : sans balancement, secousses, zoom de vitesse ni flou de mouvement.",
-      "de": "Ruhige Kamera: kein Wippen, Wackeln, Geschwindigkeitszoom oder Bewegungsunschärfe."
-    },
     "Practice yard": {
       "zh": "练习区",
       "ja": "練習エリア",
@@ -1345,6 +1337,14 @@
       "es": "Deslizar",
       "fr": "Glisser",
       "de": "Rutschen"
+    },
+    "No head bob, shake or motion blur. Sprint and slide gently widen the view.": {
+      "zh": "无走路晃动、震屏或运动模糊。冲刺和滑铲时视野轻微变宽。",
+      "ja": "歩行時の揺れ、画面振動、モーションブラーはありません。ダッシュとスライディングで視野が少し広がります。",
+      "ko": "걷기 흔들림, 화면 흔들림, 모션 블러가 없습니다. 달리기와 슬라이딩 시 시야가 조금 넓어집니다.",
+      "es": "Sin balanceo, sacudidas ni desenfoque de movimiento. Al correr y deslizarte, la vista se amplía un poco.",
+      "fr": "Sans balancement, secousses ni flou de mouvement. Le sprint et la glissade élargissent légèrement la vue.",
+      "de": "Kein Wippen, Wackeln oder Bewegungsunschärfe. Sprint und Rutschen erweitern das Sichtfeld leicht."
     }
   }
 }

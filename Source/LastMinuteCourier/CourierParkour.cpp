@@ -121,7 +121,12 @@ void ACourierObstacle::Build()
             Piece(this,Root,TEXT("Cube"),FVector(-34,Side*(Width*.5f+28.f),175),FVector(10,30,330),Gold);
         }
         Piece(this,Root,TEXT("Cube"),FVector(0,0,365),FVector(110,Width+112.f,70),Ink);
-        Blue(Moving,TEXT("Cube"),FVector(0,0,150),FVector(26,Width,300));
+        auto* DoorFace=Blue(Moving,TEXT("Cube"),FVector(0,0,150),FVector(26,Width,300));
+        // A follow camera behind the courier must stop before the opaque door.
+        // Pawn collision remains controlled by the separate moving-height blocker.
+        DoorFace->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        DoorFace->SetCollisionResponseToAllChannels(ECR_Ignore);
+        DoorFace->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);
         for(float Z:{25.f,95.f,165.f,235.f})
             Piece(this,Moving,TEXT("Cube"),FVector(0,0,Z),FVector(30,Width-6.f,9),Hex(TEXT("1E5F8A")));
         Piece(this,Moving,TEXT("Cube"),FVector(0,0,4),FVector(32,Width,8),Gold);

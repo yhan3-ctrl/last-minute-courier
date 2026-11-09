@@ -1,259 +1,113 @@
 {
- "engine": "5.8.4",
- "xcode": "27.2 (via DEVELOPER_DIR)",
- "mac_sdk": "27.0",
- "editor_build": "succeeded",
- "metal_toolchain": "installed_and_version_command_passed",
- "map_generation": "succeeded",
- "visual_material_generation": "succeeded_zero_errors_zero_warnings",
- "runtime_playtest": "v09 packaged real-speed autoplay (player verbs only: move, sprint, jump/climb, slide, Q, E) full run plus UI tour en/zh/de; four Editor, four packaged-from-DMG regression suites (FirstOrderBoundaries, Parkour, PlatformRide, ThreeOrderJourney)",
- "human_playtests": 2,
- "full_delivery_flow": "v0.10 packaged app: complete real-speed scripted run, 0 recoveries, 0 stuck, 2:22 expert wall time (cards 3 s, briefs 5 s); orders 8.1/42.4/56.2 s of 45/120/130; all three turnstile gates crossed; stars 3/3/3. First-time human run of v0.10 still pending.",
- "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
- "comfort_validation": "requires_human_playtest",
- "platform_builds": {
-  "mac": "v0.10_arm64_Development_DMG sha256 3f9d0d90277eac065aaf44855339ffff7153b1a72d09e648adfad7954178b46c; mounted strict/deep signature valid; DMG app passed four suites",
-  "windows": "not_built_on_mac; Scripts/package_windows.bat + Documentation/BuildOtherPlatforms.md for a Windows PC",
-  "linux": "not_built_on_mac; Scripts/package_linux.bat (Windows cross-compile) + Documentation/BuildOtherPlatforms.md"
- },
- "default_language": "en",
- "languages": [
-  "en",
-  "zh",
-  "ja",
-  "ko",
-  "es",
-  "fr",
-  "de"
- ],
- "translation_coverage": {
-  "runtime_strings": 159,
-  "optional_languages": 6,
-  "check": "passed"
- },
- "language_selector": "dropdown_selection_confirmed_with_keyboard",
- "opening_language_layout_checks": [
-  "en",
-  "ja",
-  "ko",
-  "es",
-  "fr",
-  "de"
- ],
- "pause_language_layout_checks": [
-  "zh",
-  "de"
- ],
- "native_speaker_review": "not_completed",
- "audit_date": "2026-11-08",
- "automated_regression": {
-  "report": "QA-Evidence.json",
-  "latest_run": "Nov05-LogicalCrossing",
-  "succeeded_suites": 3,
-  "failed_suites": 0,
-  "test_errors": 0,
-  "test_warnings": 0,
-  "scope": "Current Editor and standalone boundary tests, active-route visibility/collision, eight capsule routes, three-order controlled flow and engine-frame lift ride. Not a human full playthrough.",
-  "capsule_routes": 8
- },
- "small_window": "1024x640_pause_and_gameplay_visually_checked",
- "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
- "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
- "version": "0.8",
- "previous_v03_runtime_checks": [
-  "default_english_opening",
-  "optional_chinese_glyphs",
-  "opening_navigation",
-  "movement",
-  "jump",
-  "slowdown_recharge_feedback",
-  "package_pickup_starts_timer",
-  "pause_resume",
-  "keyboard_slider_adjustment",
-  "camera_lock_checkbox_keyboard",
-  "campus_scene_rendering",
-  "first_order_successful_delivery",
-  "retry_returns_to_pickup",
-  "keyboard_quit_button",
-  "recenter_camera_while_paused_locked",
-  "tutorial_requires_actual_jump",
-  "checkpoint_notice",
-  "natural_140_second_timeout",
-  "retry_after_timeout",
-  "delivery_pause_clock_freeze_comparison"
- ],
- "verified_in_runtime": [
-  "default_english",
-  "four_card_navigation",
-  "fourth_card_layout_en_zh_de",
-  "untimed_practice_move_jump_q",
-  "collision_checkpoint_recovery",
-  "untimed_brief_then_accept",
-  "music_checkbox_keyboard_off_on",
-  "first_order_arcade_and_delivery",
-  "second_order_brief_layout",
-  "corrected_garden_ramp_corner_and_merge_from_controlled_start",
-  "cinema_ending_ticket_from_controlled_start",
-  "play_again_returns_to_opening"
- ],
- "audio": {
-  "original_assets": 9,
-  "music_seconds": 48,
-  "mute_control": true,
-  "listening_review": "human_listening_review_not_completed",
-  "import": "nine_named_assets_imported_zero_errors_zero_warnings",
-  "mute_checkbox": "keyboard_toggle_visually_confirmed",
-  "music_layers": 3,
-  "synchronization": "three_48_second_loops_with_play_when_silent_virtualization"
- },
- "sky": "Metal_render_checked_gradient_sun_clouds_hills_and_instanced_terrain",
- "opening_cards": 4,
- "generated_runtime_path": "Runtime.nosync (relative Saved/Intermediate symlinks; local DDC)",
- "visual_screenshot_evidence": "QA-Evidence.json",
- "source_control": {
-  "original_git": "preserved; bulk restoration was rejected and not executed",
-  "active_checkout": "Project3/Runtime.nosync/CampusV05Work",
-  "v04_checkpoint": "2488abe",
-  "v05": "48d651a gameplay; d754ed5 packaged startup/finale; later documentation/launch checkpoint in git log",
-  "backup_note": "nosync working copy is not an iCloud backup; authored changes mirrored to outer Project3",
-  "history_backup": "Outer Project3/VersionHistory/LastMinuteCourier-v0.5.3.bundle; verified after this iteration commit."
- },
- "v05_runtime_checks": [
-  "fresh_english_opening",
-  "jump_immediately_after_prompt_advances_lesson",
-  "charge_seconds_visible",
-  "coffee_delivery_cups_steam_and_side_result_from_controlled_start",
-  "next_order_brief_directly_from_result_without_accepting",
-  "central_cinema_aisle_walk_and_E_delivery_from_controlled_start",
-  "arrived_prompt_in_reachable_delivery_area",
-  "ending_wide_view_ticket_and_movie_reveal_from_controlled_start"
- ],
- "v05_native_limits": "Full scripted-input run includes pauses, camera lock and read-only trace; successful-order time 4:07 is not first-time human wall time. Packaged app startup and CJK switching verified after startup crash fix; packaged full run, human comfort/listening/native-language review remain incomplete.",
- "packaged_startup_fix": {
-  "problem": "User reported app cannot open; crash stack confirmed HUD Rebuild read empty card arrays before GameMode loaded content.",
-  "commit": "d754ed5",
-  "verification": "Fresh independent executable remains running, English opening and Chinese/Japanese/Korean opening render verified through native UI. No Editor or uproject launch arguments.",
-  "assembly_log": "Saved/Logs/MacStartupFixAssembly.log",
-  "signature": "codesign --verify --deep --strict passed",
-  "complete_packaged_playthrough": "not_completed"
- },
- "disk_policy": {
-  "user_choice": "Keep Unreal; pause large builds",
-  "editor_minimum_free_gib": 8,
-  "packaging_minimum_free_gib": 12,
-  "automatic_build_on_launch": false,
-  "local_game_image": "Runtime.nosync/CourierBuildMac.sparseimage",
-  "note": "Image contains only completed local app and residual tiny assembly metadata; failed build trees and duplicate staging removed.",
-  "targeted_fix_builds": "Nov05 user requested practice-rule and route clarity changes. Editor/Game compiled; unchanged cooked assets reused. Current playtest window left alone."
- },
- "graduate_requirements": {
-  "confirmed": true,
-  "mechanic_categories": 7,
-  "balance_lenses": [
-   "Reward",
-   "Punishment",
-   "Simplicity/Complexity"
+  "version": "0.10.1",
+  "audit_date": "2026-11-08",
+  "engine": "5.8.4",
+  "xcode": "27.2 via DEVELOPER_DIR",
+  "editor_build": "succeeded; camera fix included",
+  "game_build": "succeeded; final camera copy included",
+  "metal_toolchain": "missing_for_editor_rendering; packaged_Metal_rendering_verified",
+  "opening_cards": 3,
+  "default_language": "en",
+  "languages": [
+    "en",
+    "zh",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
   ],
-  "document": "GraduateAnalysis.md",
-  "lecture_structure_checked": true
- },
- "v052": {
-  "training": "Q must stay active from near lane edge to far edge; early release, side bypass and recovery covered by regression",
-  "platform_hints": [
-   "wait_for_lowering_without_Q",
-   "hold_Q_and_Space_to_board",
-   "release_Q_to_ride",
-   "walk_forward_at_landing"
+  "translation_coverage": {
+    "runtime_strings": 159,
+    "optional_languages": 6,
+    "check": "passed"
+  },
+  "opening_card_1_native_layout_checks": [
+    "en",
+    "zh",
+    "ja",
+    "ko",
+    "es",
+    "fr",
+    "de"
   ],
-  "editor_report": "Saved/QA/Nov04-Onboarding/index.json",
-  "packaged_report": "Saved/QA/Nov04-FinalImageRegression.json",
-  "packaged_report_warning": "Earlier candidate runs could not export JSON through the app sandbox. Final read-only DMG test deliberately uses captured stdout, with all three suites successful and exit 0.",
-  "native_checks": [
-   "fresh_English_opening",
-   "four_cards",
-   "real_jump_to_Q_lesson",
-   "new_Q_instruction_fits",
-   "untrained_bypass_returns_with_specific_instruction"
-  ],
-  "binary_uuid": "D5573103-C998-3A4B-8F89-BFBD5D4DF15D",
-  "human_playtests": 0,
-  "full_normal_input_packaged_run": "pending",
-  "new_Q_simultaneous_keyboard": "requires_human_check; tool cannot hold Q and W together",
-  "distribution": "Builds/Mac-v0.5.2/LastMinuteCourier-0.5.2-Mac-arm64-Final.dmg",
-  "distribution_verification": {
-   "version": "0.5.2",
-   "architecture": "arm64",
-   "binary_uuid": "D5573103-C998-3A4B-8F89-BFBD5D4DF15D",
-   "sha256": "9e8ffba71cba619b2786a76db332b5b58dc201accf991ce6ac31aa1d36a88c1b",
-   "bytes": 515235729,
-   "dmg_checksum": "hdiutil verify passed",
-   "mounted_app_signature": "codesign --verify --deep --strict passed",
-   "native_opening": "Observed earlier v0.5.2 DMG before final recharge wording adjustment; no new graphical full playthrough.",
-   "final_change": "Recharge hint now refers to the visible full ability bar; removes reference to a nonexistent READY label.",
-   "normal_input_complete_run": false,
-   "human_playtest": false,
-   "source_manifest": "Saved/QA/Nov04-FinalCompiledSource.json",
-   "compile_log": "Saved/Logs/Nov04-FinalGame.log",
-   "final_image_test_stdout": "Saved/Logs/Nov04-FinalImageRegression.log",
-   "final_image_regression": {
-    "tests": [
-     {
-      "state": "Success",
-      "name": "FirstOrderBoundaries",
-      "path": "Courier.Regression.FirstOrderBoundaries"
-     },
-     {
-      "state": "Success",
-      "name": "PlatformRide",
-      "path": "Courier.Regression.PlatformRide"
-     },
-     {
-      "state": "Success",
-      "name": "ThreeOrderJourney",
-      "path": "Courier.Regression.ThreeOrderJourney"
-     }
+  "human_playtests": 4,
+  "human_playtests_basis": "owner-reported aggregate v0.9/v0.10; may overlap older counts",
+  "completed_human_playtests": null,
+  "first_time_human_duration_seconds": null,
+  "human_feedback": "PlaytestFeedback-Nov08.md",
+  "automated_regression": {
+    "editor_report": "Saved/QA/HandoffNov08Fixed/index.json",
+    "packaged_stdout": "Saved/QA/HandoffNov08/PackagedFinalRegression.log",
+    "succeeded_suites": 4,
+    "failed_suites": 0,
+    "scope": "boundaries,parkour,platform ride,three-order journey; controlled tests, not human observations",
+    "dmg_stdout": "Saved/QA/HandoffNov08/DMGRegression.log"
+  },
+  "normal_packaged_journey": {
+    "version": "0.10.1",
+    "seconds": 143.0,
+    "order_seconds": [
+      8.1,
+      42.4,
+      56.3
     ],
-    "exit_code": 0,
-    "executable_from": "Read-only final distribution DMG",
-    "method": "Controlled state/positions, boundary cases and engine-frame platform ride; no report export requested; stdout retained.",
-    "not_a_human_or_full_normal_input_run": true
-   }
+    "recoveries": 0,
+    "timeouts": 0,
+    "retries": 0,
+    "stuck": 0,
+    "stars": [
+      3,
+      3,
+      3
+    ],
+    "scope": "known-route real-speed scripted player actions; expert lower bound"
+  },
+  "controlled_ui_tour": {
+    "languages": [
+      "en",
+      "zh",
+      "de"
+    ],
+    "failure_states": "timeout and lens damage deliberately forced; not ordinary-input timing"
+  },
+  "platform_builds": {
+    "mac": "0.10.1 arm64 DMG; checksum valid, strict/deep mounted signature, matching tested app/data, four mounted suites succeeded; v0.10 preserved",
+    "windows": "owner reports existing build; verification deferred by user",
+    "linux": "not independently verified",
+    "box": "not independently verified"
+  },
+  "native_language_review": "not completed",
+  "comfort_listening_review": "not recorded",
+  "camera_fix": "moving shutter visible face blocks Camera, ignores Pawn; independent Pawn blocker unchanged",
+  "report_documents": [
+    "LastMinuteCourier-HighConcept.pdf",
+    "LastMinuteCourier-GameScript-Graduate.pdf",
+    "LastMinuteCourier-Report.pdf"
+  ],
+  "graduate_requirements": {
+    "mechanic_categories": 7,
+    "lenses": {
+      "Reward": 6,
+      "Punishment": 5,
+      "Simplicity/Complexity": 4
+    }
+  },
+  "disk_policy": "Keep Unreal; targeted compile only, no downloads or cleanup",
+  "evidence": "DeliveryAudit-Nov08.md; historical runs remain in QA-Evidence.json",
+  "public_release": "v0.10.1 not published; public action requires approval",
+  "distribution": {
+    "path": "Builds/Mac-v0.10.1/LastMinuteCourier-0.10.1-Mac-arm64.dmg",
+    "bytes": 515723065,
+    "sha256": "fe1ddfa6fc747fd6f9046746d52954178b063d6ce5973917e8e5e89bffee7abf",
+    "version": "0.10.1"
+  },
+  "pdfs": {
+    "HighConcept": 2,
+    "GameScript-Graduate": 8,
+    "Report": 10,
+    "font": "Arial/Arial Bold",
+    "author": "Yu Han",
+    "visual_review": "all final pages inspected"
   }
- },
- "completed_human_playtests": 0,
- "human_feedback_scope": "Owner partial practice session; Q-rule confusion and faint route markings. No duration, full completion, comfort or listening result.",
- "v053": {
-  "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
-  "rule": "Safe cart-lane crossings accepted with or without Q; no instructional respawn. Actual cart hits still recover with a specific collision message.",
-  "route_guide": "Continuous high-contrast orange lines, broad arrows about every five metres, stationary next-waypoint ring/pointer, larger HUD heading; only current practice/order markings shown; no collision.",
-  "editor_report": "Saved/QA/Nov05-LogicalCrossing/index.json",
-  "standalone_report": "Saved/QA/Nov05-PackagedSummary.json",
-  "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
-  "native_evidence": "Saved/Logs/FirstPlayable.log and chat tool screenshots; ordinary keyboard crossing observed with full 3.0-second Q charge and the next lesson, no fixture mutation.",
-  "native_limits": "Editor preview partial input check, not standalone full journey. Tool subsequently reported user changed the window; stopped sending input.",
-  "human_feedback_sessions": 1,
-  "completed_human_runs": 0,
-  "distribution": "Builds/Mac-v0.5.3/LastMinuteCourier-0.5.3-Mac-arm64.dmg",
-  "distribution_verification": {
-   "version": "0.5.3",
-   "binary_uuid": "D4071D65-5B65-3B14-B0B3-8743EA9BD13F",
-   "sha256": "1a43fd18450e209a99bce3fde106ad089d447f29f0c7f4de476d8e00f0c216e6",
-   "bytes": 515233150,
-   "checksum": "hdiutil verify passed",
-   "signature": "Strict/deep verification passed for app mounted read-only from this DMG.",
-   "native_render": "Editor preview route and no-Q crossing observed; no current full normal-input standalone playthrough.",
-   "source_manifest": "Saved/QA/Nov05-CompiledSource.json",
-   "feedback": "Documentation/PlaytestFeedback-Nov05.zh.md",
-   "read_only_image_regression": "Three suites succeeded, exit 0. Final image only clarifies Read Me wording; tested app program and runtime-data hashes match the mounted final image.",
-   "regression_summary": "Saved/QA/Nov05-DmgSummary.json"
-  }
- },
- "fonts": [
-  "LilitaOne-Regular",
-  "Nunito-Bold",
-  "Nunito-ExtraBold",
-  "Nunito-Black",
-  "NotoSansSC/JP/KR-Regular"
- ],
- "editor_rendering_note": "Xcode 27.2 update removed the Metal Toolchain; editor rendering needs xcodebuild -downloadComponent MetalToolchain. Packaged builds unaffected."
 }

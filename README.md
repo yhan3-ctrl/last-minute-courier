@@ -17,10 +17,10 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 ## Play
 
-Download the release for your platform (see the course Box folder; the Mac build is also attached to the GitHub release). No Unreal Editor is needed.
+The public Mac v0.10 build is attached to its GitHub Release. Course Box download links are to be verified before submission. No Unreal Editor is needed.
 
 - **Mac:** open `LastMinuteCourier-0.10-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
-- Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). They are published in the course Box folder.
+- Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). The owner reports an existing Windows build; its file and Box link will be verified later. Linux and Box status remain unverified in this audit.
 
 | Key | Action |
 |---|---|
@@ -67,8 +67,13 @@ Requires Unreal Engine 5.8 and Xcode on macOS.
 python3 Scripts/validate_localization.py                                # 7-language coverage
 ```
 
-`autoplay.command` launches the game with a QA-only autopilot that uses only player controls (move, look, jump, hold Q, E, Enter), never teleports, and writes an event log plus screenshots to `Saved/AutoPlay/`. Add `COURIER_AUTOPLAY_EXTRA=-CourierUITour` to also capture every menu in several languages. It is a lower bound for an expert who already knows the route, not a substitute for human playtesting.
+`autoplay.command` launches the game with a QA-only autopilot that uses scripted player actions (move, sprint, jump/climb, slide, Q and E), without teleporting in a normal run, and writes an event log plus screenshots to `Saved/AutoPlay/`. Add `COURIER_AUTOPLAY_EXTRA=-CourierUITour` for a separate controlled menu audit. That tour deliberately shortens the timer and damages the lens to reach failure screens; its time/failures are not normal-play evidence. It is a lower bound for an expert who already knows the route, not a substitute for human playtesting.
 
 ## Credits
 
 Original procedural campus built from engine basic shapes; original synthesized music and sound effects. Fonts: Lilita One, Nunito and Noto Sans CJK under the SIL Open Font License 1.1. See [ASSET_CREDITS.md](Documentation/ASSET_CREDITS.md).
+
+
+### Local v0.10.1 revision
+
+The camera now stays in front of the projection-booth shutter instead of inside it. Comfort copy and application version metadata are synchronized. Four regression suites and a complete packaged journey pass. The course documents are separate Arial PDFs: [High Concept](output/pdf/LastMinuteCourier-HighConcept.pdf), [Game Script and Graduate Analysis](output/pdf/LastMinuteCourier-GameScript-Graduate.pdf), and [Project Report](output/pdf/LastMinuteCourier-Report.pdf). See [submission checklist](Documentation/SubmissionChecklist.md). The published download above remains v0.10 until the new release is published.

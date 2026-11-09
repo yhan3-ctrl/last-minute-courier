@@ -228,3 +228,14 @@ The project owner played v0.9 and reported: the turnstile spun so fast they coul
 - Also found while reviewing screenshots: on the upper deck after a lift the hint still said to board the lift (the check ignored height), and the gold "Close call!" pop-up was hard to read against the pale sky (it now has a dark outline). The lens brief and star rule now say that any hit or fall knocks the case, not only carts. The coffee limit went from 40 to 45 s because the gate is now unavoidable.
 
 Verification: all four engine suites pass, with new checks that each turnstile is walled in and turns no faster than once per 7 s. The packaged real-speed scripted playthrough completes with 0 recoveries, crossing all three gates (two slides under the high arm, one jump over the low arm) and earning 3/3/3 stars. Whether the slower turnstile now feels fair to a first-time player is for the owner's next playthrough.
+
+
+## v0.10.1 - November 8, 2026: camera visibility and submission documents
+
+A final packaged screenshot review found that the projection-booth shutter could cover the chase camera after delivery 2 and through the next brief. Its visible moving face now blocks the camera only and ignores Pawn; the independent courier blocker still controls passage. A regression trace checks both collision responses. The normal-input packaged journey was rerun from the first card to the final ticket; all three orders completed with no recovery, timeout, retry or stuck event. Four regression suites pass in the fixed Editor build and the final packaged candidate.
+
+The comfort description now acknowledges the existing sprint/slide field-of-view effect in all seven languages. Stale 0.5.3 application metadata is corrected to 0.10.1. All 159 runtime strings have six optional translations and required font/license files; opening card 1 was visually checked in all seven languages and restored to English.
+
+The owner confirmed four players with similar v0.9/v0.10 feedback and immediate feedback-driven revisions. PlaytestFeedback-Nov08.md records the aggregate reconstruction without inventing individual times, quotations or completion counts. The course submission now has an independent High Concept, an independent Game Script including graduate analysis, and a concise report. All use Arial, a plain academic layout and Yu Han authorship. This directly addresses the previous instructor comment about missing separate design documents and too many persistent text boxes.
+
+Remote v0.1-v0.10 tags and release metadata were checked against local history. The new revision and local Mac DMG are prepared separately; the published v0.10 release is preserved. Detailed technical evidence is in DeliveryAudit-Nov08.md. Publication and course uploads remain separate actions.

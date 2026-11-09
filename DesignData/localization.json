@@ -118,7 +118,7 @@
       "zh": "剩余时间",
       "ja": "残り時間",
       "ko": "남은 시간",
-      "es": "TIEMPO",
+      "es": "TIEMPO RESTANTE",
       "fr": "TEMPS RESTANT",
       "de": "RESTZEIT"
     },
@@ -1385,6 +1385,70 @@
       "es": "USOS DE Q",
       "fr": "UTILISATIONS DE Q",
       "de": "Q-EINSÄTZE"
+    },
+    "Golden clock: +5 seconds.": {
+      "zh": "金色时钟：+5 秒。",
+      "ja": "金の時計：+5 秒。",
+      "ko": "황금 시계: +5초.",
+      "es": "Reloj dorado: +5 segundos.",
+      "fr": "Horloge dorée : +5 secondes.",
+      "de": "Goldene Uhr: +5 Sekunden."
+    },
+    "Golden clock! In a delivery, each one adds 5 seconds to your clock.": {
+      "zh": "金色时钟！配送时，每拿到一个，倒计时就多 5 秒。",
+      "ja": "金の時計！配達中は 1 つごとに時計が 5 秒増える。",
+      "ko": "황금 시계! 배달 중에는 하나마다 시계에 5초가 더해진다.",
+      "es": "¡Reloj dorado! En una entrega, cada uno suma 5 segundos a tu reloj.",
+      "fr": "Horloge dorée ! Pendant une livraison, chacune ajoute 5 secondes à ton chrono.",
+      "de": "Goldene Uhr! Bei einer Lieferung bringt jede 5 Sekunden mehr auf der Uhr."
+    },
+    "GOLDEN CLOCKS": {
+      "zh": "金色时钟",
+      "ja": "金の時計",
+      "ko": "황금 시계",
+      "es": "RELOJES DORADOS",
+      "fr": "HORLOGES DORÉES",
+      "de": "GOLDENE UHREN"
+    },
+    "Legend of the Last Minute": {
+      "zh": "最后一刻传奇",
+      "ja": "ラストミニットの伝説",
+      "ko": "마지막 순간의 전설",
+      "es": "Leyenda del último minuto",
+      "fr": "Légende de la dernière minute",
+      "de": "Legende der letzten Minute"
+    },
+    "Star Courier": {
+      "zh": "明星快递员",
+      "ja": "スター配達員",
+      "ko": "스타 배달원",
+      "es": "Repartidor estrella",
+      "fr": "Coursier vedette",
+      "de": "Star-Kurier"
+    },
+    "Reliable Courier": {
+      "zh": "可靠的快递员",
+      "ja": "頼れる配達員",
+      "ko": "믿음직한 배달원",
+      "es": "Repartidor fiable",
+      "fr": "Coursier fiable",
+      "de": "Zuverlässiger Kurier"
+    },
+    "Courier in Training": {
+      "zh": "见习快递员",
+      "ja": "見習い配達員",
+      "ko": "견습 배달원",
+      "es": "Repartidor en prácticas",
+      "fr": "Coursier en formation",
+      "de": "Kurier in Ausbildung"
+    },
+    "Golden clocks on this route add 5 seconds each. More time left at the counter earns more stars.": {
+      "zh": "路线上的金色时钟每个 +5 秒。送达时剩余时间越多，星星越多。",
+      "ja": "ルート上の金の時計は 1 つ 5 秒。届けたときに時間が多く残るほど星が増える。",
+      "ko": "경로의 황금 시계는 하나에 5초. 도착했을 때 남은 시간이 많을수록 별이 늘어난다.",
+      "es": "Los relojes dorados de la ruta suman 5 segundos cada uno. Cuanto más tiempo te sobre al entregar, más estrellas.",
+      "fr": "Les horloges dorées du trajet ajoutent 5 secondes chacune. Plus il te reste de temps au comptoir, plus tu gagnes d'étoiles.",
+      "de": "Goldene Uhren auf der Route bringen je 5 Sekunden. Je mehr Zeit bei der Abgabe übrig ist, desto mehr Sterne."
     }
   }
 }

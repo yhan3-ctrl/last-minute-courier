@@ -2,7 +2,7 @@
 
 A 3D campus delivery game made in **Unreal Engine 5.8** for CSCI 5999B, Project 3. Theme: **Time**.
 
-The campus movie night is about to start, but the coffee, the projector lens and the final film reel are still on the way. You are the last courier on shift. Hold **Q** to borrow a few seconds from blue clock‑tagged machinery (carts, lifts, a shuttle) and slow it to a quarter speed, while you and your delivery clock keep moving at full speed. Deliver all three parcels and earn a seat at the screening.
+The campus movie night is about to start, but the coffee, the projector lens and the final film reel are still on the way. You are the last courier on shift. Hold **Q** to borrow a few seconds from blue clock‑tagged machinery (carts, lifts, a shuttle) and slow it to a quarter speed, while you and your delivery clock keep moving at full speed. Deliver all three parcels and earn a seat at the screening. Golden clocks along the riskier lines add 5 seconds each, and every delivery is rated up to three stars by the time you have left.
 
 | | |
 |---|---|
@@ -19,8 +19,8 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 Download the release for your platform (see the course Box folder; the Mac build is also attached to the GitHub release). No Unreal Editor is needed.
 
-- **Mac:** open `LastMinuteCourier-0.6-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
-- Windows (x86) and Linux (x86) builds will be published in the Box folder.
+- **Mac:** open `LastMinuteCourier-0.7-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
+- Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). They are published in the course Box folder.
 
 | Key | Action |
 |---|---|
@@ -49,6 +49,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.5.3` | Nov 5 | Playtester: waiting for a gap and crossing felt natural but caused respawns, and the route was hard to see. Forced-Q reset removed; continuous route arrows added |
 | `v0.5.4` | Nov 7–8 | Full real-speed playthrough timed out at the shuttle (a rail blocked boarding) and found a gap at the last lift: both fixed. Time limits tightened after the run left most of each clock unused. Interface redesigned and controls changed to match first instinct after the playtester found the UI generic and template-like |
 | `v0.6` | Nov 8 | First first-time playtest: the player walked past the parcel desk to the coffee stand without an order, saw frozen carts, got no response from E at the counter, and the camera slid inside an NPC. Desks now open their brief on arrival, a yard gate holds until the first order is accepted, the world always moves, E always explains itself, people and props stop the camera, and Q has a visible number of uses per delivery |
+| `v0.7` | Nov 8 | Owner: still less fun than commercial games. Added golden clocks (+5 s each, mostly on the risky lines), a 1–3 star rating per delivery with a total and rank at the end, a blue slow-time screen grade with lowered music pitch for Q, hit flashes, a final-ten-seconds tick and delivery confetti |
 
 ## Build and test (developers)
 

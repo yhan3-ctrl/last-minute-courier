@@ -277,7 +277,8 @@ void ACourierGameMode::BuildDeliveryDistricts()
         auto* Hill=Block(W,FVector(47280,-800+I*400,950),FVector(18,600,400+(I%3)*90),I%2?TEXT("438C95"):TEXT("63856A"),false,TEXT("Sphere"));
         FinaleActors.Add(Hill);
     }
-    for(float Y:{-1400.f,1400.f})for(float X:{44400.f,45800.f,47100.f})
+    // No lamp at x=44400: it stood beside the finale's pulled-back camera.
+    for(float Y:{-1400.f,1400.f})for(float X:{45800.f,47100.f})
     {
         Block(W,FVector(X,Y,750),FVector(24,24,660),TEXT("354F53"));
         auto* Bulb=Block(W,FVector(X,Y,1100),FVector(85),TEXT("F1D9A0"),false,TEXT("Sphere"));

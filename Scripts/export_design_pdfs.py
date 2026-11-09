@@ -55,7 +55,7 @@ def markdown(text):
 def footer(c,doc):
  c.setStrokeColor(TEAL);c.setLineWidth(.65);c.line(56,43,556,43)
  c.setFont('CourierBody',8);c.setFillColor(INK)
- c.drawString(56,29,'LAST MINUTE COURIER  |  Design v0.6  |  November 8, 2026')
+ c.drawString(56,29,'LAST MINUTE COURIER  |  Design v0.7  |  November 8, 2026')
  c.drawRightString(556,29,str(doc.page))
 def export(name,paths):
  doc=SimpleDocTemplate(str(OUT/name),pagesize=(612,792),leftMargin=56,rightMargin=56,topMargin=48,bottomMargin=59,title=name.replace('.pdf',''),author='Yu Han')

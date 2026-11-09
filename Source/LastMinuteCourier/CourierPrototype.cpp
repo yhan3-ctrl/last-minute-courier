@@ -142,6 +142,7 @@ void ACourierGameMode::BeginPlay()
     BuildRouteGuide();
     BuildPracticeRoute();
     BuildDeliveryDistricts();
+    SpawnTokens();
     GetWorld()->SpawnActor<ACourierCampusScene>();
     UpdateCelebration();
     if(auto* Track=LoadObject<USoundBase>(nullptr,TEXT("/Game/Audio/CampusLoop.CampusLoop")))
@@ -242,6 +243,8 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     if(Autopilot)Autopilot->Tick(*this,DeltaSeconds);
     QDenied=FMath::Max(0.f,QDenied-DeltaSeconds);
     UpdateGate(DeltaSeconds);
+    UpdateTokens(DeltaSeconds);
+    UpdateFeel(DeltaSeconds);
     UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
     if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))
@@ -289,6 +292,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         RestoreCheckpoint();
         return;
     }
+    CollectTokens(Position);
     // Walking up to a desk opens its brief, as the counter invites. After the
     // player closes it, it reopens only once they step away and come back.
     if(Phase==ECourierPhase::AwaitPickup)
@@ -375,6 +379,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     {
         if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))UE_LOG(LogTemp,Display,TEXT("CourierQA recovery position=%s checkpoint=%s underRaised=%d"),*Position.ToString(),*Checkpoint.ToString(),UnderRaisedRoute);
         Notify(TEXT("Back on the path. Your checkpoint is safe."),TEXT("回到路上了。已恢复到检查点。"));
+        HitFlash=.45f;Sound(TEXT("Stamp"),.3f,.6f);
         RestoreCheckpoint();
         return;
     }
@@ -385,6 +390,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
             if (Cart && Cart->Touching(Position))
             {
                 Notify(TEXT("The cart hit you. Back at the checkpoint. Wait for a clear gap; Q can keep it open longer."),TEXT("你被运输车撞到了，已回到检查点。等空隙出现再通过；Q 可以让空隙保持更久。"));
+                HitFlash=.55f;Sound(TEXT("Stamp"),.38f,.5f);
                 RestoreCheckpoint();
                 break;
             }
@@ -436,6 +442,8 @@ void ACourierGameMode::Interact()
     {
         EndSlow();
         DeliveryTimes[CurrentOrder]=OrderElapsed;
+        Stars[CurrentOrder]=RateDelivery();
+        Celebrate(Destination+FVector(0,0,160),CurrentOrder==2?90:45);
         CompletedOrders=FMath::Max(CompletedOrders,CurrentOrder+1);
         Player->ShowPackage(false);
         Phase=CurrentOrder==2?ECourierPhase::Complete:ECourierPhase::Delivered;
@@ -475,7 +483,7 @@ void ACourierGameMode::AcceptOrder()
     Phase=ECourierPhase::Delivery;
     Remaining=OrderBudget();OrderElapsed=0.f;RecoverySeconds=0.f;NoticeSeconds=0.f; // No practice notices leak into an order.
     Checkpoint=Pickup+FVector(0,0,20);
-    ResetDevices();
+    ResetDevices();ResetTokens(CurrentOrder);
     if(auto* Player=Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this,0)))Player->ShowPackage(true);
     Sound(TEXT("Pickup"),.28f);
 }
@@ -495,6 +503,7 @@ void ACourierGameMode::RestartRun()
     if(Phase!=ECourierPhase::Complete)return;
     CurrentOrder=0;CompletedOrders=0;Retries=0;Tutorial=0;Card=0;SessionSeconds=0.f;
     DeliveryTimes={0.f,0.f,0.f};bTrainingJumped=false;bNearPickup=false;
+    Stars={0,0,0};ResetTokens(-2);
     ConfigureOrder(0);Checkpoint=FVector(100,0,120);
     Phase=ECourierPhase::Opening;NoticeSeconds=0.f;
     ResetDevices();RestoreCheckpoint();RecoverySeconds=0.f;
@@ -626,7 +635,7 @@ void ACourierGameMode::Retry()
     OrderElapsed = 0.f;
     ConfigureOrder(CurrentOrder);
     Checkpoint = Pickup+FVector(0,0,20);
-    ResetDevices();
+    ResetDevices();ResetTokens(CurrentOrder);
     UpdateCelebration();
     RestoreCheckpoint();
     if (auto* Player = Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
@@ -949,6 +958,14 @@ ACourierCharacter::ACourierCharacter()
     Arm->bEnableCameraLag = false;
     Arm->bEnableCameraRotationLag = false;
     Arm->ProbeSize = 18.f;
+    // Borrowed-time look: cooler, slightly desaturated, framed. Weighted by SlowFx.
+    Camera->PostProcessSettings.bOverride_ColorSaturation=true;
+    Camera->PostProcessSettings.ColorSaturation=FVector4(.42f,.5f,.66f,1.f);
+    Camera->PostProcessSettings.bOverride_SceneColorTint=true;
+    Camera->PostProcessSettings.SceneColorTint=FLinearColor(.74f,.92f,1.25f);
+    Camera->PostProcessSettings.bOverride_VignetteIntensity=true;
+    Camera->PostProcessSettings.VignetteIntensity=1.25f;
+    Camera->PostProcessBlendWeight=0.f;
     Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GreyboxCourier"));
     Body->SetupAttachment(RootComponent);
     Body->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder")));
@@ -1034,6 +1051,7 @@ void ACourierCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const bool Finale=Game(this) && Game(this)->Phase==ECourierPhase::Complete;
+    if(const auto* Mode=Game(this))Camera->PostProcessBlendWeight=Mode->SlowFx;
     // A seated audience behind the courier must not collapse the ending pullback.
     Arm->bDoCollisionTest=!Finale;
     if(!Finale){Arm->TargetArmLength=620.f;Arm->SocketOffset.Z=100.f;}

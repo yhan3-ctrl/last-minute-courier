@@ -24,6 +24,15 @@ struct FCourierOrder
     float Seconds=140.f;
 };
 
+// A golden clock pickup. Order -1 belongs to the practice yard.
+struct FCourierToken
+{
+    TWeakObjectPtr<AActor> Actor;
+    FVector Base=FVector::ZeroVector;
+    int32 Order=0;
+    bool bTaken=false;
+};
+
 // Purely visual props never block the courier, but large ones block the camera
 // probe so the chase camera cannot slide inside them.
 void CourierVisualCollision(class UPrimitiveComponent* Component,const FVector& Size);
@@ -62,6 +71,24 @@ public:
     int32 OrderCharges() const {return CurrentOrder==0?3:(CurrentOrder==1?4:5);}
     bool GateOpen() const;
     bool bNearPickup = false;
+    // Golden clocks, star ratings and feel.
+    static constexpr float TokenSeconds = 5.f;
+    TArray<FCourierToken> Tokens;
+    TArray<int32> Stars = {0,0,0};
+    float SlowFx = 0.f, HitFlash = 0.f, TokenFlash = 0.f, TokenSpin = 0.f;
+    int32 LastTickSecond = -1;
+    void SpawnTokens();
+    bool TokenVisible(const FCourierToken& Token) const;
+    int32 TokensTotal(int32 Order) const;
+    int32 TokensTaken(int32 Order) const;
+    void ResetTokens(int32 Order);
+    void UpdateTokens(float DeltaSeconds);
+    void CollectTokens(const FVector& Position);
+    int32 RateDelivery() const;
+    int32 TotalStars() const;
+    FString RankTitle() const;
+    void Celebrate(const FVector& At,int32 Count);
+    void UpdateFeel(float DeltaSeconds);
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 60.f;
@@ -146,7 +173,7 @@ private:
     void ConfigureOrder(int32 Index);
     void AcceptOrder();
     void OpenBrief();
-    void Sound(const TCHAR* Name,float Volume=.3f);
+    void Sound(const TCHAR* Name,float Volume=.3f,float Pitch=1.f);
     void UpdateCelebration();
     void LoadCopy();
     void LoadTranslations();

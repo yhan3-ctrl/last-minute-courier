@@ -46,6 +46,8 @@ private:
     ELiftStep LiftStep=ELiftStep::None;
     bool bReleasedSlowAfterBoard=false;
     bool bTour=false;
+    float SlowShotAt=-1.f;
+    int32 SlowShots=0;
     int32 TourStep=0;
     float TourClock=0.f;
     bool Tour(ACourierGameMode& Mode,float DeltaSeconds);

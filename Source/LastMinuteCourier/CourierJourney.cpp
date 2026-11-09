@@ -163,11 +163,11 @@ FString ACourierGameMode::ProgressText() const
     return Copy(TEXT("DELIVERIES"),TEXT("配送进度"))+FString::Printf(TEXT("  %d / 3"),CompletedOrders);
 }
 
-void ACourierGameMode::Sound(const TCHAR* Name,float Volume)
+void ACourierGameMode::Sound(const TCHAR* Name,float Volume,float Pitch)
 {
     if(!bAudioEnabled)return;
     const FString Path=FString::Printf(TEXT("/Game/Audio/%s.%s"),Name,Name);
-    if(auto* Cue=LoadObject<USoundBase>(nullptr,*Path))UGameplayStatics::PlaySound2D(this,Cue,Volume);
+    if(auto* Cue=LoadObject<USoundBase>(nullptr,*Path))UGameplayStatics::PlaySound2D(this,Cue,Volume,Pitch);
 }
 
 void ACourierGameMode::SetAudioEnabled(bool bEnabled)

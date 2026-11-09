@@ -131,6 +131,7 @@ void FCourierAutopilot::Tick(ACourierGameMode& Mode,float DeltaSeconds)
     LastPosition=Player->GetActorLocation();
     if(Mode.RecoverySeconds>0.f)return;
     if(ShotClock>15.f){ShotClock=0.f;Shot(FString::Printf(TEXT("play-%s-%d"),*PhaseName(Phase),Mode.CurrentOrder+1));}
+    if(SlowShotAt>0.f && Clock>=SlowShotAt){SlowShotAt=-1.f;Shot(TEXT("borrowed-time"));}
     Drive(Mode,*Player,DeltaSeconds);
 }
 
@@ -211,7 +212,11 @@ bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector
     if(bAllowQ && !Mode.bSlowing && Mode.Cooldown<=0.f && Mode.Charges>0 && Safe(Mode.SlowRemaining))
     {
         Mode.StartSlow();
-        if(Mode.bSlowing){++QUses;Log(FString::Printf(TEXT("hold Q for cart at x=%.0f"),Next->Origin.X));}
+        if(Mode.bSlowing)
+        {
+            ++QUses;Log(FString::Printf(TEXT("hold Q for cart at x=%.0f"),Next->Origin.X));
+            if(SlowShots<2){SlowShotAt=Clock+.45f;++SlowShots;}
+        }
         return true;
     }
     if(Mode.bSlowing)Mode.EndSlow();

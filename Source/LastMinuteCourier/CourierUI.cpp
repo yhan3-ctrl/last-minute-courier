@@ -80,6 +80,7 @@ public:
         Left=FSlateRoundedBoxBrush(FLinearColor::White,FVector4(16,0,0,16));
         Right=FSlateRoundedBoxBrush(FLinearColor::White,FVector4(0,16,16,0));
         Shade=FSlateColorBrush(FLinearColor(.01f,.025f,.03f,.62f));
+        Solid=FSlateColorBrush(FLinearColor::White);
         Stamp=FSlateRoundedBoxBrush(Hex(TEXT("FFF6E6"),.94f),12.f,Orange,5.f);
         StampSmall=FSlateRoundedBoxBrush(FLinearColor::Transparent,26.f,Orange,3.f);
         const auto Button=[](FButtonStyle& Style,const FLinearColor& Fill,const FLinearColor& Hover,const FLinearColor& Press,const FLinearColor* Outline)
@@ -138,7 +139,7 @@ private:
     int32 LastOrder=-1;
     bool LastHelp=false;
     bool LastConfirm=false;
-    FSlateBrush R4,R6,R12,R16,Pill,Top,Bottom,Left,Right,Shade,Stamp,StampSmall;
+    FSlateBrush R4,R6,R12,R16,Pill,Top,Bottom,Left,Right,Shade,Stamp,StampSmall,Solid;
     FButtonStyle PrimaryStyle,QuietStyle,DarkStyle;
     FProgressBarStyle ChargeStyle;
     FTableRowStyle LanguageRowStyle;
@@ -414,6 +415,15 @@ private:
             +SVerticalBox::Slot().AutoHeight()[Value];
     }
 
+    TSharedRef<SWidget> StarRow(int32 Count,int32 Size,const FLinearColor& Off) const
+    {
+        auto Row=SNew(SHorizontalBox);
+        for(int32 I=0;I<3;++I)
+            Row->AddSlot().AutoWidth().Padding(0,0,I<2?4:0,0)
+                [Text(FText::FromString(I<Count?TEXT("★"):TEXT("☆")),Size,EFace::Symbol,I<Count?CourierPalette::Gold:Off)];
+        return Row;
+    }
+
     static FString Clock(float Seconds)
     {
         const int32 S=FMath::Max(0,FMath::CeilToInt(Seconds));
@@ -476,7 +486,13 @@ private:
                 [Box(R12,PaperDeep,FMargin(16,12),
                     SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,4)[Text(Copy(TEXT("ROUTE"),TEXT("路线")),13,EFace::Heavy,Orange)]
-                        +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->RouteHint()),17,CourierPalette::Ink,660.f)])]
+                        +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->RouteHint()),17,CourierPalette::Ink,660.f)]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
+                            [SNew(SHorizontalBox)
+                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
+                                    [SNew(SBox).WidthOverride(12).HeightOverride(12)[SNew(SBorder).BorderImage(&R6).BorderBackgroundColor(Gold)]]
+                                +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+                                    [Body(FText::FromString(Mode->Copy(TEXT("Golden clocks on this route add 5 seconds each. More time left at the counter earns more stars."),TEXT("路线上的金色时钟每个 +5 秒。送达时剩余时间越多，星星越多。"))+FString::Printf(TEXT("  (%d)"),Mode->TokensTotal(Mode->CurrentOrder))),16,CourierPalette::Ink,640.f)]])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)
                 [Text(Copy(TEXT("The clock starts when you accept."),TEXT("确认接单后才开始计时。")),15,EFace::Heavy,Teal)];
         auto Footer=SNew(SHorizontalBox)
@@ -547,6 +563,11 @@ private:
                     [SNew(SHorizontalBox)
                         +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Pips(Mode->CompletedOrders,3,true)]
                         +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Text(FText::FromString(Mode->ProgressText()),14,EFace::Heavy,Gold)]]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[StarRow(Mode->Stars[Mode->CurrentOrder],34,FLinearColor(1,1,1,.25f))]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,14)
+                    [Text(FText::FromString(Mode->Copy(TEXT("TIME LEFT"),TEXT("剩余时间"))+TEXT("  ")+Clock(Mode->Remaining)+TEXT("     ")+
+                        Mode->Copy(TEXT("GOLDEN CLOCKS"),TEXT("金色时钟"))+FString::Printf(TEXT("  %d / %d"),Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder))),
+                        14,EFace::Heavy,CreamMuted)]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)[Text(FText::FromString(Mode->OrderOutcome()),22,EFace::Black,Cream,520)]
                 +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)
                     [Action(Copy(TEXT("Read next delivery"),TEXT("阅读下一单")),0,EButton::Primary,TEXT("Enter"))]);
@@ -570,7 +591,8 @@ private:
                     [SNew(SBorder).BorderImage(&StampSmall).HAlign(HAlign_Center).VAlign(VAlign_Center)
                         [SNew(SVerticalBox)
                             +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[Text(FText::FromString(FString::Printf(TEXT("0%d"),I+1)),26,EFace::Digits,Orange)]
-                            +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[Text(Names[I],12,EFace::Black,Orange)]]]];
+                            +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[Text(Names[I],12,EFace::Black,Orange)]
+                            +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[StarRow(Mode->Stars[I],11,PaperDeep)]]]];
         const float Total=Mode->DeliveryTimes[0]+Mode->DeliveryTimes[1]+Mode->DeliveryTimes[2];
         auto Main=SNew(SVerticalBox)
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,8)[Text(Copy(TEXT("ADMIT ONE / CAMPUS CINEMA"),TEXT("一人入场 / 校园电影夜")),14,EFace::Heavy,Orange)]
@@ -578,6 +600,14 @@ private:
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)
                 [Text(Copy(TEXT("The film begins. Your three delivery stamps make one ticket. Tonight, there is a seat for you too."),
                     TEXT("放映开始。三枚配送邮戳，拼成了你的电影票。今晚，也有一个座位属于你。")),18,EFace::Bold,Ink,380)]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,14)
+                [SNew(SHorizontalBox)
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)
+                        [Text(FText::FromString(TEXT("★")),30,EFace::Symbol,Gold)]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,14,0)
+                        [Text(FText::FromString(FString::Printf(TEXT("%d / 9"),Mode->TotalStars())),34,EFace::Digits,Ink)]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+                        [Text(FText::FromString(Mode->RankTitle()),20,EFace::Black,Orange,220)]]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)
                 [SNew(SHorizontalBox)
                     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,34,0)
@@ -629,6 +659,15 @@ private:
     {
         using namespace CourierPalette;
         auto Overlay=SNew(SOverlay);
+        Overlay->AddSlot()
+            [SNew(SBorder).BorderImage(&Solid).Visibility(EVisibility::HitTestInvisible)
+                .BorderBackgroundColor_Lambda([this]()->FSlateColor
+                {return FLinearColor(1.f,.1f,.05f,Mode.IsValid()?FMath::Clamp(Mode->HitFlash,0.f,.6f)*.55f:0.f);})];
+        // Borrowed time washes the screen with a faint cyan, on top of the camera grade.
+        Overlay->AddSlot()
+            [SNew(SBorder).BorderImage(&Solid).Visibility(EVisibility::HitTestInvisible)
+                .BorderBackgroundColor_Lambda([this]()->FSlateColor
+                {return FLinearColor(.25f,.85f,1.f,Mode.IsValid()?Mode->SlowFx*.1f:0.f);})];
         const bool bPractice=Mode->Phase==ECourierPhase::Practice;
         const bool bDelivery=Mode->Phase==ECourierPhase::Delivery;
 
@@ -650,7 +689,19 @@ private:
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,9,0)
                                     [SNew(SBox).WidthOverride(9).HeightOverride(9)[SNew(SBorder).BorderImage(&R4).BorderBackgroundColor(Orange)]]
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
-                                    [Text(bDelivery?FText::FromString(Mode->OrderDestination()):Copy(TEXT("Parcel desk"),TEXT("取件台")),17,EFace::Heavy,CreamMuted,330)]])]];
+                                    [Text(bDelivery?FText::FromString(Mode->OrderDestination()):Copy(TEXT("Parcel desk"),TEXT("取件台")),17,EFace::Heavy,CreamMuted,330)]]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
+                            [SNew(SHorizontalBox).Visibility(bDelivery?EVisibility::HitTestInvisible:EVisibility::Collapsed)
+                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
+                                    [SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&R6).BorderBackgroundColor(Gold)]]
+                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+                                    [SNew(STextBlock).Font(Typeface(15,EFace::Heavy)).ColorAndOpacity(Gold)
+                                        .Text_Lambda([this]()
+                                        {
+                                            if(!Mode.IsValid())return FText();
+                                            return FText::FromString(Mode->Copy(TEXT("GOLDEN CLOCKS"),TEXT("金色时钟"))+FString::Printf(TEXT("  %d / %d"),
+                                                Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder)));
+                                        })]])]];
 
         // Top centre: delivery clock, then a compass arrow toward the next marker.
         auto Centre=SNew(SVerticalBox);
@@ -659,6 +710,7 @@ private:
                 [SNew(SBorder).BorderImage(&R16).Padding(FMargin(26,2,26,6))
                     .BorderBackgroundColor_Lambda([this]()->FSlateColor
                     {
+                        if(Mode.IsValid() && Mode->TokenFlash>0.f)return FLinearColor::LerpUsingHSV(CourierPalette::Plate,CourierPalette::Gold,FMath::Clamp(Mode->TokenFlash*2.f,0.f,1.f));
                         if(!Mode.IsValid() || Mode->Remaining>20.f)return CourierPalette::Plate;
                         const float Pulse=.5f+.5f*FMath::Sin(float(FPlatformTime::Seconds())*7.f);
                         return FLinearColor::LerpUsingHSV(CourierPalette::Red,CourierPalette::Hex(TEXT("8E2416")),Pulse);

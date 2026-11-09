@@ -137,6 +137,25 @@ bool FCourierFlowRegression::RunTest(const FString&)
         Mode->ResetDevices();Mode->NoticeSeconds=0.f;Mode->QDenied=0.f;
         TestEqual(TEXT("Resetting the order restores its uses"),Mode->Charges,3);
     }
+    {
+        // Golden clocks: practice teaches one, each delivery route offers several.
+        TestEqual(TEXT("Practice yard has one teaching clock"),Mode->TokensTotal(-1),1);
+        TestTrue(TEXT("Every delivery has golden clocks"),Mode->TokensTotal(0)>=3 && Mode->TokensTotal(1)>=4 && Mode->TokensTotal(2)>=5);
+        FVector Spot=FVector::ZeroVector;
+        for(const auto& Token:Mode->Tokens)if(Token.Order==0){Spot=Token.Base;break;}
+        const float Before=Mode->Remaining;
+        Place(Spot-FVector(0,0,22));Mode->CollectTokens(Player->GetActorLocation());
+        TestTrue(TEXT("A golden clock adds five seconds"),FMath::IsNearlyEqual(Mode->Remaining,Before+ACourierGameMode::TokenSeconds));
+        TestEqual(TEXT("The clock is counted"),Mode->TokensTaken(0),1);
+        Mode->CollectTokens(Player->GetActorLocation());
+        TestTrue(TEXT("A collected clock cannot be taken twice"),FMath::IsNearlyEqual(Mode->Remaining,Before+ACourierGameMode::TokenSeconds));
+        Mode->ResetTokens(0);TestEqual(TEXT("Restarting an order restores its clocks"),Mode->TokensTaken(0),0);
+        const float Budget=Mode->OrderBudget();
+        Mode->Remaining=Budget*.5f;TestEqual(TEXT("Half the clock left earns three stars"),Mode->RateDelivery(),3);
+        Mode->Remaining=Budget*.3f;TestEqual(TEXT("A third left earns two stars"),Mode->RateDelivery(),2);
+        Mode->Remaining=Budget*.05f;TestEqual(TEXT("Any on-time delivery earns a star"),Mode->RateDelivery(),1);
+        Mode->Remaining=Before;Mode->NoticeSeconds=0.f;
+    }
     TestTrue(TEXT("Collection reveals package"),Player->Bag->IsVisible());
     Place(FVector(2600,0,88));
     const float ClockBefore=Mode->Remaining;

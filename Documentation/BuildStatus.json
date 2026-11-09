@@ -12,9 +12,9 @@
  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
  "comfort_validation": "requires_human_playtest",
  "platform_builds": {
-  "mac": "v06_arm64_Development_DMG sha256 b5786488b4027db1f2342d0db5fa7911a77c79041583203c9bfb75add39354bd; mounted strict/deep signature valid; DMG app passed three suites; packaged real-speed scripted playthrough with UI tour complete",
-  "windows": "not_built",
-  "linux": "not_built"
+  "mac": "v07_arm64_Development_DMG sha256 65f697733caa5b31212c7dfde2a354110af7d34ef0b249db0ec024e00540475b; mounted strict/deep signature valid; DMG app passed three suites; packaged real-speed scripted playthrough complete with 9/9 stars",
+  "windows": "not_built_on_mac; Scripts/package_windows.bat + Documentation/BuildOtherPlatforms.md for a Windows PC",
+  "linux": "not_built_on_mac; Scripts/package_linux.bat (Windows cross-compile) + Documentation/BuildOtherPlatforms.md"
  },
  "default_language": "en",
  "languages": [
@@ -27,7 +27,7 @@
   "de"
  ],
  "translation_coverage": {
-  "runtime_strings": 125,
+  "runtime_strings": 134,
   "optional_languages": 6,
   "check": "passed"
  },
@@ -59,7 +59,7 @@
  "small_window": "1024x640_pause_and_gameplay_visually_checked",
  "pointer_click_verification": "blocked_by_computer_use_noWindowsAvailable",
  "final_audit_graphical_flow": "1024x640_opening_tutorial_pickup_pause_recovery_delivery_retry_passed",
- "version": "0.6",
+ "version": "0.7",
  "previous_v03_runtime_checks": [
   "default_english_opening",
   "optional_chinese_glyphs",

@@ -9,7 +9,11 @@ Unreal Engine on macOS cannot compile Windows or Linux executables, so these two
 3. For Linux only: install the **Linux cross-compile toolchain** that matches UE 5.8 (Epic's "Cross-Compiling for Linux" page lists the exact clang toolchain version). The installer sets the `LINUX_MULTIARCH_ROOT` environment variable; restart the PC afterwards.
 4. Clone the repository: `git clone https://github.com/yhan3-ctrl/last-minute-courier.git`
 
-## 2. Build
+## 2. Build (one step)
+
+No git needed: on the GitHub page choose **Code → Download ZIP** and unzip it, or clone it. Then double-click `Scripts\package_all_windows.bat`. It finds Unreal Engine 5.8, builds Windows x64, builds Linux x64 if the cross-compile toolchain is installed, and leaves `LastMinuteCourier-0.10-Windows-x64.zip`, `LastMinuteCourier-0.10-Linux-x64.zip` and their `.sha256` files in `Builds\`.
+
+## 2b. Build (separately)
 
 Open a Command Prompt in the repository folder and run:
 

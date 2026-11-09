@@ -61,8 +61,8 @@
       "id": "slide",
       "completion": "slide_under_practice_beam",
       "text": {
-        "en": "Sprint, then press Ctrl to slide under the low beam.",
-        "zh": "先冲刺，再按 Ctrl 从低横梁下滑铲过去。"
+        "en": "Sprint, then press C (or Ctrl) to slide under the low beam.",
+        "zh": "先冲刺，再按 C（或 Ctrl）从低横梁下滑铲过去。"
       }
     },
     {
@@ -86,7 +86,7 @@
     {
       "id": "coffee",
       "number": 1,
-      "seconds": 40,
+      "seconds": 45,
       "title": {
         "en": "A Little Warmth",
         "zh": "把暖意送到"
@@ -129,8 +129,8 @@
         "zh": "投影台"
       },
       "brief": {
-        "en": "The projectionist left the lens case here at the coffee stand. It is fragile: a cart bump or a fall knocks it, and the third knock cracks it. Take it through the garden to the projection booth.",
-        "zh": "放映员把镜头盒落在了咖啡摊。它很娇贵：被运输车撞到或摔下去都会磕一下，第三次就会裂开。把它穿过花园送到投影台。"
+        "en": "The projectionist left the lens case here at the coffee stand. It is fragile: anything that hits you, and any fall, knocks it, and the third knock cracks it. Take it through the garden to the projection booth.",
+        "zh": "放映员把镜头盒留在了咖啡摊。它很脆弱：被任何东西撞到或摔一跤都会磕到它，第三次就裂了。穿过花园把它送到放映室。"
       },
       "label": {
         "en": "Handle with care.",

@@ -147,7 +147,8 @@ void ACourierGameMode::BuildDeliveryDistricts()
         if(!Water)Ground->AddInstance(FTransform(FRotator::ZeroRotator,FVector(X,Y,-28),FVector(4,4,.3f)),true);
     }
     // Routes share stations. All side routes are walkable alternatives, not dead ends.
-    Way(W,RailSpans,{FVector(2800,0,0),FVector(3050,850,0),FVector(7400,850,0),FVector(7700,0,0)},450);
+    // The arcade rejoins right after the shutter, so the turnstile gate before the stand is shared by every route.
+    Way(W,RailSpans,{FVector(2800,0,0),FVector(3050,850,0),FVector(6450,850,0),FVector(6700,0,0)},450);
     Plaque(W,FVector(2860,440,160),TEXT("ARCADE / WALK"),25);
     // (v0.9: the two step planters at x 4600-4700 became a climbable crate wall; see BuildParkour.)
 
@@ -220,7 +221,7 @@ void ACourierGameMode::BuildDeliveryDistricts()
     Way(W,RailSpans,{FVector(33900,0,0),FVector(34100,-1900,0),FVector(36000,-1900,0),FVector(36300,0,0)},700,true);
     Block(W,FVector(34750,0,-70),FVector(2400,5000,30),TEXT("709EA4"));
     Plaque(W,FVector(33950,600,170),TEXT("SHUTTLE / Q"));
-    Way(W,RailSpans,{FVector(36900,0,0),FVector(37000,1450,0),FVector(38700,1450,0),FVector(38900,0,0)},650);
+    Way(W,RailSpans,{FVector(37200,0,0),FVector(37300,1450,0),FVector(38700,1450,0),FVector(38900,0,0)},650);
     Way(W,RailSpans,{FVector(38900,0,0),FVector(39600,-1100,0),FVector(39800,0,0)},900);
     Deck(W,FVector(39900,0,0),FVector2D(650,1050));
     Lift(FVector(40300,0,-20),FVector(0,0,420),2,10);

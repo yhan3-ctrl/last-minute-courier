@@ -258,6 +258,7 @@ private:
     FVector SlideDirection=FVector::ForwardVector;
     float CoyoteSeconds=0.f;
     float JumpBufferSeconds=0.f;
+    float SlideBufferSeconds=0.f;
     float MantleTime=-1.f;
     FVector MantleFrom,MantleTo,MantleForward;
     float BaseFov=90.f;

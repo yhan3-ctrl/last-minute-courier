@@ -40,7 +40,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
                     Pair(TEXT("brief"),Order.Brief,Order.BriefZh);
                     Pair(TEXT("label"),Order.Label,Order.LabelZh);
                     Pair(TEXT("delivered"),Order.Delivered,Order.DeliveredZh);
-                    const double Defaults[]={40,120,130};double Seconds=Defaults[I];
+                    const double Defaults[]={45,120,130};double Seconds=Defaults[I];
                     Row->TryGetNumberField(TEXT("seconds"),Seconds);
                     Order.Seconds=FMath::Clamp(float(Seconds),20.f,600.f);
                 }
@@ -51,7 +51,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
         for(int32 I=0;I<3;++I)if(Orders[I].Title.IsEmpty())
         {
             Orders[I].Title=Titles[I];Orders[I].TitleZh=Titles[I];
-            Orders[I].Destination=Titles[I];Orders[I].Seconds=I==0?40.f:(I==1?120.f:130.f);
+            Orders[I].Destination=Titles[I];Orders[I].Seconds=I==0?45.f:(I==1?120.f:130.f);
             Orders[I].Brief=TEXT("Follow the orange route markers. E collects and delivers; Q slows blue-tagged devices.");
             UE_LOG(LogTemp,Warning,TEXT("Courier order data missing: release data check required."));
         }
@@ -134,7 +134,7 @@ FVector ACourierGameMode::NavigationTarget() const
             if(FVector::Dist2D(P,Nodes[Next])<240.f && Next+1<Nodes.Num())++Next;
             DetourTarget=Nodes[Next]+FVector(0,0,100);return true;
         };
-        if(CurrentOrder==0 && Detour({FVector(2800,0,0),FVector(3050,850,0),FVector(7400,850,0),FVector(7700,0,0)},1))return DetourTarget;
+        if(CurrentOrder==0 && Detour({FVector(2800,0,0),FVector(3050,850,0),FVector(6450,850,0),FVector(6700,0,0)},1))return DetourTarget;
         if(CurrentOrder==1)
         {
             if(Detour({FVector(12000,0,0),FVector(12200,1900,0),FVector(14100,1900,320),FVector(14800,1900,320),FVector(14800,0,320)},1))return DetourTarget;
@@ -145,7 +145,7 @@ FVector ACourierGameMode::NavigationTarget() const
         {
             if(Detour({FVector(30100,0,0),FVector(30200,1450,0),FVector(32300,1450,0),FVector(32700,0,0)},1))return DetourTarget;
             if(Detour({FVector(33900,0,0),FVector(34100,-1900,0),FVector(36000,-1900,0),FVector(36300,0,0)},-1))return DetourTarget;
-            if(Detour({FVector(36900,0,0),FVector(37000,1450,0),FVector(38700,1450,0),FVector(38900,0,0)},1))return DetourTarget;
+            if(Detour({FVector(37200,0,0),FVector(37300,1450,0),FVector(38700,1450,0),FVector(38900,0,0)},1))return DetourTarget;
             if(Detour({FVector(39700,0,0),FVector(39900,2200,0),FVector(42200,2200,420),FVector(43000,2200,420),FVector(43000,0,420)},1))return DetourTarget;
         }
     }
@@ -226,7 +226,7 @@ FString ACourierGameMode::ContextHint() const
         const FVector D=P-Obstacle->Origin;
         if(FMath::Abs(D.Z)>300.f)continue;
         if(Obstacle->Kind==ECourierObstacleKind::Shutter && D.X>-1000.f && D.X<-60.f && FMath::Abs(D.Y)<Obstacle->Width*.5f+200.f)
-            return Copy(TEXT("Rolling shutter! Sprint and slide under (Ctrl) while it is still up, or wait for it to open. Q slows it."),TEXT("卷帘门！趁它还没落下，冲刺后按 Ctrl 滑铲钻过去，或者等它再升起来。Q 能让它变慢。"));
+            return Copy(TEXT("Rolling shutter! Sprint and slide under (C) while it is still up, or wait for it to open. Q slows it."),TEXT("卷帘门！趁它还没落下，冲刺后按 C 滑铲钻过去，或者等它再升起来。Q 能让它变慢。"));
         if(Obstacle->Kind==ECourierObstacleKind::Sweeper && FVector2D(D.X,D.Y).Size()<Obstacle->ArmLength+700.f && D.X<Obstacle->ArmLength)
             return Copy(TEXT("Turnstile! Jump the low arm, slide under the high arm. Q slows it."),TEXT("旋转栏杆！低的一侧跳过去，高的一侧滑铲钻过去。Q 能让它变慢。"));
         if(Obstacle->Kind==ECourierObstacleKind::Spring && FVector2D(D.X,D.Y).Size()<700.f && D.X<0.f)
@@ -240,8 +240,9 @@ FString ACourierGameMode::ContextHint() const
     if(NextCart)
         return bOutOfTime?Copy(TEXT("No borrowed time left. Wait for the cart to pass, then cross."),TEXT("借时间已用完。等运输车开过去再通过。")):
             Copy(TEXT("Wait for the cart to pass. Hold Q to keep the gap open, then cross."),TEXT("先等运输车开过去，再按住 Q 延长空隙，趁机通过。"));
+    // Boarding hints only at the boarding level, not once you are up top.
     for(const auto& Lift:Platforms)if(Lift && Lift->OrderIndex==CurrentOrder &&
-        FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f)
+        FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f && P.Z<Lift->Origin.Z+260.f)
     {
         if(Lift->Travel.Z>0.f && P.Z<Lift->Origin.Z+160.f && Lift->GetActorLocation().Z>P.Z+20.f)
             return Copy(TEXT("The lift is above you. Release Q and wait here for it to come down."),TEXT("升降台还在上方。松开 Q，在这里等它降下来。"));
@@ -253,5 +254,5 @@ FString ACourierGameMode::ContextHint() const
         return Copy(TEXT("Walk onto the orange square. Press E to deliver."),TEXT("走到橙色方形标记上，按 E 交付。"));
     // A quiet screen once the player is underway; the reminder shows briefly per order.
     if(Phase==ECourierPhase::Delivery && OrderElapsed>7.f)return FString();
-    return Copy(TEXT("Follow the orange route markers. C gently recenters your view."),TEXT("沿橙色路线标记前进。C 可平缓地将镜头回正。"));
+    return Copy(TEXT("Follow the orange route markers. V gently recenters your view."),TEXT("沿橙色路线标记前进。V 可平缓地将镜头回正。"));
 }

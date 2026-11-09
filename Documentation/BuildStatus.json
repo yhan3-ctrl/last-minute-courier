@@ -8,11 +8,11 @@
  "visual_material_generation": "succeeded_zero_errors_zero_warnings",
  "runtime_playtest": "v09 packaged real-speed autoplay (player verbs only: move, sprint, jump/climb, slide, Q, E) full run plus UI tour en/zh/de; four Editor, four packaged-from-DMG regression suites (FirstOrderBoundaries, Parkour, PlatformRide, ThreeOrderJourney)",
  "human_playtests": 2,
- "full_delivery_flow": "v09 packaged app: complete real-speed scripted run, 0 recoveries, 0 stuck, 2:22 expert wall time (cards 3 s, briefs 5 s); orders 8.0/42.4/56.3 s of 40/120/130. First-time human run of v0.9 still pending.",
+ "full_delivery_flow": "v0.10 packaged app: complete real-speed scripted run, 0 recoveries, 0 stuck, 2:22 expert wall time (cards 3 s, briefs 5 s); orders 8.1/42.4/56.2 s of 45/120/130; all three turnstile gates crossed; stars 3/3/3. First-time human run of v0.10 still pending.",
  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
  "comfort_validation": "requires_human_playtest",
  "platform_builds": {
-  "mac": "v09_arm64_Development_DMG sha256 65d9acb138ea7af090a24b5dc6fee83a5dcc3e381661eba74832abb09c9195e9; mounted strict/deep signature valid; DMG app passed four suites; packaged real-speed scripted playthrough complete",
+  "mac": "v0.10_arm64_Development_DMG sha256 3f9d0d90277eac065aaf44855339ffff7153b1a72d09e648adfad7954178b46c; mounted strict/deep signature valid; DMG app passed four suites",
   "windows": "not_built_on_mac; Scripts/package_windows.bat + Documentation/BuildOtherPlatforms.md for a Windows PC",
   "linux": "not_built_on_mac; Scripts/package_linux.bat (Windows cross-compile) + Documentation/BuildOtherPlatforms.md"
  },
@@ -27,7 +27,7 @@
   "de"
  ],
  "translation_coverage": {
-  "runtime_strings": 156,
+  "runtime_strings": 159,
   "optional_languages": 6,
   "check": "passed"
  },

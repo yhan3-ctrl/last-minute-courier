@@ -211,6 +211,26 @@ bool FCourierParkourRegression::RunTest(const FString&)
         }
         TestTrue(TEXT("Every spark floats over something you can stand on"),bAllOnFloor);
     }
+    {
+        // Turnstiles are gates: a wall runs from the arms' reach to the hedge, so
+        // the only way on is through them. Their arms turn slowly enough to read.
+        FCollisionQueryParams Params;Params.AddIgnoredActor(Player);
+        const FCollisionShape Body=FCollisionShape::MakeCapsule(34.f,88.f);
+        int32 Gates=0;
+        for(const auto& O:Mode->Obstacles)if(O && O->Kind==ECourierObstacleKind::Sweeper)
+        {
+            ++Gates;
+            TestTrue(*FString::Printf(TEXT("Turnstile %d turns slowly (period >= 7 s)"),O->OrderIndex+1),O->Period>=7.f);
+            for(float Side:{-1.f,1.f})for(float Y:{O->ArmLength+120.f,O->ArmLength+500.f})
+            {
+                FHitResult Hit;
+                const FVector From(O->Origin.X-300.f,Side*Y,O->Origin.Z+100.f),To(O->Origin.X+300.f,Side*Y,O->Origin.Z+100.f);
+                TestTrue(*FString::Printf(TEXT("Turnstile %d cannot be walked around (y %.0f)"),O->OrderIndex+1,Side*Y),
+                    World->SweepSingleByChannel(Hit,From,To,FQuat::Identity,ECC_Pawn,Body,Params));
+            }
+        }
+        TestEqual(TEXT("Every delivery has a turnstile gate"),Gates,3);
+    }
     ADD_LATENT_AUTOMATION_COMMAND(FCourierParkourCheck(this,World,Mode,Player));
     return true;
 }

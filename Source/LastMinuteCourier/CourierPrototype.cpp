@@ -23,6 +23,7 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/PlayerInput.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputCoreTypes.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -332,7 +333,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         {
             Tutorial=3;
             Checkpoint=FVector(1360,0,120);
-            Notify(TEXT("Nice slide! Sprint, then press Ctrl to slide under anything low."),TEXT("漂亮的滑铲！冲刺时按 Ctrl，就能从低处钻过去。"));
+            Notify(TEXT("Nice slide! Sprint, then press C (or Ctrl) to slide under anything low."),TEXT("漂亮的滑铲！冲刺时按 C（或 Ctrl），就能从低处钻过去。"));
         }
         if (Tutorial == 3 && Position.X > 1900.f)
         {
@@ -789,10 +790,10 @@ void ACourierGameMode::LoadCopy()
                     TEXT("按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"),
                     TEXT("沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。")};
     TutorialText = {TEXT("WASD to move, mouse to look. Hold Shift to sprint to the marked spot."), TEXT("Space to jump. Cross the low step."),
-                    TEXT("Sprint, then press Ctrl to slide under the low beam."),
+                    TEXT("Sprint, then press C (or Ctrl) to slide under the low beam."),
                     TEXT("Cross after the cart has passed. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk and press E to read your first order.")};
     TutorialTextZh = {TEXT("WASD 移动，鼠标看方向。按住 Shift 冲刺到标记处。"), TEXT("按空格跳过低台阶。"),
-                      TEXT("先冲刺，再按 Ctrl 从低横梁下滑铲过去。"),
+                      TEXT("先冲刺，再按 C（或 Ctrl）从低横梁下滑铲过去。"),
                       TEXT("等运输车开过去再通过。想延长空隙可以按住 Q，两种方法都可以。"), TEXT("走到取件台，按 E 查看第一份订单。")};
     FString Json;
     if (!FFileHelper::LoadFileToString(Json, *(FPaths::ProjectDir() / TEXT("DesignData/game_content.json"))))
@@ -1170,6 +1171,8 @@ void ACourierCharacter::Tick(float DeltaSeconds)
     CoyoteSeconds=Move->IsMovingOnGround()?.14f:FMath::Max(0.f,CoyoteSeconds-DeltaSeconds);
     JumpBufferSeconds=FMath::Max(0.f,JumpBufferSeconds-DeltaSeconds);
     if(JumpBufferSeconds>0.f && bFree && Move->IsMovingOnGround() && !bIsCrouched){JumpBufferSeconds=0.f;Jump();}
+    SlideBufferSeconds=FMath::Max(0.f,SlideBufferSeconds-DeltaSeconds);
+    if(SlideBufferSeconds>0.f && bFree && Move->IsMovingOnGround() && !bIsCrouched && SlideSeconds<=0.f)StartSlide();
     // A jump or fall into a ledge between knee and reach height climbs it.
     if(bFree && MantleTime<0.f && Move->IsFalling() && Move->Velocity.Z<320.f && Move->GetCurrentAcceleration().SizeSquared2D()>1.f)TryMantle();
     // Slide: fast at first, easing off; the capsule stays low until there is headroom.
@@ -1236,7 +1239,9 @@ void ACourierCharacter::SetupPlayerInputComponent(UInputComponent* Input)
         Input->BindKey(Key,IE_Pressed,this,&ACourierCharacter::SprintPressed);
         Input->BindKey(Key,IE_Released,this,&ACourierCharacter::SprintReleased);
     }
-    for(const FKey& Key:{EKeys::LeftControl,EKeys::RightControl,EKeys::LeftCommand})
+    // Ctrl or C slides (C is the common crouch key). Never Command: on a Mac,
+    // Command+Q would quit the game the moment someone borrows time.
+    for(const FKey& Key:{EKeys::LeftControl,EKeys::RightControl,EKeys::C})
         Input->BindKey(Key,IE_Pressed,this,&ACourierCharacter::SlidePressed);
 }
 
@@ -1321,7 +1326,9 @@ void ACourierCharacter::StartSlide()
     auto* Mode=Game(this);
     auto* Move=GetCharacterMovement();
     if(!Mode || !Mode->CanMove() || Mode->RecoverySeconds>0.f || Mode->StunSeconds>0.f || MantleTime>=0.f)return;
-    if(!Move->IsMovingOnGround() || SlideSeconds>0.f || bIsCrouched)return;
+    if(SlideSeconds>0.f || bIsCrouched)return;
+    if(!Move->IsMovingOnGround()){SlideBufferSeconds=.35f;return;} // slide as soon as you land
+    SlideBufferSeconds=0.f;
     FVector Direction=GetVelocity().GetSafeNormal2D();
     if(Direction.IsNearlyZero())Direction=GetActorForwardVector().GetSafeNormal2D();
     SlideDirection=Direction;SlideSeconds=SlideTime;
@@ -1373,6 +1380,13 @@ void ACourierController::BeginPlay()
 void ACourierController::SetupInputComponent()
 {
     Super::SetupInputComponent();
+    // C now slides; camera recentering moves to V. Remapped at runtime so the
+    // packaged build needs no new input config.
+    if(PlayerInput)
+    {
+        PlayerInput->RemoveActionMapping(FInputActionKeyMapping(TEXT("Recenter"),EKeys::C));
+        PlayerInput->AddActionMapping(FInputActionKeyMapping(TEXT("Recenter"),EKeys::V));
+    }
     InputComponent->BindAction(TEXT("Continue"),IE_Pressed,this,&ACourierController::Next).bExecuteWhenPaused=true;
     InputComponent->BindAction(TEXT("Back"),IE_Pressed,this,&ACourierController::Previous).bExecuteWhenPaused=true;
     InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&ACourierController::PausePressed).bExecuteWhenPaused=true;

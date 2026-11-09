@@ -141,9 +141,11 @@ void ACourierObstacle::Build()
         Blue(Moving,TEXT("Cylinder"),FVector(0,0,186),FVector(90,90,24));
         Blue(Moving,TEXT("Cube"),FVector(ArmLength*.5f+20.f,0,55),FVector(ArmLength,24,40));
         Piece(this,Moving,TEXT("Cube"),FVector(ArmLength+10.f,0,55),FVector(26,28,44),Gold);
-        Blue(Moving,TEXT("Cube"),FVector(-ArmLength*.5f-20.f,0,130),FVector(ArmLength,24,40));
-        Piece(this,Moving,TEXT("Cube"),FVector(-ArmLength-10.f,0,130),FVector(26,28,44),Gold);
-        for(int32 I=1;I<4;++I)Piece(this,Moving,TEXT("Cube"),FVector(-ArmLength*I/4.f-20.f,0,108),FVector(6,6,40),Ink);
+        Blue(Moving,TEXT("Cube"),FVector(-ArmLength*.5f-20.f,0,140),FVector(ArmLength,24,40));
+        Piece(this,Moving,TEXT("Cube"),FVector(-ArmLength-10.f,0,140),FVector(26,28,44),Gold);
+        for(int32 I=1;I<4;++I)Piece(this,Moving,TEXT("Cube"),FVector(-ArmLength*I/4.f-20.f,0,118),FVector(6,6,40),Ink);
+        // Stripes on the low arm say "over"; the fringe under the high arm says "under".
+        for(int32 I=1;I<5;++I)Piece(this,Moving,TEXT("Cube"),FVector(ArmLength*I/5.f+20.f,0,55),FVector(16,26,42),Gold);
         ClockFace(Moving,FVector(0,0,200),0.f);
         if(ClockHand)ClockHand->SetRelativeRotation(FRotator(90,0,0));
         break;
@@ -292,10 +294,10 @@ void ACourierObstacle::Check(ACourierGameMode& Mode,ACourierCharacter& Player,fl
             const FVector2D Dir(FMath::Cos(A),FMath::Sin(A));
             const float Along=FVector2D::DotProduct(Rel,Dir);
             const float Perp=FMath::Abs(Rel.X*Dir.Y-Rel.Y*Dir.X);
-            if(Along<20.f || Along>ArmLength+40.f || Perp>34.f+14.f)continue;
-            // Low arm spans 35-75 cm: clear it with a jump. High arm spans
-            // 110-150 cm: clear it with a slide.
-            const bool bHit=Arm==0?Feet<75.f:Top>110.f;
+            if(Along<20.f || Along>ArmLength+30.f || Perp>34.f+6.f)continue;
+            // Low arm spans 35-75 cm: clear it with a jump (a little grace at the
+            // top). High arm spans 120-160 cm: clear it with a slide.
+            const bool bHit=Arm==0?Feet<62.f:Top>128.f;
             if(bHit && Mode.CollisionProtection<=0.f)
             {
                 const FVector2D Swing(-Dir.Y,Dir.X);
@@ -339,12 +341,12 @@ void ACourierGameMode::BuildParkour()
     // Coffee: climb the crate wall (or take the arcade), then the first shutter.
     CrateWall(W,4650.f,0.f,1130.f,150.f);
     Make(ECourierObstacleKind::Shutter,0,FVector(6300,0,0),1130.f,6.5f,.05f);
-    // A slow, short turnstile just before the stand introduces the two arms.
-    Make(ECourierObstacleKind::Sweeper,0,FVector(7100,0,0),1130.f,4.6f,.5f,380.f);
+    // The stand's turnstile gate: slow, and the only way to the counter.
+    Make(ECourierObstacleKind::Sweeper,0,FVector(7300,0,0),1130.f,10.f,.5f,560.f);
     // Garden: a crate wall on the approach, a turnstile after the stones and a
     // shutter in front of the projection booth.
     CrateWall(W,9800.f,1100.f,850.f,160.f);
-    Make(ECourierObstacleKind::Sweeper,1,FVector(22000,0,0),900.f,3.8f,0.f,430.f);
+    Make(ECourierObstacleKind::Sweeper,1,FVector(22000,0,0),900.f,8.5f,0.f,460.f);
     Make(ECourierObstacleKind::Shutter,1,FVector(25200,0,400),1000.f,6.f,.3f);
     // Reel: a shutter after the market lanes, a market roof to run along, a
     // turnstile before the last lanes, a springboard up to the terrace and the
@@ -355,7 +357,21 @@ void ACourierGameMode::BuildParkour()
     Solid(W,FVector(31150,-800,295),FVector(1100,320,50),TEXT("D7835D"));
     for(float X:{30650.f,31150.f,31650.f})Trim(W,FVector(X,-930,135),FVector(24,24,270),TEXT("354F53"));
     for(int32 I=0;I<6;++I)Trim(W,FVector(30650+I*200.f,-640,312),FVector(100,12,12),I%2?TEXT("E5D7BB"):TEXT("C86C43"));
-    Make(ECourierObstacleKind::Sweeper,2,FVector(36800,0,0),1050.f,3.4f,.25f,500.f);
+    Make(ECourierObstacleKind::Sweeper,2,FVector(36650,0,0),1050.f,7.5f,.25f,540.f);
+    // Every turnstile stands in a wall from hedge to hedge: like a ticket gate,
+    // the only way on is through it.
+    for(const auto& O:Obstacles)if(O && O->Kind==ECourierObstacleKind::Sweeper)
+    {
+        const float Edge=O->OrderIndex==0?1250.f:3450.f;
+        const float Inner=O->ArmLength+45.f;
+        for(float Side:{-1.f,1.f})
+        {
+            const float Mid=Side*(Inner+Edge)*.5f,Length=Edge-Inner;
+            Trim(W,FVector(O->Origin.X,Mid,O->Origin.Z+115.f),FVector(60,Length,230),TEXT("BB886F"))->GetStaticMeshComponent()->SetCollisionProfileName(TEXT("BlockAll"));
+            Trim(W,FVector(O->Origin.X,Mid,O->Origin.Z+238.f),FVector(76,Length+10.f,18),TEXT("E5D7BB"));
+            Trim(W,FVector(O->Origin.X,Side*Inner,O->Origin.Z+130.f),FVector(70,70,260),TEXT("354F53"))->GetStaticMeshComponent()->SetCollisionProfileName(TEXT("BlockAll"));
+        }
+    }
     Make(ECourierObstacleKind::Spring,2,FVector(39700,380,0),0.f,1.f,0.f);
     Make(ECourierObstacleKind::Shutter,2,FVector(42600,0,420),1100.f,5.5f,.6f);
 }

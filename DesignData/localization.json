@@ -538,14 +538,6 @@
       "fr": "Les dispositifs bleus ralentissent. Votre vitesse et le compte à rebours restent normaux.",
       "de": "Blaue Geräte sind langsamer. Du und die Lieferzeit laufen normal weiter."
     },
-    "Follow the orange route markers. C gently recenters your view.": {
-      "zh": "沿橙色路线标记前进。C 可平缓地将镜头回正。",
-      "ja": "オレンジ色の道しるべを追いましょう。Cで視点をゆっくり正面に戻せます。",
-      "ko": "주황색 길 표시를 따라가세요. C로 시점을 부드럽게 정면으로 돌릴 수 있어요.",
-      "es": "Sigue las marcas naranjas. C centra la cámara suavemente.",
-      "fr": "Suivez les repères orange. C recentre doucement la caméra.",
-      "de": "Folge den orangefarbenen Wegmarkierungen. C richtet die Kamera sanft aus."
-    },
     "Press Space to jump over the low step.": {
       "zh": "按空格跳过低台阶。",
       "ja": "スペースで低い段差を飛び越えましょう。",
@@ -1018,14 +1010,6 @@
       "fr": "Apporte la caisse de café au stand avant qu'elle refroidisse. Les chariots sortent des portes du dépôt et traversent la place ; attends une ouverture.",
       "de": "Bring die Kaffeebox zum Stand, bevor sie abkühlt. Lieferwagen rollen aus den Depottoren über den Platz; warte auf eine Lücke."
     },
-    "The projectionist left the lens case here at the coffee stand. It is fragile: a cart bump or a fall knocks it, and the third knock cracks it. Take it through the garden to the projection booth.": {
-      "zh": "放映员把镜头盒落在了咖啡摊。它很娇贵：被运输车撞到或摔下去都会磕一下，第三次就会裂开。把它穿过花园送到投影台。",
-      "ja": "映写技師がレンズケースをコーヒースタンドに置き忘れた。壊れやすい：カートにぶつかったり落ちたりすると傷つき、3 回目で割れる。庭を通って映写台へ運ぼう。",
-      "ko": "영사 기사가 렌즈 상자를 커피 스탠드에 두고 갔다. 깨지기 쉽다: 카트에 부딪히거나 떨어지면 충격을 받고, 세 번째에 금이 간다. 정원을 지나 영사대로 옮기자.",
-      "es": "El proyeccionista dejó la caja de la lente aquí, en el puesto de café. Es frágil: un golpe de carro o una caída la dañan, y el tercer golpe la rompe. Llévala por el jardín a la cabina de proyección.",
-      "fr": "Le projectionniste a laissé la mallette de l'objectif ici, au stand de café. Elle est fragile : un coup de chariot ou une chute l'abîme, et le troisième choc la fêle. Porte-la à travers le jardin jusqu'à la cabine.",
-      "de": "Der Vorführer hat den Linsenkoffer hier am Kaffeestand vergessen. Er ist zerbrechlich: Ein Wagenstoß oder Sturz beschädigt ihn, der dritte Stoß bricht ihn. Bring ihn durch den Garten zur Vorführkabine."
-    },
     "The final reel has just reached the projection booth, and the whole square is waiting. Run it to the clocktower console before the screening starts.": {
       "zh": "最后一卷胶片刚送到投影台，全场都在等。开场前把它送到钟楼控制台。",
       "ja": "最後のフィルムがたった今映写台に届き、広場じゅうが待っている。上映が始まる前に時計塔のコンソールへ急ごう。",
@@ -1129,14 +1113,6 @@
       "es": "Estrellas: lo caliente que llega el café.",
       "fr": "Étoiles : la chaleur du café à l'arrivée.",
       "de": "Sterne: wie warm der Kaffee ankommt."
-    },
-    "Stars: how few knocks the lens takes. Carts and falls knock it; the third knock cracks it.": {
-      "zh": "星级：镜头被磕的次数越少越好。被车撞、摔下去都会磕到，第三次就裂了。",
-      "ja": "星：レンズへの衝撃が少ないほど良い。カートと落下で傷つき、3 回目で割れる。",
-      "ko": "별: 렌즈가 충격을 덜 받을수록 좋다. 카트와 추락이 충격을 주고, 세 번째에 금이 간다.",
-      "es": "Estrellas: cuantos menos golpes reciba la lente, mejor. Los carros y las caídas la golpean; el tercer golpe la rompe.",
-      "fr": "Étoiles : moins l'objectif subit de chocs, mieux c'est. Chariots et chutes le heurtent ; le troisième choc le fêle.",
-      "de": "Sterne: je weniger Stöße die Linse abbekommt, desto besser. Wagen und Stürze stoßen sie; der dritte Stoß bricht sie."
     },
     "Stars: how much time is left before the screening.": {
       "zh": "星级：开场前还剩多少时间。",
@@ -1242,22 +1218,6 @@
       "fr": "Les voies du marché et un rideau, une course sur les toits pour les audacieux, la navette, un tourniquet et deux voies de plus. Puis la terrasse : prenez l’ascenseur ou passez sur le tremplin. La porte de la tour de l’horloge descend à intervalles. 5 utilisations pour cette livraison.",
       "de": "Marktspuren und ein Rolltor, ein Dachlauf für Mutige, das Shuttle, ein Drehkreuz und zwei weitere Spuren. Dann hinauf zur Terrasse: Lift nehmen oder über das Sprungbrett laufen. Das Uhrturmtor fährt im Takt herunter. 5 Einsätze für diese Lieferung."
     },
-    "Nice slide! Sprint, then press Ctrl to slide under anything low.": {
-      "zh": "漂亮的滑铲！冲刺时按 Ctrl，就能从低处钻过去。",
-      "ja": "ナイススライディング！ダッシュ中にCtrlで低いものの下をくぐれます。",
-      "ko": "멋진 슬라이딩! 질주하다 Ctrl을 누르면 낮은 곳 아래로 빠져나갈 수 있어요.",
-      "es": "¡Buen deslizamiento! Esprinta y pulsa Ctrl para deslizarte bajo cualquier cosa baja.",
-      "fr": "Belle glissade ! Sprintez puis appuyez sur Ctrl pour glisser sous tout ce qui est bas.",
-      "de": "Gut gerutscht! Sprinte und drück Strg, um unter allem Niedrigen durchzurutschen."
-    },
-    "Rolling shutter! Sprint and slide under (Ctrl) while it is still up, or wait for it to open. Q slows it.": {
-      "zh": "卷帘门！趁它还没落下，冲刺后按 Ctrl 滑铲钻过去，或者等它再升起来。Q 能让它变慢。",
-      "ja": "シャッターだ！まだ上がっているうちにダッシュしてスライディング（Ctrl）でくぐるか、開くのを待ちましょう。Qで遅くできます。",
-      "ko": "셔터다! 아직 올라가 있을 때 질주해서 슬라이딩(Ctrl)으로 빠져나가거나 열릴 때까지 기다리세요. Q로 느리게 할 수 있어요.",
-      "es": "¡Persiana! Esprinta y deslízate por debajo (Ctrl) mientras siga arriba, o espera a que se abra. Q la frena.",
-      "fr": "Rideau métallique ! Sprintez et glissez dessous (Ctrl) tant qu’il est levé, ou attendez qu’il remonte. Q le ralentit.",
-      "de": "Rolltor! Sprinte und rutsch drunter durch (Strg), solange es noch oben ist, oder warte, bis es aufgeht. Q bremst es."
-    },
     "Slide under low things": {
       "zh": "滑铲，从低处钻过去",
       "ja": "低いものの下をスライディング",
@@ -1273,14 +1233,6 @@
       "es": "Trampolín: pasa corriendo por encima para saltar directo a la terraza, sin ascensor.",
       "fr": "Tremplin : courez dessus pour bondir directement sur la terrasse, sans ascenseur.",
       "de": "Sprungbrett: lauf drüber und spring direkt auf die Terrasse, ganz ohne Lift."
-    },
-    "Sprint, then press Ctrl to slide under the low beam.": {
-      "zh": "先冲刺，再按 Ctrl 从低横梁下滑铲过去。",
-      "ja": "ダッシュしてからCtrlを押し、低い梁の下をスライディングでくぐりましょう。",
-      "ko": "질주한 다음 Ctrl을 눌러 낮은 들보 아래로 슬라이딩하세요.",
-      "es": "Esprinta y pulsa Ctrl para deslizarte bajo la viga baja.",
-      "fr": "Sprintez, puis appuyez sur Ctrl pour glisser sous la poutre basse.",
-      "de": "Sprinte und drück dann Strg, um unter dem niedrigen Balken durchzurutschen."
     },
     "Turnstile! Jump the low arm, slide under the high arm. Q slows it.": {
       "zh": "旋转栏杆！低的一侧跳过去，高的一侧滑铲钻过去。Q 能让它变慢。",
@@ -1329,6 +1281,70 @@
       "es": "Cada reloj de arena dorado de esta ruta da un uso más de Q, y también cada 25 chispas. Pasar por los pelos da chispas.",
       "fr": "Chaque sablier doré de ce parcours donne une utilisation de Q en plus, tout comme chaque lot de 25 étincelles. Passer de justesse rapporte des étincelles.",
       "de": "Jede goldene Sanduhr auf dieser Route bringt einen weiteren Q-Einsatz, ebenso je 25 Funken. Knappe Manöver bringen Funken."
+    },
+    "Sprint, then press C (or Ctrl) to slide under the low beam.": {
+      "zh": "先冲刺，再按 C（Ctrl） 从低横梁下滑铲过去。",
+      "ja": "ダッシュしてからC（Ctrl）を押し、低い梁の下をスライディングでくぐりましょう。",
+      "ko": "질주한 다음 C (Ctrl)을 눌러 낮은 들보 아래로 슬라이딩하세요.",
+      "es": "Esprinta y pulsa C (Ctrl) para deslizarte bajo la viga baja.",
+      "fr": "Sprintez, puis appuyez sur C (Ctrl) pour glisser sous la poutre basse.",
+      "de": "Sprinte und drück dann C (Strg), um unter dem niedrigen Balken durchzurutschen."
+    },
+    "Nice slide! Sprint, then press C (or Ctrl) to slide under anything low.": {
+      "zh": "漂亮的滑铲！冲刺时按 C（Ctrl），就能从低处钻过去。",
+      "ja": "ナイススライディング！ダッシュ中にC（Ctrl）で低いものの下をくぐれます。",
+      "ko": "멋진 슬라이딩! 질주하다 C (Ctrl)을 누르면 낮은 곳 아래로 빠져나갈 수 있어요.",
+      "es": "¡Buen deslizamiento! Esprinta y pulsa C (Ctrl) para deslizarte bajo cualquier cosa baja.",
+      "fr": "Belle glissade ! Sprintez puis appuyez sur C (Ctrl) pour glisser sous tout ce qui est bas.",
+      "de": "Gut gerutscht! Sprinte und drück C (Strg), um unter allem Niedrigen durchzurutschen."
+    },
+    "Rolling shutter! Sprint and slide under (C) while it is still up, or wait for it to open. Q slows it.": {
+      "zh": "卷帘门！趁它还没落下，冲刺后按 C 滑铲钻过去，或者等它再升起来。Q 能让它变慢。",
+      "ja": "シャッターだ！まだ上がっているうちにダッシュしてスライディング（C）でくぐるか、開くのを待ちましょう。Qで遅くできます。",
+      "ko": "셔터다! 아직 올라가 있을 때 질주해서 슬라이딩(C)으로 빠져나가거나 열릴 때까지 기다리세요. Q로 느리게 할 수 있어요.",
+      "es": "¡Persiana! Esprinta y deslízate por debajo (C) mientras siga arriba, o espera a que se abra. Q la frena.",
+      "fr": "Rideau métallique ! Sprintez et glissez dessous (C) tant qu’il est levé, ou attendez qu’il remonte. Q le ralentit.",
+      "de": "Rolltor! Sprinte und rutsch drunter durch (C), solange es noch oben ist, oder warte, bis es aufgeht. Q bremst es."
+    },
+    "The projectionist left the lens case here at the coffee stand. It is fragile: anything that hits you, and any fall, knocks it, and the third knock cracks it. Take it through the garden to the projection booth.": {
+      "zh": "放映员把镜头盒留在了咖啡摊。它很脆弱：被任何东西撞到或摔一跤都会磕到它，第三次就裂了。穿过花园把它送到放映室。",
+      "ja": "映写技師がレンズケースをコーヒースタンドに置いていきました。壊れやすいので、何かにぶつかったり落ちたりするたびに傷が付き、3回目で割れます。庭園を抜けて映写室へ届けましょう。",
+      "ko": "영사 기사가 렌즈 케이스를 커피 가판대에 두고 갔어요. 깨지기 쉬워서 무엇에든 부딪히거나 떨어지면 충격을 받고, 세 번째에 금이 가요. 정원을 지나 영사실로 가져가세요.",
+      "es": "El proyeccionista dejó el estuche de la lente aquí, en el puesto de café. Es frágil: cualquier golpe que recibas y cualquier caída lo dañan, y al tercero se rompe. Llévalo por el jardín hasta la cabina de proyección.",
+      "fr": "Le projectionniste a laissé l’étui de l’objectif ici, au stand de café. Il est fragile : tout ce qui vous heurte et toute chute le cognent, et au troisième choc il se fend. Portez-le à travers le jardin jusqu’à la cabine de projection.",
+      "de": "Der Filmvorführer hat das Objektivetui hier am Kaffeestand gelassen. Es ist zerbrechlich: Alles, was dich trifft, und jeder Sturz setzt ihm zu, beim dritten Mal bekommt es einen Sprung. Bring es durch den Garten zur Vorführkabine."
+    },
+    "Stars: how few knocks the lens takes. Every hit or fall knocks it; the third knock cracks it.": {
+      "zh": "星级：镜头被磕的次数越少越好。被撞到或摔下去都会磕到，第三次就裂了。",
+      "ja": "星：レンズへの衝撃が少ないほど高評価。ぶつかるか落ちるたびに衝撃、3回目で割れます。",
+      "ko": "별점: 렌즈 충격이 적을수록 좋아요. 부딪히거나 떨어질 때마다 충격, 세 번째에 금이 가요.",
+      "es": "Estrellas: cuantos menos golpes reciba la lente, mejor. Cada golpe o caída cuenta; al tercero se rompe.",
+      "fr": "Étoiles : moins l’objectif prend de chocs, mieux c’est. Chaque coup ou chute compte ; au troisième il se fend.",
+      "de": "Sterne: je weniger Stöße das Objektiv abbekommt, desto besser. Jeder Treffer oder Sturz zählt; beim dritten bekommt es einen Sprung."
+    },
+    "Follow the orange route markers. V gently recenters your view.": {
+      "zh": "沿橙色路线标记前进。V 可平缓地将镜头回正。",
+      "ja": "オレンジ色の道しるべを追いましょう。Vで視点をゆっくり正面に戻せます。",
+      "ko": "주황색 길 표시를 따라가세요. V로 시점을 부드럽게 정면으로 돌릴 수 있어요.",
+      "es": "Sigue las marcas naranjas. V centra la cámara suavemente.",
+      "fr": "Suivez les repères orange. V recentre doucement la caméra.",
+      "de": "Folge den orangefarbenen Wegmarkierungen. V richtet die Kamera sanft aus."
+    },
+    "Sprint": {
+      "zh": "冲刺",
+      "ja": "ダッシュ",
+      "ko": "질주",
+      "es": "Esprint",
+      "fr": "Sprint",
+      "de": "Sprint"
+    },
+    "Slide": {
+      "zh": "滑铲",
+      "ja": "スライディング",
+      "ko": "슬라이딩",
+      "es": "Deslizar",
+      "fr": "Glisser",
+      "de": "Rutschen"
     }
   }
 }

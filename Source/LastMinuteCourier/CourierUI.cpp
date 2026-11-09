@@ -1,4 +1,5 @@
 #include "CourierPrototype.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "GameFramework/PlayerController.h"
@@ -359,11 +360,11 @@ private:
                     ControlRow({Copy(TEXT("Mouse"),TEXT("鼠标"))},Copy(TEXT("Look around"),TEXT("转动视角")),156),
                     ControlRow({Copy(TEXT("Shift"),TEXT("Shift"))},Copy(TEXT("Hold: sprint"),TEXT("按住：冲刺")),156),
                     ControlRow({Copy(TEXT("Space"),TEXT("空格"))},Copy(TEXT("Jump; jump at a ledge to climb it"),TEXT("跳跃；朝矮墙跳就能爬上去")),156),
-                    ControlRow({Copy(TEXT("Ctrl"),TEXT("Ctrl"))},Copy(TEXT("Slide under low things"),TEXT("滑铲，从低处钻过去")),156)})]
+                    ControlRow({S(TEXT("C")),Copy(TEXT("Ctrl"),TEXT("Ctrl"))},Copy(TEXT("Slide under low things"),TEXT("滑铲，从低处钻过去")),156)})]
             +SHorizontalBox::Slot().FillWidth(.88f).Padding(14,0,0,0)
                 [Column({ControlRow({S(TEXT("Q"))},Copy(TEXT("Hold: slow blue devices"),TEXT("按住：让蓝色装置变慢")),50),
                     ControlRow({S(TEXT("E"))},Copy(TEXT("Collect / deliver"),TEXT("取件 / 交付")),50),
-                    ControlRow({S(TEXT("C"))},Copy(TEXT("Recenter camera"),TEXT("镜头回正")),50),
+                    ControlRow({S(TEXT("V"))},Copy(TEXT("Recenter camera"),TEXT("镜头回正")),50),
                     ControlRow({S(TEXT("H"))},Copy(TEXT("Route help"),TEXT("路线帮助")),50),
                     ControlRow({S(TEXT("Esc"))},Copy(TEXT("Pause & settings"),TEXT("暂停与设置")),50)})];
     }
@@ -431,7 +432,7 @@ private:
     FString StarRule() const
     {
         if(Mode->CurrentOrder==0)return Mode->Copy(TEXT("Stars: how warm the coffee is when it arrives."),TEXT("星级：送到时咖啡还有多热。"));
-        if(Mode->CurrentOrder==1)return Mode->Copy(TEXT("Stars: how few knocks the lens takes. Carts and falls knock it; the third knock cracks it."),TEXT("星级：镜头被磕的次数越少越好。被车撞、摔下去都会磕到，第三次就裂了。"));
+        if(Mode->CurrentOrder==1)return Mode->Copy(TEXT("Stars: how few knocks the lens takes. Every hit or fall knocks it; the third knock cracks it."),TEXT("星级：镜头被磕的次数越少越好。被撞到或摔下去都会磕到，第三次就裂了。"));
         return Mode->Copy(TEXT("Stars: how much time is left before the screening."),TEXT("星级：开场前还剩多少时间。"));
     }
 
@@ -778,7 +779,13 @@ private:
 
         // Upper centre: a short pop for pickups and close calls.
         Overlay->AddSlot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(0,0,0,260)
-            [SNew(STextBlock).Font(Typeface(40,EFace::Display)).Justification(ETextJustify::Center)
+            [SNew(STextBlock).Font([this]()
+                {
+                    FSlateFontInfo Font=Typeface(40,EFace::Display);
+                    Font.OutlineSettings.OutlineSize=3;
+                    Font.OutlineSettings.OutlineColor=FLinearColor(.07f,.12f,.13f,.85f);
+                    return Font;
+                }()).Justification(ETextJustify::Center)
                 .ShadowOffset(FVector2D(0,3)).ShadowColorAndOpacity(FLinearColor(.07f,.12f,.13f,.6f))
                 .ColorAndOpacity_Lambda([this]()->FSlateColor
                 {
@@ -898,12 +905,30 @@ private:
                                         })]]]
                     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(16,0,0,0)[Uses()])];
 
-        // Bottom right: the only always-on control reminder.
+        // Bottom right: the movement keys. Each cap lights while its move is
+        // active, so a press is always visibly answered.
+        const auto Lit=[this](int32 Which)->TAttribute<FSlateColor>
+        {
+            return TAttribute<FSlateColor>::CreateLambda([this,Which]()->FSlateColor
+            {
+                const auto* C=Mode.IsValid()?Cast<ACourierCharacter>(UGameplayStatics::GetPlayerCharacter(Mode.Get(),0)):nullptr;
+                const bool bOn=C && (Which==0?C->bSprintHeld:(Which==1?!C->GetCharacterMovement()->IsMovingOnGround():C->bIsCrouched));
+                return bOn?CourierPalette::Gold:CourierPalette::Paper;
+            });
+        };
+        const auto KeyRow=[&](const FText& Cap,TAttribute<FSlateColor> Face,const FText& Label)
+        {
+            return SNew(SHorizontalBox)
+                +SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(0,0,10,0)[KeyCap(Cap,13,Face)]
+                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).MinDesiredWidth(64)[Text(Label,15,EFace::Heavy,CreamMuted)]];
+        };
         Overlay->AddSlot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(24)
-            [Box(Pill,Plate,FMargin(10,7,16,7),
-                SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Key(TEXT("Esc"),13)]
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Text(Copy(TEXT("Pause"),TEXT("暂停")),15,EFace::Heavy,CreamMuted)])];
+            [Box(R16,Plate,FMargin(12,9,14,9),
+                SNew(SVerticalBox)
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,5)[KeyRow(Copy(TEXT("Shift"),TEXT("Shift")),Lit(0),Copy(TEXT("Sprint"),TEXT("冲刺")))]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,5)[KeyRow(Copy(TEXT("Space"),TEXT("空格")),Lit(1),Copy(TEXT("Jump"),TEXT("跳跃")))]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,5)[KeyRow(FText::FromString(FString(TEXT("C / "))+Mode->Copy(TEXT("Ctrl"),TEXT("Ctrl"))),Lit(2),Copy(TEXT("Slide"),TEXT("滑铲")))]
+                    +SVerticalBox::Slot().AutoHeight()[KeyRow(FText::FromString(TEXT("Esc")),FSlateColor(CourierPalette::Paper),Copy(TEXT("Pause"),TEXT("暂停")))])];
         Overlay->SetVisibility(EVisibility::HitTestInvisible);
         return Overlay;
     }

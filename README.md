@@ -19,7 +19,7 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 Download the release for your platform (see the course Box folder; the Mac build is also attached to the GitHub release). No Unreal Editor is needed.
 
-- **Mac:** open `LastMinuteCourier-0.9-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
+- **Mac:** open `LastMinuteCourier-0.10-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
 - Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). They are published in the course Box folder.
 
 | Key | Action |
@@ -27,13 +27,13 @@ Download the release for your platform (see the course Box folder; the Mac build
 | W A S D / Mouse | Move / look |
 | Shift (hold) | Sprint |
 | Space | Jump; jump at a ledge (crates, decks) to climb it |
-| Ctrl | Slide under anything low (beams, closing shutters, a turnstile's high arm) |
+| C or Ctrl | Slide under anything low (beams, closing shutters, a turnstile's high arm) |
 | Q (hold) | Slow blue devices for up to 3 s; 3 / 4 / 5 uses per delivery, +1 per gold hourglass and per 25 sparks, counted bottom-left |
 | E | Walk up to a desk to open its brief; E accepts; E delivers on the orange square |
-| C / H / Esc | Recenter camera / route help / pause and settings |
+| V / H / Esc | Recenter camera / route help / pause and settings |
 | R | Restart the current order (asks first) |
 
-Walk up to the parcel desk to open your first brief; the yard gate opens once you accept. Practice and reading are untimed. Order time limits are 0:40, 2:00 and 2:10. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
+Walk up to the parcel desk to open your first brief; the yard gate opens once you accept. Practice and reading are untimed. Order time limits are 0:45, 2:00 and 2:10. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
 
 ## Iterations
 
@@ -54,6 +54,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.7` | Nov 8 | Owner: still less fun than commercial games. Added golden clocks (+5 s each, mostly on the risky lines), a 1–3 star rating per delivery with a total and rank at the end, a blue slow-time screen grade with lowered music pitch for Q, hit flashes, a final-ten-seconds tick and delivery confetti |
 | `v0.8` | Nov 8 | Owner: monotonous, and much did not make sense. Carts became one-way traffic between depot sheds; a cart now knocks you aside instead of teleporting you; the coffee cools and the lens case cracks after three knocks, each judged by its own stars; golden clocks became Borrower cells (+1 Q use); hedges mark the edge; briefs explain who handed over each parcel. The owner also saw the orange line lead to a ramp while the marker led to a lift: only the recommended route is painted now, with arrows riding on the lifts |
 | `v0.9` | Nov 8 | Owner: the Borrower cell looked like a hazard (people avoided it), the game was boring and too easy; suggested parkour games. Added sprint, slide, ledge climb and forgiving jumps; rolling shutters and turnstiles that combine Q with the new moves; a springboard, crate walls and a market roof; gold hourglasses and lines of gold sparks with close-call bonuses; a slide lesson in practice; time limits 40/120/130 s. A full re-check also fixed stale cart hints, overlapping key hints on buttons and 42 unused translations |
+| `v0.10` | Nov 8 | Owner played v0.9: the turnstile spun too fast to pass, it should be impossible to walk around, and the new keys seemed not to respond. Turnstiles turn about 2.5x slower inside hedge-to-hedge gate walls with gentler hit zones; C slides (Ctrl still works; Command unbound because Command+Q quits); a slide pressed mid-air fires on landing; V recenters; a HUD key plate lights up for sprint, jump and slide; the lift hint no longer shows on the upper deck |
 
 ## Build and test (developers)
 

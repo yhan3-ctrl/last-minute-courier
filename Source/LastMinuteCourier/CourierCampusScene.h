@@ -13,6 +13,7 @@ struct FCourierGuestPose
     TWeakObjectPtr<USceneComponent> Root, Arm, Cup;
     int32 AppearsAfter=0;
     float Offset=0.f;
+    TWeakObjectPtr<UPrimitiveComponent> Body;
 };
 
 // Cosmetic scenery never blocks a route or changes device/mission time.

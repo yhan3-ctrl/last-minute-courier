@@ -28,7 +28,8 @@ namespace
         auto* A=W->SpawnActor<AStaticMeshActor>(At,FRotator::ZeroRotator);
         auto* M=A->GetStaticMeshComponent();M->SetMobility(EComponentMobility::Movable);
         M->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Engine/BasicShapes/%s.%s"),Shape,Shape)));
-        M->SetWorldScale3D(Size/100.f);M->SetCollisionProfileName(Solid?TEXT("BlockAll"):TEXT("NoCollision"));
+        M->SetWorldScale3D(Size/100.f);
+        if(Solid)M->SetCollisionProfileName(TEXT("BlockAll"));else CourierVisualCollision(M,Size);
         Finish(M,Hex);return A;
     }
     struct FRailSpan {FVector A,B;float Width;bool Guard;};
@@ -304,6 +305,7 @@ void ACourierGameMode::BuildDeliveryDistricts()
     {
         auto* Cloud=Block(W,At,Size,TEXT("FFF1DE"),false,TEXT("Sphere"));
         auto* M=Cloud->GetStaticMeshComponent();M->SetCastShadow(false);
+        M->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Sky dressing, never a camera obstacle.
         const FString Path=FString::Printf(TEXT("/Game/Materials/%s.%s"),MaterialName,MaterialName);
         if(auto* Base=LoadObject<UMaterialInterface>(nullptr,*Path))
         {
@@ -358,6 +360,8 @@ void ACourierGameMode::BuildRouteGuide()
     {
         auto* A=Block(GetWorld(),At,Size,Hex,false,Shape);
         A->GetStaticMeshComponent()->SetCastShadow(false);
+        A->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Follows the waypoint.
+        A->SetActorEnableCollision(false); // Actor-level: survives later transform edits.
         A->AttachToActor(RouteBeacon,FAttachmentTransformRules::KeepRelativeTransform);return A;
     };
     // A stationary high-contrast ring and downward pointer identify the next waypoint.
@@ -402,7 +406,9 @@ void ACourierGameMode::UpdateRouteGuide()
     const ECourierPhase ViewPhase=Phase==ECourierPhase::Paused?BeforePause:Phase;
     const bool bShow=ViewPhase==ECourierPhase::Practice || ViewPhase==ECourierPhase::AwaitPickup ||
         ViewPhase==ECourierPhase::Briefing || ViewPhase==ECourierPhase::Delivery;
-    const int32 Active=ViewPhase==ECourierPhase::Practice?0:CurrentOrder+1;
+    // Only the path the player should take now: the yard path to the first desk,
+    // an order's route while reading or carrying it, nothing while a parcel waits.
+    const int32 Active=ViewPhase==ECourierPhase::Practice?0:(ViewPhase==ECourierPhase::AwaitPickup?(CurrentOrder==0?0:-1):CurrentOrder+1);
     for(int32 I=0;I<RouteGuideGroups.Num();++I)if(RouteGuideGroups[I])
         RouteGuideGroups[I]->SetActorHiddenInGame(!bShow || I!=Active);
     if(RouteBeacon)
@@ -449,7 +455,7 @@ void ACourierLift::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     const auto* Mode=Cast<ACourierGameMode>(UGameplayStatics::GetGameMode(this));
     if(!Mode)return;
-    const bool Active=Mode->IsPlaying() && Mode->CurrentOrder==OrderIndex && Mode->RecoverySeconds<=0;
+    const bool Active=Mode->CanMove() && Mode->RecoverySeconds<=0; // Lifts run whenever the world does.
     if(Material)Material->SetVectorParameterValue(TEXT("Color"),Color(Active && Mode->bSlowing?TEXT("8EC8CD"):TEXT("438C95")));
     if(!Active)return;
     Clock+=DeltaSeconds*Mode->DeviceRate();

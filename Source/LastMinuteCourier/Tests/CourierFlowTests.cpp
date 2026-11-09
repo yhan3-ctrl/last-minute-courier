@@ -92,7 +92,24 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Collision recovery explicitly names the cart hit"),Mode->StatusNotice().Contains(TEXT("hit you")));
     Place(FVector(2000,0,88));Mode->Tick(.01f);
     TestEqual(TEXT("Can complete the safe crossing after a collision"),Mode->Tutorial,3);
-    Place(FVector(2400,0,88));Mode->Tick(.01f);
+    {
+        // The gate holds anyone who skips the desk, with a reason, and the carts
+        // beyond it keep moving so the yard never looks frozen.
+        Place(FVector(3000,0,88));Mode->Tick(.01f);
+        TestTrue(TEXT("Closed yard gate returns a courier who skipped the desk"),Player->GetActorLocation().X<2760.f);
+        TestTrue(TEXT("Gate return explains why"),Mode->StatusNotice().Contains(TEXT("gate")));
+        Mode->RecoverySeconds=0.f;
+        const float Before=DeliveryCart->Clock;DeliveryCart->Tick(.5f);
+        TestTrue(TEXT("Delivery carts move during practice"),DeliveryCart->Clock>Before);
+        Mode->NoticeSeconds=0.f;
+        Place(FVector(1700,0,88));Mode->Interact();
+        TestTrue(TEXT("E with nothing to do explains what to do"),!Mode->StatusNotice().IsEmpty());
+        Mode->NoticeSeconds=0.f;
+    }
+    Place(FVector(2400,-230,88));Mode->Tick(.01f);
+    TestTrue(TEXT("Walking up to the desk counter opens the first brief"),Mode->Phase==ECourierPhase::Briefing);
+    Mode->Back();Mode->Tick(.01f);
+    TestTrue(TEXT("A closed brief does not reopen while standing at the desk"),Mode->Phase==ECourierPhase::AwaitPickup);
     TestTrue(TEXT("Practice reaches pickup"),Mode->Phase==ECourierPhase::AwaitPickup);
     Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,60.f));
     Place(FVector(2400,0,-100),false);Act();
@@ -104,6 +121,22 @@ bool FCourierFlowRegression::RunTest(const FString&)
     if(Mode->Phase!=ECourierPhase::AwaitPickup)Mode->Retry();
     Place(FVector(2400,0,88));Act();
     TestTrue(TEXT("Grounded collection starts order"),Mode->Phase==ECourierPhase::Delivery);
+    for(int32 I=0;I<20;++I)Mode->Tick(.1f);
+    TestTrue(TEXT("Accepting the first order opens the yard gate"),Mode->GateOpen() && Mode->GateAngle>40.f);
+    TestEqual(TEXT("First delivery gives three uses of borrowed time"),Mode->Charges,3);
+    {
+        int32 Uses=0;float Recharge=0.f;
+        for(int32 I=0;I<4;++I)
+        {
+            Mode->Cooldown=0.f;Mode->SlowRemaining=3.f;Mode->StartSlow();
+            if(Mode->bSlowing){++Uses;Mode->EndSlow();Recharge=Mode->Cooldown;}
+        }
+        TestEqual(TEXT("Only three uses are granted"),Uses,3);
+        TestTrue(TEXT("Out of uses gives visible feedback"),Mode->Charges==0 && Mode->QDenied>0.f && Mode->StatusNotice().Contains(TEXT("No borrowed time")));
+        TestTrue(TEXT("Recharge between uses is short"),FMath::IsNearlyEqual(Recharge,ACourierGameMode::RechargeSeconds));
+        Mode->ResetDevices();Mode->NoticeSeconds=0.f;Mode->QDenied=0.f;
+        TestEqual(TEXT("Resetting the order restores its uses"),Mode->Charges,3);
+    }
     TestTrue(TEXT("Collection reveals package"),Player->Bag->IsVisible());
     Place(FVector(2600,0,88));
     const float ClockBefore=Mode->Remaining;
@@ -127,11 +160,11 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Mode->TogglePause();
     TestFalse(TEXT("Resume unpauses world"),World->IsPaused());
     TestFalse(TEXT("Released Q during pause ends ability on resume"),Mode->bSlowing);
-    TestTrue(TEXT("Resume enters full cooldown"),FMath::IsNearlyEqual(Mode->Cooldown,4.f));
+    TestTrue(TEXT("Resume enters the short recharge"),FMath::IsNearlyEqual(Mode->Cooldown,ACourierGameMode::RechargeSeconds));
     Mode->StartSlow();TestFalse(TEXT("Ability cannot restart during cooldown"),Mode->bSlowing);
     Mode->Tick(4.f);TestTrue(TEXT("Cooldown restores full charge"),Mode->Cooldown==0 && Mode->SlowRemaining==3.f);
     Mode->StartSlow();Mode->Tick(3.f);
-    TestTrue(TEXT("Exhausted ability ends with cooldown"),!Mode->bSlowing && FMath::IsNearlyEqual(Mode->Cooldown,4.f));
+    TestTrue(TEXT("Exhausted ability ends with the short recharge"),!Mode->bSlowing && FMath::IsNearlyEqual(Mode->Cooldown,ACourierGameMode::RechargeSeconds));
 
     Mode->Checkpoint=FVector(4500,0,120);Place(FVector(4500,1500,88));Mode->Tick(.1f);
     TestTrue(TEXT("Off-road recovery uses checkpoint"),FVector::Dist2D(Player->GetActorLocation(),Mode->Checkpoint)<1.f);

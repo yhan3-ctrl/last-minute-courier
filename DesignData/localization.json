@@ -634,30 +634,6 @@
       "fr": "Lisez à votre rythme. Le chrono ne démarre qu'après acceptation.",
       "de": "Lies in deinem Tempo. Die Uhr startet erst, wenn du annimmst."
     },
-    "Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both routes reach the coffee stand.": {
-      "zh": "中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥。两条路都能到咖啡摊。",
-      "ja": "中央は台車を横切る短いルート。右の回廊は広くて安全。どちらもコーヒースタンドに着く。",
-      "ko": "중앙은 수레를 지나는 짧은 길, 오른쪽 아케이드는 넓고 안전한 길입니다. 둘 다 커피 가판대로 이어집니다.",
-      "es": "Centro: cruces de carros más cortos. Galería derecha: camino más ancho y seguro. Ambas rutas llegan al puesto de café.",
-      "fr": "Au centre : des passages plus courts entre les chariots. À droite : une galerie plus large et plus sûre. Les deux mènent au café.",
-      "de": "Mitte: kürzere Wagenübergänge. Rechte Arkade: breiter und sicherer. Beide Wege führen zum Kaffeestand."
-    },
-    "Garden lifts: jump aboard low, ride up, then leave at the landing. Q gives you more boarding time. Wide side ramps bypass every lift and the stepping stones.": {
-      "zh": "花园升降台：低处跳上，乘台升高，到站离开。Q 能延长登台窗口。宽阔的侧坡道可绕过升降台和跳石。",
-      "ja": "庭園のリフトは低い位置で飛び乗り、上まで乗ってから降りよう。Q で乗れる時間が長くなる。広い脇のスロープならリフトも飛び石も迂回できる。",
-      "ko": "정원 승강기가 낮을 때 뛰어올라 타고, 올라가면 내리세요. Q로 탈 수 있는 시간을 늘릴 수 있습니다. 넓은 옆 경사로로 승강기와 징검돌을 모두 우회할 수 있습니다.",
-      "es": "Elevadores del jardín: sube de un salto cuando estén bajos y baja al llegar arriba. Q amplía el tiempo para subir. Las rampas laterales evitan todos los elevadores y las piedras.",
-      "fr": "Plateformes du jardin : sautez dessus en bas, montez et descendez au palier. Q donne plus de temps pour embarquer. Les larges rampes contournent plateformes et pierres.",
-      "de": "Gartenlifte: unten aufspringen, hochfahren und am Absatz aussteigen. Q verlängert das Zeitfenster zum Einsteigen. Breite Seitenrampen umgehen alle Lifte und Trittsteine."
-    },
-    "The last route combines cart lanes, a shuttle and a terrace lift. Q lasts 3 seconds, then needs 4 to recharge. Side paths are always available; save a charge for your next crossing.": {
-      "zh": "最后一程组合了车道、摆渡台和露台升降机。Q 最长 3 秒，之后充能 4 秒。始终有侧路可选，为下一次通行安排好能量。",
-      "ja": "最後のルートには台車の車線、往復台、テラスのリフトがある。Q は最大3秒、充電は4秒。脇道も使いながら、次の通行に備えて充電を残そう。",
-      "ko": "마지막 경로에는 수레 차선, 왕복 발판, 테라스 승강기가 있습니다. Q는 3초 동안 작동하고 충전에 4초가 걸립니다. 항상 옆길이 있으니 다음 통과에 쓸 에너지를 남겨 두세요.",
-      "es": "La última ruta combina carriles de carros, una plataforma móvil y un elevador. Q dura 3 segundos y recarga en 4. Siempre hay caminos laterales; reserva energía para el próximo cruce.",
-      "fr": "Le dernier trajet combine chariots, navette et plateforme de terrasse. Q dure 3 secondes, puis recharge en 4. Des chemins latéraux restent disponibles ; gardez de l'énergie pour le prochain passage.",
-      "de": "Die letzte Route verbindet Wagenspuren, eine Pendelplattform und einen Terrassenlift. Q hält 3 Sekunden und lädt 4 Sekunden auf. Seitenwege sind immer offen; spare Energie für den nächsten Übergang."
-    },
     "BEHIND": {
       "zh": "后方",
       "ja": "後ろ",
@@ -849,14 +825,6 @@
       "es": "Las tres entregas están hechas. Es hora de tomar asiento.",
       "fr": "Les trois livraisons sont faites. Il est temps de vous asseoir.",
       "de": "Alle drei Lieferungen geschafft. Zeit, deinen Platz einzunehmen."
-    },
-    "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Recharge takes 4. You move normally, and your delivery clock keeps ticking.": {
-      "zh": "按住 Q，让带蓝色时钟标签的装置减速，最长 3 秒，之后充能 4 秒。你的步伐和订单倒计时照常进行。",
-      "ja": "Q を押すと青い時計マークの装置が最大3秒減速し、充電に4秒かかる。あなたの動きと配達の時計は通常どおり進む。",
-      "ko": "Q를 누르면 파란 시계 표시 장치가 최대 3초 느려지고, 충전에는 4초가 걸립니다. 자신의 움직임과 배달 시간은 그대로입니다.",
-      "es": "Mantén Q para ralentizar hasta 3 segundos los dispositivos azules con reloj; recargar tarda 4. Tú te mueves normalmente y el reloj de entrega sigue corriendo.",
-      "fr": "Maintenez Q pour ralentir les appareils bleus marqués d’une horloge pendant 3 secondes ; recharge en 4 secondes. Vous bougez normalement et le chrono continue.",
-      "de": "Halte Q, um blaue Geräte mit Uhrsymbol bis zu 3 Sekunden zu verlangsamen. Aufladen dauert 4 Sekunden. Du bewegst dich normal und die Lieferzeit läuft weiter."
     },
     "Deliver coffee to the stand, the lens to the projection booth, and the reel to the clocktower. E reads a delivery brief; Enter accepts and starts its clock. R retries only your current order.": {
       "zh": "把咖啡送到咖啡摊、镜头送到投影台、胶片送到钟楼。按 E 阅读配送简报，Enter 确认后才开始计时。R 只重试当前订单，前面的交付保留。",
@@ -1098,14 +1066,6 @@
       "fr": "Va au comptoir des colis et appuie sur E pour lire ta première commande.",
       "de": "Geh zur Paketausgabe und drück E, um deinen ersten Auftrag zu lesen."
     },
-    "Walk to the parcel desk and press E. The clock waits for you.": {
-      "zh": "走到取件台按 E。倒计时还没开始。",
-      "ja": "受付カウンターで E を押そう。時計はまだ止まっている。",
-      "ko": "접수대로 가서 E를 누르자. 시계는 아직 멈춰 있다.",
-      "es": "Ve al mostrador y pulsa E. El reloj te espera.",
-      "fr": "Va au comptoir et appuie sur E. Le chrono t'attend.",
-      "de": "Geh zur Paketausgabe und drück E. Die Uhr wartet auf dich."
-    },
     "Move": {
       "zh": "移动",
       "ja": "移動",
@@ -1305,6 +1265,126 @@
       "es": "Pausa",
       "fr": "Pause",
       "de": "Pause"
+    },
+    "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Each delivery gives you only a few uses, counted at the bottom left. You and your delivery clock keep moving normally.": {
+      "zh": "按住 Q，让带蓝色时钟标记的装置减速，每次最长 3 秒。每一单只能用几次，剩余次数显示在左下角。你和配送倒计时都照常进行。",
+      "ja": "Q を押している間、青い時計マークの装置が最大 3 秒遅くなる。使える回数は配達ごとに数回だけで、左下に表示される。きみと配達時計はいつも通り進む。",
+      "ko": "Q를 누르면 파란 시계 표시 장치가 최대 3초 느려진다. 배달마다 몇 번만 쓸 수 있고 남은 횟수는 왼쪽 아래에 나온다. 너와 배달 시계는 그대로 흐른다.",
+      "es": "Mantén Q para ralentizar los aparatos azules con reloj hasta 3 segundos. Cada entrega te da solo unos pocos usos, contados abajo a la izquierda. Tú y el reloj de entrega seguís a velocidad normal.",
+      "fr": "Maintiens Q pour ralentir jusqu'à 3 secondes les appareils bleus marqués d'une horloge. Chaque livraison n'en offre que quelques utilisations, comptées en bas à gauche. Toi et le chrono continuez normalement.",
+      "de": "Halte Q, um blaue Geräte mit Uhrsymbol bis zu 3 Sekunden zu verlangsamen. Pro Lieferung hast du nur wenige Einsätze, unten links gezählt. Du und die Lieferuhr laufen normal weiter."
+    },
+    "Pick up your first order at the parcel desk. The gate opens when you accept it.": {
+      "zh": "先在取件台领取第一单。接单后大门才会打开。",
+      "ja": "まず受付カウンターで最初の注文を受け取ろう。受け取るとゲートが開く。",
+      "ko": "먼저 접수대에서 첫 주문을 받자. 주문을 수락하면 문이 열린다.",
+      "es": "Recoge primero tu pedido en el mostrador. La barrera se abre al aceptarlo.",
+      "fr": "Récupère d'abord ta commande au comptoir. La barrière s'ouvre quand tu l'acceptes.",
+      "de": "Hol zuerst deinen Auftrag an der Paketausgabe. Die Schranke öffnet sich, wenn du ihn annimmst."
+    },
+    "Your parcel is at the desk the marker points to. Walk there to read it.": {
+      "zh": "包裹在标记指向的取件台，走过去就能查看。",
+      "ja": "荷物はマーカーが指すカウンターにある。そこへ行けば読める。",
+      "ko": "소포는 표시가 가리키는 접수대에 있다. 가면 확인할 수 있다.",
+      "es": "Tu paquete está en el mostrador que señala el marcador. Ve allí para leerlo.",
+      "fr": "Ton colis est au comptoir indiqué par le repère. Vas-y pour le lire.",
+      "de": "Dein Paket liegt an der Ausgabe, auf die die Markierung zeigt. Geh hin, um es zu lesen."
+    },
+    "Nothing to pick up yet. Follow the arrows to the parcel desk.": {
+      "zh": "这里还没有东西可拿。沿箭头走到取件台。",
+      "ja": "まだ受け取るものはない。矢印に沿って受付カウンターへ。",
+      "ko": "아직 받을 것이 없다. 화살표를 따라 접수대로 가자.",
+      "es": "Aún no hay nada que recoger. Sigue las flechas hasta el mostrador.",
+      "fr": "Rien à prendre pour l'instant. Suis les flèches jusqu'au comptoir.",
+      "de": "Noch nichts abzuholen. Folge den Pfeilen zur Paketausgabe."
+    },
+    "Deliver on the orange square the marker points to.": {
+      "zh": "到标记指向的橙色方块上交付。",
+      "ja": "マーカーが指すオレンジの四角の上で届けよう。",
+      "ko": "표시가 가리키는 주황색 사각형 위에서 배달하자.",
+      "es": "Entrega sobre el cuadrado naranja que señala el marcador.",
+      "fr": "Livre sur le carré orange indiqué par le repère.",
+      "de": "Liefere auf dem orangen Quadrat, auf das die Markierung zeigt."
+    },
+    "No borrowed time left for this delivery. Wait for a gap or take a side path.": {
+      "zh": "这一单的借时间已经用完。等空隙，或者走侧路。",
+      "ja": "この配達で借りられる時間はもうない。すき間を待つか、脇道を通ろう。",
+      "ko": "이번 배달에서 빌릴 시간이 없다. 틈을 기다리거나 옆길로 가자.",
+      "es": "No te queda tiempo prestado en esta entrega. Espera un hueco o toma un camino lateral.",
+      "fr": "Plus de temps emprunté pour cette livraison. Attends une ouverture ou prends un chemin latéral.",
+      "de": "Keine geliehene Zeit mehr für diese Lieferung. Warte auf eine Lücke oder nimm einen Seitenweg."
+    },
+    "Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both reach the coffee stand. You can borrow time 3 times on this delivery.": {
+      "zh": "中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥，两条路都能到咖啡摊。这一单可以借 3 次时间。",
+      "ja": "中央：カートの横断が短い。右のアーケード：広くて安全な道。どちらもコーヒースタンドへ。この配達では 3 回時間を借りられる。",
+      "ko": "가운데: 카트 횡단이 짧다. 오른쪽 아케이드: 넓고 안전한 길. 둘 다 커피 스탠드로 간다. 이번 배달에서는 3번 시간을 빌릴 수 있다.",
+      "es": "Centro: cruces de carros más cortos. Soportal derecho: un paseo más ancho y seguro. Ambos llegan al puesto de café. En esta entrega puedes pedir tiempo 3 veces.",
+      "fr": "Centre : traversées de chariots plus courtes. Arcade de droite : un chemin plus large et plus sûr. Les deux mènent au stand de café. Tu peux emprunter du temps 3 fois pour cette livraison.",
+      "de": "Mitte: kürzere Wagenübergänge. Rechte Arkade: breiter und sicherer. Beide führen zum Kaffeestand. Bei dieser Lieferung kannst du dir 3-mal Zeit leihen."
+    },
+    "Garden lifts: step aboard while the platform is level, ride up, step off at the top. Holding Q while boarding gives you more time. Wide side ramps avoid every lift and the stepping stones. 4 uses this delivery.": {
+      "zh": "花园升降台：平台和地面齐平时走上去，乘到顶后走下来。上台时按住 Q 能多留一点时间。宽阔的侧坡道可以绕开所有升降台和跳石。这一单可借 4 次。",
+      "ja": "庭のリフト：台が地面と同じ高さのときに乗り、上まで行ったら降りる。乗るときに Q を押すと余裕が増える。広い脇のスロープでリフトと飛び石をすべて避けられる。この配達では 4 回。",
+      "ko": "정원 리프트: 발판이 바닥과 같은 높이일 때 올라타고, 위에서 내리자. 탈 때 Q를 누르면 여유가 생긴다. 넓은 옆 경사로로 모든 리프트와 징검돌을 피할 수 있다. 이번 배달은 4번.",
+      "es": "Elevadores del jardín: sube cuando la plataforma esté a nivel, súbete y baja arriba. Mantener Q al subir te da más tiempo. Las rampas laterales evitan todos los elevadores y las piedras. 4 usos en esta entrega.",
+      "fr": "Ascenseurs du jardin : monte quand la plateforme est à niveau, et descends en haut. Maintenir Q en montant te laisse plus de temps. Les larges rampes latérales évitent tous les ascenseurs et les pierres. 4 utilisations pour cette livraison.",
+      "de": "Garten-Lifte: steig auf, wenn die Plattform ebenerdig ist, fahr hoch und steig oben aus. Q beim Aufsteigen gibt dir mehr Zeit. Breite Seitenrampen umgehen alle Lifte und Trittsteine. 4 Einsätze bei dieser Lieferung."
+    },
+    "The last route has cart lanes, a shuttle and a terrace lift: 6 blue devices, but only 5 uses of borrowed time, so choose where you need them. Side paths are always available.": {
+      "zh": "最后一程有车道、摆渡台和露台升降台，共 6 个蓝色装置，但只能借 5 次时间，想好用在哪里。侧路始终可走。",
+      "ja": "最後のルートにはカートの通り道、シャトル、テラスのリフトがある。青い装置は 6 つ、借りられるのは 5 回だけ。使う場所を選ぼう。脇道はいつでも通れる。",
+      "ko": "마지막 경로에는 카트 길, 셔틀, 테라스 리프트가 있다. 파란 장치는 6개지만 빌릴 수 있는 건 5번뿐이니 쓸 곳을 고르자. 옆길은 언제나 열려 있다.",
+      "es": "La última ruta tiene carriles de carros, una lanzadera y un elevador de terraza: 6 aparatos azules pero solo 5 usos de tiempo prestado, así que elige dónde usarlos. Siempre hay caminos laterales.",
+      "fr": "Le dernier trajet comporte des voies de chariots, une navette et un ascenseur de terrasse : 6 appareils bleus mais seulement 5 utilisations, alors choisis bien. Les chemins latéraux restent toujours ouverts.",
+      "de": "Die letzte Route hat Wagenspuren, ein Shuttle und einen Terrassenlift: 6 blaue Geräte, aber nur 5 Einsätze geliehene Zeit, also wähle gut. Seitenwege sind immer offen."
+    },
+    "Your next parcel waits at the marker. Walk there to read the brief; the clock has not started.": {
+      "zh": "下一份包裹在标记处。走过去查看简报，倒计时还没开始。",
+      "ja": "次の荷物はマーカーの場所にある。そこへ行けば説明が開く。時計はまだ動いていない。",
+      "ko": "다음 소포는 표시된 곳에 있다. 가면 안내가 열린다. 시계는 아직 멈춰 있다.",
+      "es": "Tu siguiente paquete espera en el marcador. Ve allí para leer el encargo; el reloj aún no corre.",
+      "fr": "Ton prochain colis t'attend au repère. Vas-y pour lire la mission ; le chrono n'a pas commencé.",
+      "de": "Dein nächstes Paket wartet an der Markierung. Geh hin, um den Auftrag zu lesen; die Uhr läuft noch nicht."
+    },
+    "No borrowed time left. Wait for the cart to move aside, then cross.": {
+      "zh": "借时间已用完。等运输车让开再通过。",
+      "ja": "借りられる時間はもうない。カートがよけるのを待ってから渡ろう。",
+      "ko": "빌릴 시간이 없다. 카트가 비키면 건너자.",
+      "es": "No te queda tiempo prestado. Espera a que el carro se aparte y cruza.",
+      "fr": "Plus de temps emprunté. Attends que le chariot s'écarte, puis traverse.",
+      "de": "Keine geliehene Zeit mehr. Warte, bis der Wagen ausweicht, dann geh rüber."
+    },
+    "No borrowed time left. Step aboard as soon as the platform is level with you, or take the side path.": {
+      "zh": "借时间已用完。平台和你齐平时立刻走上去，或者走侧路。",
+      "ja": "借りられる時間はもうない。台が同じ高さになったらすぐ乗るか、脇道を通ろう。",
+      "ko": "빌릴 시간이 없다. 발판이 같은 높이가 되면 바로 타거나 옆길로 가자.",
+      "es": "No te queda tiempo prestado. Sube en cuanto la plataforma esté a tu nivel o toma el camino lateral.",
+      "fr": "Plus de temps emprunté. Monte dès que la plateforme est à ton niveau, ou prends le chemin latéral.",
+      "de": "Keine geliehene Zeit mehr. Steig auf, sobald die Plattform auf deiner Höhe ist, oder nimm den Seitenweg."
+    },
+    "NO USES LEFT THIS DELIVERY": {
+      "zh": "这一单的次数已用完",
+      "ja": "この配達の回数は使い切った",
+      "ko": "이번 배달 횟수 소진",
+      "es": "SIN USOS EN ESTA ENTREGA",
+      "fr": "PLUS D'UTILISATIONS",
+      "de": "KEINE EINSÄTZE MEHR"
+    },
+    "FREE IN PRACTICE": {
+      "zh": "练习中不限次数",
+      "ja": "練習中は使い放題",
+      "ko": "연습 중 무제한",
+      "es": "LIBRE EN PRÁCTICA",
+      "fr": "LIBRE À L'ENTRAÎNEMENT",
+      "de": "IM TRAINING FREI"
+    },
+    "Q USES": {
+      "zh": "Q 次数",
+      "ja": "Q の回数",
+      "ko": "Q 횟수",
+      "es": "USOS DE Q",
+      "fr": "UTILISATIONS DE Q",
+      "de": "Q-EINSÄTZE"
     }
   }
 }

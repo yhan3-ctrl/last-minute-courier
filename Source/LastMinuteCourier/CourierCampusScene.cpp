@@ -5,6 +5,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 
 namespace
 {
@@ -111,7 +112,14 @@ void ACourierCampusScene::Guest(FVector At,float Yaw,const TCHAR* Shirt,const TC
     Part(Arm,TEXT("Cylinder"),FVector(0,0,-18),FVector(15,15,36),Shirt);
     Part(Arm,TEXT("Sphere"),FVector(0,0,-39),FVector(18),Skin);
     auto* Mug=Part(Arm,TEXT("Cylinder"),FVector(13,0,-38),FVector(18,18,24),TEXT("FFF0D4"));
-    Guests.Add({Root,Arm,Mug,Stage,float(Guests.Num())*.8f});
+    // A solid body: the courier bumps into people and the camera stops in front
+    // of them instead of passing inside. Hidden guests drop their collision.
+    auto* Body=NewObject<UCapsuleComponent>(this);Parts.Add(Body);Body->SetupAttachment(Root);
+    Body->InitCapsuleSize(30.f,Seated?70.f:88.f);Body->SetRelativeLocation(FVector(0,0,Seated?70.f:88.f));
+    Body->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Body->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);Body->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);
+    Body->SetCanEverAffectNavigation(false);Body->RegisterComponent();
+    Guests.Add({Root,Arm,Mug,Stage,float(Guests.Num())*.8f,Body});
     if(Stage==0 && At.X>8100 && At.X<8400)
     {
         Part(Root,TEXT("Cube"),FVector(23,0,79),FVector(4,32,52),TEXT("F3DEC1"));
@@ -199,6 +207,7 @@ void ACourierCampusScene::Tick(float DeltaSeconds)
         if(!Guest.Root.IsValid())continue;
         const bool Visible=Mode->CompletedOrders>=Guest.AppearsAfter;
         if(Guest.Root->IsVisible()!=Visible)Guest.Root->SetVisibility(Visible,true);
+        if(Guest.Body.IsValid())Guest.Body->SetCollisionEnabled(Visible?ECollisionEnabled::QueryOnly:ECollisionEnabled::NoCollision);
         if(Guest.Cup.IsValid())Guest.Cup->SetVisibility(Visible && Mode->CompletedOrders>=1);
         const float ArmPitch=Mode->CompletedOrders>=1?55.f+FMath::Sin(SceneSeconds*.9f+Guest.Offset)*3.f:0.f;
         if(Guest.Arm.IsValid())Guest.Arm->SetRelativeRotation(FRotator(ArmPitch,0,0));

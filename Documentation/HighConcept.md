@@ -1,6 +1,6 @@
 # Last Minute Courier
 
-High Concept | v0.5.4 | November 7, 2026
+High Concept | v0.6 | November 8, 2026
 
 ## High concept statement
 
@@ -16,7 +16,7 @@ For players who understand a keyboard and mouse but may be new to 3D action game
 
 ## Distinctive experience
 
-The Borrower slows marked machinery to one quarter speed for up to three seconds. It leaves the courier and deadline unchanged, so extending a safe window still costs delivery time. Releasing it after boarding makes transport useful again. One rule supports avoidance, boarding and route planning.
+The Borrower slows marked machinery to one quarter speed for up to three seconds, a few times per delivery (3, 4, then 5 uses, counted beside the Q key). It leaves the courier and deadline unchanged, so extending a safe window still costs delivery time. Releasing it after boarding makes transport useful again. One rule supports avoidance, boarding and route planning.
 
 Each parcel changes the same evening: coffee brings warm cups and a musical layer; the lens prepares the projector and brings an audience; the reel opens the cinema. Three delivery stamps become one admission ticket. The courier contributes to a shared event and receives a place in it.
 

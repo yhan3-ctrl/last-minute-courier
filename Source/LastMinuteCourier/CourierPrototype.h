@@ -24,6 +24,10 @@ struct FCourierOrder
     float Seconds=140.f;
 };
 
+// Purely visual props never block the courier, but large ones block the camera
+// probe so the chase camera cannot slide inside them.
+void CourierVisualCollision(class UPrimitiveComponent* Component,const FVector& Size);
+
 // One connected campus, three deliveries, current-session progress.
 UCLASS()
 class LASTMINUTECOURIER_API ACourierGameMode : public AGameModeBase
@@ -52,6 +56,12 @@ public:
     bool bAudioEnabled = true;
     bool bConfirmRetry = false; // R during a delivery asks before discarding progress.
     float QDenied = 0.f;        // Brief HUD flash when Q is pressed without charge.
+    int32 Charges = 3;          // Borrowed-time uses left in the current delivery.
+    static constexpr float RechargeSeconds = 1.5f;
+    static constexpr float InteractRadius = 300.f;
+    int32 OrderCharges() const {return CurrentOrder==0?3:(CurrentOrder==1?4:5);}
+    bool GateOpen() const;
+    bool bNearPickup = false;
     float SlowRemaining = 3.f;
     float Cooldown = 0.f;
     float Remaining = 60.f;
@@ -108,6 +118,9 @@ public:
     FVector NavigationTarget() const;
     float OrderBudget() const;
     float RecoverySeconds = 0.f;
+    float GateAngle = 0.f;
+    float NoticeSeconds = 0.f;
+    void ResetDevices();
 private:
     friend class FCourierAutopilot;
     TSharedPtr<class FCourierAutopilot> Autopilot;
@@ -120,6 +133,10 @@ private:
     UPROPERTY() TArray<TObjectPtr<class UAudioComponent>> MusicLayers;
     UPROPERTY() TArray<TObjectPtr<AActor>> RouteGuideGroups;
     UPROPERTY() TObjectPtr<AActor> RouteBeacon;
+    UPROPERTY() TObjectPtr<AActor> GateArm;
+    UPROPERTY() TObjectPtr<UPrimitiveComponent> GateBlocker;
+    UPROPERTY() TArray<TObjectPtr<AActor>> GateSign;
+    void UpdateGate(float DeltaSeconds);
     TArray<FVector> Route;
     void BuildRouteGuide();
     void AddRouteGuideSpan(int32 Order,const FVector& A,const FVector& B);
@@ -128,16 +145,15 @@ private:
     void BuildDeliveryDistricts();
     void ConfigureOrder(int32 Index);
     void AcceptOrder();
+    void OpenBrief();
     void Sound(const TCHAR* Name,float Volume=.3f);
     void UpdateCelebration();
     void LoadCopy();
     void LoadTranslations();
     TMap<FString,TMap<FString,FString>> Translations;
     FString NoticeEn,NoticeZh;
-    float NoticeSeconds = 0.f;
     void RefreshInput();
     void RestoreCheckpoint();
-    void ResetDevices();
     void SetCoffeeLit(bool bLit);
 };
 

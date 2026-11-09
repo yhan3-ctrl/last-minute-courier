@@ -1,6 +1,6 @@
 # Graduate Mechanics and Balance Analysis
 
-Last Minute Courier | v0.5.4 | November 7, 2026
+Last Minute Courier | v0.6 | November 8, 2026
 
 Required for this student's graduate submission. Based on lecture deck 4, The Art of Game Design: mechanics 1-7 and the balance lenses on slides 104, 112 and 118. The following answers refer to implemented rules. November 5 practice feedback is recorded explicitly; other player-feeling claims remain hypotheses.
 
@@ -9,10 +9,10 @@ Required for this student's graduate submission. Based on lecture deck 4, The Ar
 | Course mechanic | Implemented model and example | What the player decides |
 |---|---|---|
 | 1. Space | A continuous, bounded 3D campus with ground, raised landings, ramps, gaps and connected routes. Desks and delivery zones are meaningful subspaces. Height matters: E from beneath a desk is invalid. | Choose a connected route, align with a landing, and reach the correct interaction area. |
-| 2. Time | Continuous movement; separate 60/150/160-second order clocks; Q slows active blue-tagged machinery to 0.25 speed for up to three real seconds, followed by four seconds of recharge. Reading is untimed; pause suspends simulation. | Spend the window after observing a gap; release Q after boarding; balance longer safe travel against a deadline. |
+| 2. Time | Continuous movement; separate 60/150/160-second order clocks; Q slows blue-tagged machinery to 0.25 speed for up to three real seconds per use, with 3/4/5 uses per delivery and a 1.5-second recharge between uses. Reading is untimed; pause suspends simulation. | Spend the window after observing a gap; release Q after boarding; balance longer safe travel against a deadline. |
 | 3. Objects, attributes and states | Courier: position, grounded/jumping/recovering, held parcel. Cart: lane position and time phase. Platform: location and boarding/riding state. Order: unread, accepted, delivered or expired. Borrower: ready, active or recharging. Desks, stamps and the cinema have persistent delivered states within a run. | Read visible cart/platform motion, charge bar, delivery count and clock to choose the next action. |
 | 4. Actions | Basic actions: move, look, jump, hold/release Q and interact. Strategic actions: wait for a gap, preserve a charge for boarding, release it during travel, choose a bypass, or retry an order after learning its route. | Combine a small set of verbs in different sequences. Settings and help are shell actions, not additional courier powers. |
-| 5. Rules | Three ordered parcels, reachable-height interaction, limited Q use, grounded checkpoints, order-specific timeouts and retries, and a three-delivery completion condition. The game enforces these rules; the script states their consequences. | Complete the current goal within its budget, recover from a mistake, and understand which progress persists. |
+| 5. Rules | Three ordered parcels, reachable-height interaction, a fixed number of Q uses per delivery (the last route has six devices but five uses), grounded checkpoints, order-specific timeouts and retries, and a three-delivery completion condition. The game enforces these rules; the script states their consequences. | Complete the current goal within its budget, recover from a mistake, and understand which progress persists. |
 | 6. Skill | Physical: coordinate camera-relative movement, jumping and landings. Mental: observe periodic machinery, estimate a safe interval and compare routes. No social opponent or avatar-stat upgrade system is required. | Improve real observation and coordination through practice rather than buying numerical power. |
 | 7. Chance | Gameplay-critical traffic and platform movement are periodic, not random success rolls. Arrival timing can feel uncertain to a novice; motion can be observed and learned. Cosmetic variation does not decide whether a delivery succeeds. | Take an informed timing risk or choose a longer route; failure is not assigned by a dice roll. |
 
@@ -46,7 +46,7 @@ These categories describe different aspects of the same interaction. For example
 
 ## Balance lens 3: Simplicity and complexity (deck 4, slide 118)
 
-**1. What innate complexity exists?** Players must know the blue-tag rule, three-second allowance, four-second recharge, the difference between reading and accepting, the delivery order and the difference between checkpoint recovery and retry. These rules are explained in cards, practice, contextual hints, the brief and pause help. Seven language options share the same rules.
+**1. What innate complexity exists?** Players must know the blue-tag rule, three-second allowance, the per-delivery use count shown beside the Q key, the difference between reading and accepting, the delivery order and the difference between checkpoint recovery and retry. These rules are explained in cards, practice, contextual hints, the brief and pause help. Seven language options share the same rules.
 
 **2. Can innate complexity become emergent complexity?** One Q rule is used on carts, vertical lifts and a horizontal shuttle. There is no separate freeze power, vehicle control scheme or per-device recharge rule. Observing and combining that one rule with movement creates the later decisions. Directly opening the next untimed brief removes an unnecessary extra interaction.
 

@@ -90,9 +90,9 @@ FString ACourierGameMode::OrderBrief() const
 
 FString ACourierGameMode::RouteHint() const
 {
-    if(CurrentOrder==0)return Copy(TEXT("Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both routes reach the coffee stand."),TEXT("中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥。两条路都能到咖啡摊。"));
-    if(CurrentOrder==1)return Copy(TEXT("Garden lifts: jump aboard low, ride up, then leave at the landing. Q gives you more boarding time. Wide side ramps bypass every lift and the stepping stones."),TEXT("花园升降台：低处跳上，乘台升高，到站离开。Q 能延长登台窗口。宽阔的侧坡道可绕过升降台和跳石。"));
-    return Copy(TEXT("The last route combines cart lanes, a shuttle and a terrace lift. Q lasts 3 seconds, then needs 4 to recharge. Side paths are always available; save a charge for your next crossing."),TEXT("最后一程组合了车道、摆渡台和露台升降机。Q 最长 3 秒，之后充能 4 秒。始终有侧路可选，为下一次通行安排好能量。"));
+    if(CurrentOrder==0)return Copy(TEXT("Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both reach the coffee stand. You can borrow time 3 times on this delivery."),TEXT("中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥，两条路都能到咖啡摊。这一单可以借 3 次时间。"));
+    if(CurrentOrder==1)return Copy(TEXT("Garden lifts: step aboard while the platform is level, ride up, step off at the top. Holding Q while boarding gives you more time. Wide side ramps avoid every lift and the stepping stones. 4 uses this delivery."),TEXT("花园升降台：平台和地面齐平时走上去，乘到顶后走下来。上台时按住 Q 能多留一点时间。宽阔的侧坡道可以绕开所有升降台和跳石。这一单可借 4 次。"));
+    return Copy(TEXT("The last route has cart lanes, a shuttle and a terrace lift: 6 blue devices, but only 5 uses of borrowed time, so choose where you need them. Side paths are always available."),TEXT("最后一程有车道、摆渡台和露台升降台，共 6 个蓝色装置，但只能借 5 次时间，想好用在哪里。侧路始终可走。"));
 }
 
 FVector ACourierGameMode::NavigationTarget() const
@@ -197,7 +197,7 @@ FString ACourierGameMode::ContextHint() const
         const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
     }
     if(Phase==ECourierPhase::AwaitPickup)
-        return Copy(TEXT("Walk to the parcel desk and press E. The clock waits for you."),TEXT("走到取件台按 E。倒计时还没开始。"));
+        return Copy(TEXT("Your next parcel waits at the marker. Walk there to read the brief; the clock has not started."),TEXT("下一份包裹在标记处。走过去查看简报，倒计时还没开始。"));
     const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);if(!Player)return FString();
     const FVector P=Player->GetActorLocation();
     for(const auto& Lift:Platforms)if(Lift && Player->GetMovementBaseObject()==Lift->Mesh.Get())
@@ -214,14 +214,17 @@ FString ACourierGameMode::ContextHint() const
     for(const auto& Cart:Carts)if(Cart && !Cart->bTraining && Cart->OrderIndex==CurrentOrder &&
         Cart->Origin.X>=P.X-120.f && Cart->Origin.X-P.X<900.f && FMath::Abs(P.Y)<570.f &&
         (!NextCart || Cart->Origin.X<NextCart->Origin.X))NextCart=Cart;
+    const bool bOutOfTime=Phase==ECourierPhase::Delivery && Charges<=0;
     if(NextCart)
-        return Copy(TEXT("Wait until the cart moves aside. Hold Q to keep the gap open, then cross."),TEXT("先等运输车让开，再按住 Q 延长空隙，趁机通过。"));
+        return bOutOfTime?Copy(TEXT("No borrowed time left. Wait for the cart to move aside, then cross."),TEXT("借时间已用完。等运输车让开再通过。")):
+            Copy(TEXT("Wait until the cart moves aside. Hold Q to keep the gap open, then cross."),TEXT("先等运输车让开，再按住 Q 延长空隙，趁机通过。"));
     for(const auto& Lift:Platforms)if(Lift && Lift->OrderIndex==CurrentOrder &&
         FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f)
     {
         if(Lift->Travel.Z>0.f && P.Z<Lift->Origin.Z+160.f && Lift->GetActorLocation().Z>P.Z+20.f)
             return Copy(TEXT("The lift is above you. Release Q and wait here for it to come down."),TEXT("升降台还在上方。松开 Q，在这里等它降下来。"));
-        return Copy(TEXT("When the blue platform reaches your side, hold Q and walk aboard. Space also works."),TEXT("等蓝色平台来到你这一侧，按住 Q 走上去；也可以按空格跳上去。"));
+        return bOutOfTime?Copy(TEXT("No borrowed time left. Step aboard as soon as the platform is level with you, or take the side path."),TEXT("借时间已用完。平台和你齐平时立刻走上去，或者走侧路。")):
+            Copy(TEXT("When the blue platform reaches your side, hold Q and walk aboard. Space also works."),TEXT("等蓝色平台来到你这一侧，按住 Q 走上去；也可以按空格跳上去。"));
     }
     if(bSlowing)return Copy(TEXT("Blue devices are slower. You and the delivery clock move normally."),TEXT("蓝色装置正在减速。你的步伐和配送倒计时照常进行。"));
     if(FVector::Dist2D(P,Destination)<1800.f)

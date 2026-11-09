@@ -24,8 +24,8 @@
         "zh": "借来的三秒"
       },
       "body": {
-        "en": "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Recharge takes 4. You move normally, and your delivery clock keeps ticking.",
-        "zh": "按住 Q，让带蓝色时钟标签的装置减速，最长 3 秒，之后充能 4 秒。你的步伐和订单倒计时照常进行。"
+        "en": "Hold Q to slow blue clock-tagged devices for up to 3 seconds. Each delivery gives you only a few uses, counted at the bottom left. You and your delivery clock keep moving normally.",
+        "zh": "按住 Q，让带蓝色时钟标记的装置减速，每次最长 3 秒。每一单只能用几次，剩余次数显示在左下角。你和配送倒计时都照常进行。"
       }
     },
     {
@@ -166,13 +166,18 @@
   "rules": {
     "slow_factor": 0.25,
     "slow_max_seconds": 3.0,
-    "cooldown_seconds": 4.0,
+    "cooldown_seconds": 1.5,
     "collision_protection_seconds": 1.0,
     "respawn_fade_seconds": 0.3,
     "timer_slowed_by_ability": false,
     "pause_stops_timer": true,
     "intro_starts_timer": false,
-    "progress_persistence": "current_run_only"
+    "progress_persistence": "current_run_only",
+    "uses_per_delivery": [
+      3,
+      4,
+      5
+    ]
   },
   "ui": {
     "continue": {

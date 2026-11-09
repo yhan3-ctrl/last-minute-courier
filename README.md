@@ -19,19 +19,19 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 Download the release for your platform (see the course Box folder; the Mac build is also attached to the GitHub release). No Unreal Editor is needed.
 
-- **Mac:** open `LastMinuteCourier-0.5.4-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
+- **Mac:** open `LastMinuteCourier-0.6-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
 - Windows (x86) and Linux (x86) builds will be published in the Box folder.
 
 | Key | Action |
 |---|---|
 | W A S D / Mouse | Move / look |
 | Space | Jump |
-| Q (hold) | Slow blue devices for up to 3 s, then 4 s recharge |
-| E | Open a delivery brief, press again to accept; deliver at the orange square |
+| Q (hold) | Slow blue devices for up to 3 s; 3 / 4 / 5 uses per delivery, counted bottom-left |
+| E | Walk up to a desk to open its brief; E accepts; E delivers on the orange square |
 | C / H / Esc | Recenter camera / route help / pause and settings |
 | R | Restart the current order (asks first) |
 
-Practice and reading are untimed. Order time limits are 1:00, 2:30 and 2:40. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
+Walk up to the parcel desk to open your first brief; the yard gate opens once you accept. Practice and reading are untimed. Order time limits are 1:00, 2:30 and 2:40. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
 
 ## Iterations
 
@@ -48,6 +48,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.5.2` | Nov 4 | A short Q tap "passed" the Q lesson without learning it: lesson and lift guidance rewritten |
 | `v0.5.3` | Nov 5 | Playtester: waiting for a gap and crossing felt natural but caused respawns, and the route was hard to see. Forced-Q reset removed; continuous route arrows added |
 | `v0.5.4` | Nov 7–8 | Full real-speed playthrough timed out at the shuttle (a rail blocked boarding) and found a gap at the last lift: both fixed. Time limits tightened after the run left most of each clock unused. Interface redesigned and controls changed to match first instinct after the playtester found the UI generic and template-like |
+| `v0.6` | Nov 8 | First first-time playtest: the player walked past the parcel desk to the coffee stand without an order, saw frozen carts, got no response from E at the counter, and the camera slid inside an NPC. Desks now open their brief on arrival, a yard gate holds until the first order is accepted, the world always moves, E always explains itself, people and props stop the camera, and Q has a visible number of uses per delivery |
 
 ## Build and test (developers)
 

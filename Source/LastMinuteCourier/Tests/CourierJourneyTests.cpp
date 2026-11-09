@@ -44,7 +44,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
         FHitResult Hit;
         const bool Blocked=World->SweepSingleByChannel(Hit,A,B,FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(34,88),WalkParams);
         const bool Wall=Blocked && (Hit.bStartPenetrating || Hit.ImpactNormal.Z<Player->GetCharacterMovement()->GetWalkableFloorZ());
-        if(Wall)AddInfo(FString::Printf(TEXT("Blocked sweep %s: actor=%s, point=%s, normal=%s, initial=%d"),Name,*GetNameSafe(Hit.GetActor()),*Hit.ImpactPoint.ToString(),*Hit.ImpactNormal.ToString(),Hit.bStartPenetrating));
+        if(Wall)AddInfo(FString::Printf(TEXT("Blocked sweep %s: actor=%s at %s scale %s profile %s, point=%s, normal=%s, initial=%d"),Name,*GetNameSafe(Hit.GetActor()),Hit.GetActor()?*Hit.GetActor()->GetActorLocation().ToString():TEXT("-"),Hit.GetComponent()?*Hit.GetComponent()->GetComponentScale().ToString():TEXT("-"),Hit.GetComponent()?*Hit.GetComponent()->GetCollisionProfileName().ToString():TEXT("-"),*Hit.ImpactPoint.ToString(),*Hit.ImpactNormal.ToString(),Hit.bStartPenetrating));
         // A sweep may touch the walkable ramp while leaving it. Only a wall or
         // initial penetration obstructs this walking route.
         TestFalse(Name,Wall);
@@ -57,6 +57,24 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     WalkClear(FVector(43000,2200,510),FVector(43000,0,510),TEXT("Final terrace ramp joins upper walk"));
     WalkClear(FVector(7600,0,90),FVector(8000,0,90),TEXT("Coffee counter approach is clear"));
     WalkClear(FVector(45300,-950,510),FVector(46000,-950,510),TEXT("Cinema side console approach is clear"));
+    for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(TEXT("CourierNextMarker")))
+    {
+        TArray<AActor*> Parts;It->GetAttachedActors(Parts);
+        for(AActor* Part:Parts)if(auto* M=Part->FindComponentByClass<UStaticMeshComponent>())
+        {
+            AddInfo(FString::Printf(TEXT("Marker part %s enabled=%d profile=%s pawn=%d actorCollision=%d"),*Part->GetName(),int32(M->GetCollisionEnabled()),
+                *M->GetCollisionProfileName().ToString(),int32(M->GetCollisionResponseToChannel(ECC_Pawn)),Part->GetActorEnableCollision()));
+            TestTrue(TEXT("Waypoint marker parts never collide"),!Part->GetActorEnableCollision() || M->GetCollisionEnabled()==ECollisionEnabled::NoCollision);
+        }
+    }
+    {
+        // Nov 8 playtest: the chase camera slid inside the barista at the coffee stand.
+        FHitResult Hit;
+        const bool bPerson=World->LineTraceSingleByChannel(Hit,FVector(8280,-500,140),FVector(8280,150,140),ECC_Camera,WalkParams);
+        TestTrue(TEXT("Camera stops in front of a person instead of entering them"),bPerson && Hit.ImpactPoint.Y<-140.f);
+        const bool bSky=World->LineTraceSingleByChannel(Hit,FVector(4000,0,500),FVector(4000,0,6000),ECC_Camera,WalkParams);
+        TestFalse(TEXT("The sky dome never blocks the camera"),bSky);
+    }
     // Nov 7 autoplay: a side-path rail fenced the shuttle's boarding edge.
     WalkClear(FVector(33950,-60,95),FVector(34450,-60,95),TEXT("Shuttle boarding edge has no side-path rail"));
     WalkClear(FVector(33950,60,95),FVector(34450,60,95),TEXT("Shuttle boarding edge is open on both halves"));
@@ -91,7 +109,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     }
     TestEqual(TEXT("Exactly one current route group is shown"),ActiveGuides,1);
     Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
-    TestTrue(TEXT("Ready after teaching"),Mode->Phase==ECourierPhase::AwaitPickup);
+    TestTrue(TEXT("Finishing practice at the desk opens the first brief"),Mode->Phase==ECourierPhase::Briefing);
     for(int32 Order=0;Order<3;++Order)
     {
         TestEqual(TEXT("Correct active order"),Mode->CurrentOrder,Order);

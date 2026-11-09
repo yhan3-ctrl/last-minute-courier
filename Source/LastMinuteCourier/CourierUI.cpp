@@ -326,10 +326,10 @@ private:
         return Text(Value,Size,EFace::Display,CourierPalette::Ink,700);
     }
 
-    TSharedRef<SWidget> Body(const FText& Value,int32 Size=21,const FLinearColor& Color=CourierPalette::Ink) const
+    TSharedRef<SWidget> Body(const FText& Value,int32 Size=21,const FLinearColor& Color=CourierPalette::Ink,float Wrap=700.f) const
     {
         return SNew(STextBlock).Text(Value).Font(Typeface(Size,EFace::Bold)).ColorAndOpacity(Color)
-            .WrapTextAt(700).WrappingPolicy(ETextWrappingPolicy::AllowPerCharacterWrapping).LineHeightPercentage(1.32f);
+            .WrapTextAt(Wrap).WrappingPolicy(ETextWrappingPolicy::AllowPerCharacterWrapping).LineHeightPercentage(1.32f);
     }
 
     TSharedRef<SWidget> ControlRow(std::initializer_list<FText> Keys,const FText& Label,float KeyWidth) const
@@ -463,18 +463,20 @@ private:
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)[Title(FText::FromString(Mode->OrderTitle()),44)]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)
                 [SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().FillWidth(1.15f)
-                        [InfoCell(Copy(TEXT("PACKAGE"),TEXT("包裹")),Text(FText::FromString(Mode->OrderPackage()),20,EFace::Black,Ink,250))]
-                    +SHorizontalBox::Slot().FillWidth(1.15f)
-                        [InfoCell(Copy(TEXT("DELIVER TO"),TEXT("送往")),Text(FText::FromString(Mode->OrderDestination()),20,EFace::Black,Ink,250))]
-                    +SHorizontalBox::Slot().FillWidth(.7f)
-                        [InfoCell(Copy(TEXT("TIME LIMIT"),TEXT("配送时限")),Text(FText::FromString(Clock(Mode->OrderBudget())),40,EFace::Digits,Orange))]]
+                    +SHorizontalBox::Slot().FillWidth(1.f).Padding(0,0,12,0)
+                        [InfoCell(Copy(TEXT("PACKAGE"),TEXT("包裹")),Text(FText::FromString(Mode->OrderPackage()),19,EFace::Black,Ink,185))]
+                    +SHorizontalBox::Slot().FillWidth(1.f).Padding(0,0,12,0)
+                        [InfoCell(Copy(TEXT("DELIVER TO"),TEXT("送往")),Text(FText::FromString(Mode->OrderDestination()),19,EFace::Black,Ink,185))]
+                    +SHorizontalBox::Slot().FillWidth(.62f)
+                        [InfoCell(Copy(TEXT("TIME LIMIT"),TEXT("配送时限")),Text(FText::FromString(Clock(Mode->OrderBudget())),38,EFace::Digits,Orange))]
+                    +SHorizontalBox::Slot().FillWidth(.62f)
+                        [InfoCell(Copy(TEXT("Q USES"),TEXT("Q 次数")),Text(FText::FromString(FString::Printf(TEXT("×%d"),Mode->OrderCharges())),38,EFace::Digits,Teal))]]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,16)[Body(FText::FromString(Mode->Copy(*Mode->Orders[Mode->CurrentOrder].Brief,*Mode->Orders[Mode->CurrentOrder].BriefZh)),20)]
             +SVerticalBox::Slot().AutoHeight()
                 [Box(R12,PaperDeep,FMargin(16,12),
                     SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,4)[Text(Copy(TEXT("ROUTE"),TEXT("路线")),13,EFace::Heavy,Orange)]
-                        +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->RouteHint()),17)])]
+                        +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->RouteHint()),17,CourierPalette::Ink,660.f)])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)
                 [Text(Copy(TEXT("The clock starts when you accept."),TEXT("确认接单后才开始计时。")),15,EFace::Heavy,Teal)];
         auto Footer=SNew(SHorizontalBox)
@@ -600,6 +602,27 @@ private:
                 [SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[TicketCard]];
     }
 
+    // Remaining borrowed-time uses: one pip per use and a count. Practice is free.
+    TSharedRef<SWidget> Uses()
+    {
+        using namespace CourierPalette;
+        if(Mode->Phase==ECourierPhase::Practice)
+            return Text(Copy(TEXT("FREE IN PRACTICE"),TEXT("练习中不限次数")),13,EFace::Heavy,Cyan,120);
+        if(Mode->Phase!=ECourierPhase::Delivery)return SNullWidget::NullWidget;
+        auto Pips=SNew(SHorizontalBox);
+        for(int32 I=0;I<Mode->OrderCharges();++I)
+            Pips->AddSlot().AutoWidth().Padding(0,0,5,0)
+                [SNew(SBox).WidthOverride(12).HeightOverride(12)
+                    [SNew(SBorder).BorderImage(&R6).BorderBackgroundColor_Lambda([this,I]()->FSlateColor
+                    {return Mode.IsValid() && I<Mode->Charges?CourierPalette::Cyan:FLinearColor(1,1,1,.18f);})]];
+        return SNew(SVerticalBox)
+            +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)
+                [SNew(STextBlock).Font(Typeface(26,EFace::Digits))
+                    .ColorAndOpacity_Lambda([this]()->FSlateColor{return Mode.IsValid() && Mode->Charges<=0?CourierPalette::Red:CourierPalette::Cream;})
+                    .Text_Lambda([this](){return FText::FromString(Mode.IsValid()?FString::Printf(TEXT("×%d"),Mode->Charges):FString());})]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[Pips];
+    }
+
     // ---------------------------------------------------------------- live HUD
 
     TSharedRef<SWidget> Gameplay()
@@ -712,6 +735,7 @@ private:
                                     {
                                         if(!Mode.IsValid())return FText();
                                         if(Mode->bSlowing)return Copy(TEXT("SLOWING BLUE DEVICES"),TEXT("蓝色装置减速中"));
+                                        if(Mode->Phase==ECourierPhase::Delivery && Mode->Charges<=0)return Copy(TEXT("NO USES LEFT THIS DELIVERY"),TEXT("这一单的次数已用完"));
                                         if(Mode->Cooldown>0.f)return Copy(TEXT("Recharging…"),TEXT("充能中…"));
                                         return Copy(TEXT("HOLD TO BORROW TIME"),TEXT("按住借时间"));
                                     })]
@@ -727,8 +751,9 @@ private:
                                         .Percent_Lambda([this]()->TOptional<float>
                                         {
                                             if(!Mode.IsValid())return 0.f;
-                                            return Mode->Cooldown>0.f?1.f-Mode->Cooldown/4.f:Mode->SlowRemaining/3.f;
-                                        })]]])];
+                                            return Mode->Cooldown>0.f?1.f-Mode->Cooldown/ACourierGameMode::RechargeSeconds:Mode->SlowRemaining/3.f;
+                                        })]]]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(16,0,0,0)[Uses()])];
 
         // Bottom right: the only always-on control reminder.
         Overlay->AddSlot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(24)

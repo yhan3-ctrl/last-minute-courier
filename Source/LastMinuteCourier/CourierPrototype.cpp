@@ -56,7 +56,8 @@ namespace
         Mesh->SetMobility(EComponentMobility::Movable);
         Mesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")));
         Mesh->SetWorldScale3D(Size / 100.f);
-        Mesh->SetCollisionEnabled(bSolid ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+        if(bSolid)Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        else CourierVisualCollision(Mesh,Size);
         Paint(Mesh, Color);
         return Actor;
     }
@@ -113,6 +114,16 @@ namespace
     }
 }
 
+void CourierVisualCollision(UPrimitiveComponent* Component,const FVector& Size)
+{
+    // Thin posts and flat decals stay camera-transparent to avoid needless pops.
+    const bool bCameraSolid=FMath::Min(Size.X,Size.Y)>=60.f && Size.Z>=20.f;
+    Component->SetCollisionEnabled(bCameraSolid?ECollisionEnabled::QueryOnly:ECollisionEnabled::NoCollision);
+    Component->SetCollisionResponseToAllChannels(ECR_Ignore);
+    if(bCameraSolid)Component->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);
+    Component->SetCanEverAffectNavigation(false);
+}
+
 ACourierGameMode::ACourierGameMode()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -167,7 +178,7 @@ bool ACourierGameMode::CanMove() const
 
 float ACourierGameMode::DeviceRate() const
 {
-    return IsPlaying() && RecoverySeconds<=0.f ? (bSlowing ? .25f : 1.f) : 0.f;
+    return CanMove() && RecoverySeconds<=0.f ? (bSlowing ? .25f : 1.f) : 0.f;
 }
 
 FString ACourierGameMode::Copy(const TCHAR* English, const TCHAR* Chinese) const
@@ -230,6 +241,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     if(Autopilot)Autopilot->Tick(*this,DeltaSeconds);
     QDenied=FMath::Max(0.f,QDenied-DeltaSeconds);
+    UpdateGate(DeltaSeconds);
     UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
     if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))
@@ -268,6 +280,23 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         if (Cooldown <= 0.f) SlowRemaining = 3.f;
     }
     const FVector Position = Player->GetActorLocation();
+    // The yard gate stays shut until the first order is accepted; grass around it
+    // is held by the same rule so nobody wanders to a stand without a parcel.
+    if(!GateOpen() && Position.X>2760.f)
+    {
+        Notify(TEXT("Pick up your first order at the parcel desk. The gate opens when you accept it."),TEXT("先在取件台领取第一单。接单后大门才会打开。"));
+        if(Phase==ECourierPhase::AwaitPickup)Checkpoint=Pickup+FVector(-150,0,20);
+        RestoreCheckpoint();
+        return;
+    }
+    // Walking up to a desk opens its brief, as the counter invites. After the
+    // player closes it, it reopens only once they step away and come back.
+    if(Phase==ECourierPhase::AwaitPickup)
+    {
+        const bool bNear=CanInteractAt(Pickup);
+        if(bNear && !bNearPickup){bNearPickup=true;OpenBrief();return;}
+        bNearPickup=bNear;
+    }
     if (Phase == ECourierPhase::Practice)
     {
         if (Tutorial == 0 && Position.X > 550.f)
@@ -296,11 +325,13 @@ void ACourierGameMode::Tick(float DeltaSeconds)
             Checkpoint=FVector(2000,0,120);
             Notify(TEXT("Safe crossing. Follow the orange arrows to the parcel desk."),TEXT("安全通过！沿橙色箭头走到取件台。"));
         }
-        if (Tutorial == 3 && FVector::Dist2D(Position, Pickup) < 240.f)
+        if (Tutorial == 3 && CanInteractAt(Pickup))
         {
-            Phase = ECourierPhase::AwaitPickup;
+            // Practice ends at the counter by handing over the first brief.
             Checkpoint = FVector(2400, 0, 120);
             EndSlow();
+            bNearPickup=true;OpenBrief();
+            return;
         }
     }
     else if (Phase == ECourierPhase::Delivery)
@@ -378,7 +409,7 @@ void ACourierGameMode::Continue()
 void ACourierGameMode::Back()
 {
     if (Phase == ECourierPhase::Opening) Card = FMath::Max(0, Card - 1);
-    else if(Phase==ECourierPhase::Briefing){Phase=ECourierPhase::AwaitPickup;RefreshInput();}
+    else if(Phase==ECourierPhase::Briefing){Phase=ECourierPhase::AwaitPickup;bNearPickup=true;RefreshInput();}
     else if (Phase == ECourierPhase::Paused) TogglePause();
 }
 
@@ -393,9 +424,14 @@ void ACourierGameMode::Interact()
     }
     else if(Phase==ECourierPhase::AwaitPickup && CanInteractAt(Pickup))
     {
-        Phase=ECourierPhase::Briefing;
-        Sound(TEXT("Paper"),.22f);
+        OpenBrief();
     }
+    else if(Phase==ECourierPhase::AwaitPickup)
+        Notify(TEXT("Your parcel is at the desk the marker points to. Walk there to read it."),TEXT("包裹在标记指向的取件台，走过去就能查看。"));
+    else if(Phase==ECourierPhase::Practice)
+        Notify(TEXT("Nothing to pick up yet. Follow the arrows to the parcel desk."),TEXT("这里还没有东西可拿。沿箭头走到取件台。"));
+    else if(Phase==ECourierPhase::Delivery && !CanInteractAt(Destination))
+        Notify(TEXT("Deliver on the orange square the marker points to."),TEXT("到标记指向的橙色方块上交付。"));
     else if(Phase==ECourierPhase::Delivery && CanInteractAt(Destination))
     {
         EndSlow();
@@ -408,6 +444,29 @@ void ACourierGameMode::Interact()
         if(CurrentOrder==2)Player->RecenterView((FVector(47400,0,1350)-Player->GetActorLocation()).Rotation().Yaw,5.f);
     }
     RefreshInput();
+}
+
+void ACourierGameMode::OpenBrief()
+{
+    Phase=ECourierPhase::Briefing;
+    EndSlow();NoticeSeconds=0.f;
+    Sound(TEXT("Paper"),.22f);
+    RefreshInput();
+}
+
+bool ACourierGameMode::GateOpen() const
+{
+    return CurrentOrder>0 || CompletedOrders>0 || Phase==ECourierPhase::Delivery ||
+        (Phase==ECourierPhase::Paused && BeforePause==ECourierPhase::Delivery) || Phase==ECourierPhase::Failed;
+}
+
+void ACourierGameMode::UpdateGate(float DeltaSeconds)
+{
+    const float Target=GateOpen()?82.f:0.f;
+    GateAngle=FMath::FInterpConstantTo(GateAngle,Target,DeltaSeconds,110.f);
+    if(GateArm)GateArm->SetActorRelativeRotation(FRotator(0,0,GateAngle));
+    if(GateBlocker)GateBlocker->SetCollisionEnabled(GateAngle>40.f?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryAndPhysics);
+    for(const auto& Part:GateSign)if(Part)Part->SetActorHiddenInGame(GateAngle>10.f);
 }
 
 void ACourierGameMode::AcceptOrder()
@@ -426,7 +485,7 @@ void ACourierGameMode::NextOrder()
     if(Phase!=ECourierPhase::Delivered || CurrentOrder>=2)return;
     ConfigureOrder(CurrentOrder+1);
     // The next parcel is already at this counter. Reading never starts its clock.
-    Phase=CanInteractAt(Pickup)?ECourierPhase::Briefing:ECourierPhase::AwaitPickup;
+    Phase=CanInteractAt(Pickup)?ECourierPhase::Briefing:ECourierPhase::AwaitPickup;bNearPickup=true;
     ResetDevices();NoticeSeconds=0.f;
     RefreshInput();
 }
@@ -435,7 +494,7 @@ void ACourierGameMode::RestartRun()
 {
     if(Phase!=ECourierPhase::Complete)return;
     CurrentOrder=0;CompletedOrders=0;Retries=0;Tutorial=0;Card=0;SessionSeconds=0.f;
-    DeliveryTimes={0.f,0.f,0.f};bTrainingJumped=false;
+    DeliveryTimes={0.f,0.f,0.f};bTrainingJumped=false;bNearPickup=false;
     ConfigureOrder(0);Checkpoint=FVector(100,0,120);
     Phase=ECourierPhase::Opening;NoticeSeconds=0.f;
     ResetDevices();RestoreCheckpoint();RecoverySeconds=0.f;
@@ -448,9 +507,17 @@ void ACourierGameMode::RestartRun()
 
 void ACourierGameMode::StartSlow()
 {
-    if (IsPlaying() && RecoverySeconds<=0.f && Cooldown <= 0.f && SlowRemaining > 0.f && !bSlowing)
-    {bSlowing=true;Sound(TEXT("Borrow"),.18f);}
-    else if(IsPlaying() && !bSlowing)QDenied=.6f; // Visible "not ready" answer instead of silence.
+    if(!CanMove() || RecoverySeconds>0.f || bSlowing)return;
+    if(Cooldown>0.f || SlowRemaining<=0.f){QDenied=.6f;return;} // Visible "not ready" answer.
+    if(Phase==ECourierPhase::Delivery && Charges<=0)
+    {
+        QDenied=.6f;
+        Notify(TEXT("No borrowed time left for this delivery. Wait for a gap or take a side path."),TEXT("这一单的借时间已经用完。等空隙，或者走侧路。"));
+        return;
+    }
+    bSlowing=true;
+    if(Phase==ECourierPhase::Delivery)--Charges;
+    Sound(TEXT("Borrow"),.18f);
 }
 
 void ACourierGameMode::EndSlow()
@@ -458,7 +525,7 @@ void ACourierGameMode::EndSlow()
     if (bSlowing)
     {
         bSlowing = false;
-        Cooldown = 4.f;
+        Cooldown = RechargeSeconds;
     }
 }
 
@@ -542,6 +609,7 @@ void ACourierGameMode::ResetDevices()
     bSlowing = false;
     SlowRemaining = 3.f;
     Cooldown = 0.f;
+    Charges = OrderCharges();
 }
 
 void ACourierGameMode::Retry()
@@ -596,7 +664,7 @@ bool ACourierGameMode::CanInteractAt(const FVector& Target) const
 {
     const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
     return Player && Player->GetCharacterMovement()->IsMovingOnGround() &&
-        FVector::Dist2D(Player->GetActorLocation(),Target)<240.f &&
+        FVector::Dist2D(Player->GetActorLocation(),Target)<InteractRadius &&
         FMath::Abs(Player->GetActorLocation().Z-Target.Z)<110.f;
 }
 
@@ -713,13 +781,45 @@ void ACourierGameMode::BuildPracticeRoute()
     AddRouteGuideSpan(0,FVector(2400,0,0),FVector(8000,0,0));
 
     // Parcel depot sits to the side so the route and the next landmark stay visible.
-    Box(World,FVector(2400,-400,66),FVector(270,120,132),Teal);
-    Box(World,FVector(2400,-400,145),FVector(300,150,25),Cream,false);
-    Box(World,FVector(2400,-400,290),FVector(320,175,28),Orange,false);
-    for(float X:{2270.f,2530.f})Box(World,FVector(X,-460,210),FVector(16,16,170),Ink,false);
-    for(float X:{2340.f,2420.f})Box(World,FVector(X,-400,180),FVector(60,60,48),Swatch(TEXT("D6AB73")),false);
-    Sign(World,FVector(2400,-335,330),TEXT("PARCEL DESK"));
+    Box(World,FVector(2400,-330,66),FVector(270,120,132),Teal);
+    Box(World,FVector(2400,-330,145),FVector(300,150,25),Cream,false);
+    Box(World,FVector(2400,-330,290),FVector(320,175,28),Orange,false);
+    for(float X:{2270.f,2530.f})Box(World,FVector(X,-390,210),FVector(16,16,170),Ink,false);
+    for(float X:{2340.f,2420.f})Box(World,FVector(X,-330,180),FVector(60,60,48),Swatch(TEXT("D6AB73")),false);
+    Sign(World,FVector(2400,-265,330),TEXT("PARCEL DESK"));
     Box(World,Pickup-FVector(0,0,95),FVector(220,230,10),Teal,false);
+
+    // Yard gate: a striped barrier arm that swings up when the first order is
+    // accepted. It makes "collect first" visible instead of an invisible rule.
+    for(float Side:{-1.f,1.f})
+    {
+        Box(World,FVector(2720,Side*600,85),FVector(34,34,170),Ink,false);
+        Shape(World,TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(2720,Side*600,178),FVector(42),Orange);
+    }
+    GateArm=World->SpawnActor<AActor>();
+    auto* Pivot=NewObject<USceneComponent>(GateArm);GateArm->SetRootComponent(Pivot);Pivot->SetMobility(EComponentMobility::Movable);
+    Pivot->RegisterComponent();GateArm->SetActorLocation(FVector(2720,-600,120));
+    for(int32 I=0;I<8;++I)
+    {
+        auto* Stripe=Box(World,FVector(2720,-600+75+I*150,120),FVector(22,150,22),I%2?Cream:Orange,false);
+        Stripe->AttachToActor(GateArm,FAttachmentTransformRules::KeepWorldTransform);
+    }
+    {
+        // The gate's own notice; it disappears together with the barrier.
+        const FString Text=TEXT("ACCEPT AN ORDER TO OPEN");const FVector At(2705,0,215);
+        GateSign.Add(Box(World,At+FVector(6,0,8),FVector(8,Text.Len()*13.f+30.f,46),Ink,false));
+        auto* Board=World->SpawnActor<AActor>(At,FRotator(0,180,0));
+        auto* Label=NewObject<UTextRenderComponent>(Board);Board->SetRootComponent(Label);Label->RegisterComponent();
+        Label->SetWorldLocationAndRotation(At,FRotator(0,180,0));Label->SetText(FText::FromString(Text));
+        Label->SetTextMaterial(LoadObject<UMaterialInterface>(nullptr,TEXT("/Engine/EngineMaterials/UnlitText.UnlitText")));
+        Label->SetWorldSize(22.f);Label->SetHorizontalAlignment(EHTA_Center);Label->SetTextRenderColor(FColor(245,235,207));
+        GateSign.Add(Board);
+    }
+    auto* Blocker=Box(World,FVector(2720,0,150),FVector(40,2600,300),Ink,true);
+    Blocker->SetActorHiddenInGame(true);
+    GateBlocker=Blocker->GetStaticMeshComponent();
+    GateBlocker->SetCollisionResponseToAllChannels(ECR_Ignore);
+    GateBlocker->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
 
     // A cafe pavilion gives the first destination a clear silhouette and warm palette.
     Box(World,FVector(8440,0,170),FVector(100,860,340),Cream);
@@ -790,6 +890,7 @@ void ACourierGameMode::BuildPracticeRoute()
 
     auto* Sky=Shape(World,TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(25000,0,0),FVector(220000),Swatch(TEXT("A9C9CD")));
     auto* SkyMesh=Sky->GetStaticMeshComponent();
+    SkyMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); // The camera lives inside it.
     auto* SkyMaterial=UMaterialInstanceDynamic::Create(LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_CourierSkyGradient.M_CourierSkyGradient")),SkyMesh);
     if(SkyMaterial)
     {
@@ -1107,7 +1208,8 @@ void ACourierCart::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     auto* Mode=Game(this);
     if(!Mode) return;
-    const bool bEnabled=bTraining ? Mode->Phase==ECourierPhase::Practice : Mode->Phase==ECourierPhase::Delivery && Mode->CurrentOrder==OrderIndex;
+    // The campus keeps moving whenever the courier can; a frozen cart reads as broken.
+    const bool bEnabled=Mode->CanMove();
     if(!Material) Material=Paint(Mesh,FLinearColor(.02f,.42f,.75f));
     Material->SetVectorParameterValue(TEXT("Color"),bEnabled && Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
     if(!bEnabled) return;
@@ -1124,7 +1226,7 @@ void ACourierCart::Reset()
 bool ACourierCart::Touching(const FVector& Player) const
 {
     const auto* Mode=Game(this);
-    if(!Mode || (bTraining ? Mode->Phase!=ECourierPhase::Practice : (Mode->Phase!=ECourierPhase::Delivery || Mode->CurrentOrder!=OrderIndex))) return false;
+    if(!Mode || !Mode->CanMove()) return false;
     const FVector D=Player-GetActorLocation();
     return FMath::Abs(D.X)<112.f && FMath::Abs(D.Y)<137.f && D.Z<132.f && D.Z>-120.f;
 }

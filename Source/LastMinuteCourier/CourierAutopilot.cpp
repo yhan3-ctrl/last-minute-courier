@@ -208,7 +208,7 @@ bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector
     if(P.X>=Enter)return true; // Committed: keep walking and keep any Q already held.
     const bool bAllowQ=Mode.Phase==ECourierPhase::Delivery;
     if(Safe(Mode.bSlowing?Mode.SlowRemaining:0.f))return true;
-    if(bAllowQ && !Mode.bSlowing && Mode.Cooldown<=0.f && Safe(Mode.SlowRemaining))
+    if(bAllowQ && !Mode.bSlowing && Mode.Cooldown<=0.f && Mode.Charges>0 && Safe(Mode.SlowRemaining))
     {
         Mode.StartSlow();
         if(Mode.bSlowing){++QUses;Log(FString::Printf(TEXT("hold Q for cart at x=%.0f"),Next->Origin.X));}

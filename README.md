@@ -21,7 +21,7 @@ The campus movie night is about to start, but the coffee, the projector lens and
 The Mac v0.10.1 build and three independent design PDFs are attached to [GitHub Release v0.10.1](https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1). Course Box download links are to be verified before submission. No Unreal Editor is needed.
 
 - **Mac:** open `LastMinuteCourier-0.10.1-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
-- Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). The owner reports an existing Windows build; its file and Box link will be verified later. Linux and Box status remain unverified in this audit.
+- Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). The current Project 3 release contains the Mac build. Windows and Linux builds still require a suitable build environment; no remote environment is being added at present.
 
 | Key | Action |
 |---|---|

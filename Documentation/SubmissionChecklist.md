@@ -14,6 +14,6 @@ Published Mac release: https://github.com/yhan3-ctrl/last-minute-courier/release
 
 Release v0.10.1 includes the shutter-camera fix, seven-language comfort copy, version metadata and synchronized documents. The release assets include the Mac DMG, checksum and three PDFs. Earlier releases are preserved.
 
-Verify existing Windows/Mac/Linux files and their actual Project 3 Box link before submitting. The owner says Windows was already prepared; inspect that build rather than assuming it is absent. The feedback screenshot contains Project 2 links; do not reuse those links for this project.
+Verify existing Windows/Mac/Linux files and their actual Project 3 Box link before submitting. The latest check found no Project 3 Windows or Linux executable. The owner has only a Mac and is not adding a remote environment at present; those two packages remain to be built. The feedback screenshot contains Project 2 links; do not reuse those links for this project.
 
 The author handles the teacher invitation and final Blackboard upload. Check that the submitted attempt contains all three PDFs, the repository link and the correct Box link.

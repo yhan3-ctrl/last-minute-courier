@@ -47,3 +47,9 @@ Three independent PDFs: High Concept 2 pages; Game Script and Graduate Analysis 
 ## Authorized publication
 
 The owner authorized publishing v0.10.1 to the existing public repository on November 8, 2026, including code, the new tag, Mac DMG/checksum and all three PDFs. The report and repository links were synchronized to the new release before publishing. The existing published tags and assets are preserved. Remote verification records are retained in Saved/QA/HandoffNov08/Publication.
+
+## Platform clarification after publication
+
+The owner confirmed they have only this Mac and cannot add a remote environment at present. The Project 3 folder and release assets contain no Windows/Linux executable. The earlier Windows-build statement is superseded by this check; the supplied screenshot shows Project 2 MidnightShift builds. The repository has no connected self-hosted runner, no saved cloud environment was available, and the current GitHub account cannot read the official Unreal source repository (HTTP 404). No new compute, toolchain download, purchase or remote setup was performed. Windows/Linux completion and target-system testing remain outstanding.
+
+Local submission folder: Project3/Final Submission. Blackboard contains the three final PDFs; Box contains the Mac DMG and checksum only. Teacher invitation, Box upload and Blackboard submission were not performed.

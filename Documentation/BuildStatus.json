@@ -73,9 +73,9 @@
   },
   "platform_builds": {
     "mac": "0.10.1 arm64 DMG; checksum valid, strict/deep mounted signature, matching tested app/data, four mounted suites succeeded; v0.10 preserved",
-    "windows": "owner reports existing build; verification deferred by user",
-    "linux": "not independently verified",
-    "box": "not independently verified"
+    "windows": "not built; no Project 3 executable found locally or in releases; no remote build environment available",
+    "linux": "not built; no Project 3 executable found locally or in releases; no remote build environment available",
+    "box": "local Final Submission/Box contains tested Mac DMG and checksum only; no Box upload performed"
   },
   "native_language_review": "not completed",
   "comfort_listening_review": "not recorded",
@@ -111,5 +111,7 @@
     "visual_review": "all final pages inspected"
   },
   "release_url": "https://github.com/yhan3-ctrl/last-minute-courier/releases/tag/v0.10.1",
-  "publication_authorization": "User confirmed now publish on 2026-11-08"
+  "publication_authorization": "User confirmed now publish on 2026-11-08",
+  "platform_delivery_constraint": "User has only this Mac and declined adding a remote environment on 2026-11-08; Windows/Linux delivery remains incomplete",
+  "submission_directory": "Project3/Final Submission"
 }

@@ -168,7 +168,7 @@ private:
         static TMap<FString,TSharedPtr<const FCompositeFont>> Fonts;
         const FString Path=FPaths::ProjectContentDir()/TEXT("Fonts")/Name;
         auto& Font=Fonts.FindOrAdd(Path);
-        if(!Font.IsValid())Font=MakeShared<FCompositeFont>(FName(TEXT("Regular")),Path,EFontHinting::Default,EFontLoadingPolicy::LazyLoad);
+        if(!Font.IsValid())Font=MakeShared<FCompositeFont>(FName(TEXT("Regular")),Path,EFontHinting::None,EFontLoadingPolicy::LazyLoad);
         return FSlateFontInfo(Font,Size);
     }
 
@@ -200,12 +200,14 @@ private:
     TSharedRef<SWidget> Action(const FText& Caption,int32 Id,EButton Kind=EButton::Quiet,const TCHAR* KeyLabel=nullptr)
     {
         const FLinearColor Ink=Kind==EButton::Quiet?CourierPalette::Ink:CourierPalette::Cream;
-        auto Content=SNew(SHorizontalBox)
-            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Text(Caption,19,EFace::Black,Ink)];
+        // The key hint leads ("[E] Accept"), as in most games; the caption ends the
+        // button, so glyph rounding at any scale can never push it into the key.
+        auto Content=SNew(SHorizontalBox);
         if(KeyLabel)
-            Content->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(12,0,0,0)
+            Content->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)
                 [Box(R4,Kind==EButton::Quiet?FLinearColor(.12f,.19f,.21f,.1f):FLinearColor(1,1,1,.22f),FMargin(7,1,7,2),
                     Text(FText::FromString(KeyLabel),13,EFace::Heavy,Ink))];
+        Content->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,4,0)[Text(Caption,19,EFace::Black,Ink)];
         return SNew(SButton).ButtonStyle(Kind==EButton::Primary?&PrimaryStyle:(Kind==EButton::Dark?&DarkStyle:&QuietStyle))
             .IsFocusable(true)
             .IsEnabled(Id!=4 || Mode->Phase!=ECourierPhase::Paused || Mode->BeforePause!=ECourierPhase::Practice)
@@ -355,10 +357,12 @@ private:
             +SHorizontalBox::Slot().FillWidth(1.12f)
                 [Column({ControlRow({S(TEXT("W")),S(TEXT("A")),S(TEXT("S")),S(TEXT("D"))},Copy(TEXT("Move"),TEXT("移动")),156),
                     ControlRow({Copy(TEXT("Mouse"),TEXT("鼠标"))},Copy(TEXT("Look around"),TEXT("转动视角")),156),
-                    ControlRow({Copy(TEXT("Space"),TEXT("空格"))},Copy(TEXT("Jump"),TEXT("跳跃")),156),
-                    ControlRow({S(TEXT("Q"))},Copy(TEXT("Hold: slow blue devices"),TEXT("按住：让蓝色装置变慢")),156)})]
+                    ControlRow({Copy(TEXT("Shift"),TEXT("Shift"))},Copy(TEXT("Hold: sprint"),TEXT("按住：冲刺")),156),
+                    ControlRow({Copy(TEXT("Space"),TEXT("空格"))},Copy(TEXT("Jump; jump at a ledge to climb it"),TEXT("跳跃；朝矮墙跳就能爬上去")),156),
+                    ControlRow({Copy(TEXT("Ctrl"),TEXT("Ctrl"))},Copy(TEXT("Slide under low things"),TEXT("滑铲，从低处钻过去")),156)})]
             +SHorizontalBox::Slot().FillWidth(.88f).Padding(14,0,0,0)
-                [Column({ControlRow({S(TEXT("E"))},Copy(TEXT("Collect / deliver"),TEXT("取件 / 交付")),50),
+                [Column({ControlRow({S(TEXT("Q"))},Copy(TEXT("Hold: slow blue devices"),TEXT("按住：让蓝色装置变慢")),50),
+                    ControlRow({S(TEXT("E"))},Copy(TEXT("Collect / deliver"),TEXT("取件 / 交付")),50),
                     ControlRow({S(TEXT("C"))},Copy(TEXT("Recenter camera"),TEXT("镜头回正")),50),
                     ControlRow({S(TEXT("H"))},Copy(TEXT("Route help"),TEXT("路线帮助")),50),
                     ControlRow({S(TEXT("Esc"))},Copy(TEXT("Pause & settings"),TEXT("暂停与设置")),50)})];
@@ -438,8 +442,9 @@ private:
         if(Mode->CurrentOrder==0)Line=Mode->Copy(TEXT("COFFEE WARMTH"),TEXT("咖啡温度"))+FString::Printf(TEXT("  %d%%"),FMath::RoundToInt(Share*100.f));
         else if(Mode->CurrentOrder==1)Line=Mode->Copy(TEXT("LENS CASE"),TEXT("镜头盒"))+FString::Printf(TEXT("  %d / 3"),Mode->LensCondition);
         else Line=Mode->Copy(TEXT("TIME LEFT"),TEXT("剩余时间"))+TEXT("  ")+Clock(Mode->Remaining);
-        return Line+TEXT("     ")+Mode->Copy(TEXT("BORROWER CELLS"),TEXT("借时器电池"))+
-            FString::Printf(TEXT("  %d / %d"),Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder));
+        return Line+TEXT("     ")+Mode->Copy(TEXT("HOURGLASSES"),TEXT("金沙漏"))+
+            FString::Printf(TEXT("  %d / %d     "),Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder))+
+            Mode->Copy(TEXT("SPARKS"),TEXT("光点"))+FString::Printf(TEXT("  %d / %d"),Mode->MotesTaken(Mode->CurrentOrder),Mode->MotesTotal(Mode->CurrentOrder));
     }
 
     static FString Clock(float Seconds)
@@ -505,12 +510,19 @@ private:
                     SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,4)[Text(Copy(TEXT("ROUTE"),TEXT("路线")),13,EFace::Heavy,Orange)]
                         +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->RouteHint()),17,CourierPalette::Ink,660.f)]
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
+                        // Two rules, two rows: the hourglass count on a gold pill, the star rule on a gold dot.
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,0)
                             [SNew(SHorizontalBox)
-                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
+                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Top).Padding(0,1,10,0)
+                                    [Box(R6,CourierPalette::Gold,FMargin(8,0,8,1),Text(FText::FromString(FString::Printf(TEXT("×%d"),Mode->TokensTotal(Mode->CurrentOrder))),14,EFace::Heavy,CourierPalette::Ink))]
+                                +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+                                    [Body(FText::FromString(Mode->Copy(TEXT("Gold hourglasses on this route give Q one more use each, and so does every 25 sparks. Close calls earn sparks."),TEXT("路线上每个金沙漏让 Q 多用一次，每收集 25 个光点也一样。擦边惊险通过还会奖励光点。"))),16,CourierPalette::Ink,600.f)]]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)
+                            [SNew(SHorizontalBox)
+                                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Top).Padding(0,6,10,0)
                                     [SNew(SBox).WidthOverride(12).HeightOverride(12)[SNew(SBorder).BorderImage(&R6).BorderBackgroundColor(Gold)]]
                                 +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
-                                    [Body(FText::FromString(Mode->Copy(TEXT("Borrower cells on this route give Q one more use each."),TEXT("路线上的借时器电池每个让 Q 多用一次。"))+FString::Printf(TEXT("  (%d)  "),Mode->TokensTotal(Mode->CurrentOrder))+StarRule()),16,CourierPalette::Ink,640.f)]])]
+                                    [Body(FText::FromString(StarRule()),16,CourierPalette::Ink,600.f)]])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)
                 [Text(Copy(TEXT("The clock starts when you accept."),TEXT("确认接单后才开始计时。")),15,EFace::Heavy,Teal)];
         auto Footer=SNew(SHorizontalBox)
@@ -703,7 +715,13 @@ private:
                 [SNew(STextBlock).Font(Typeface(26,EFace::Digits))
                     .ColorAndOpacity_Lambda([this]()->FSlateColor{return Mode.IsValid() && Mode->Charges<=0?CourierPalette::Red:CourierPalette::Cream;})
                     .Text_Lambda([this](){return FText::FromString(Mode.IsValid()?FString::Printf(TEXT("×%d"),Mode->Charges):FString());})]
-            +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[Pips];
+            +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[Pips]
+            // Sparks fill a small gold bar; a full bar is one more use.
+            +SVerticalBox::Slot().AutoHeight().Padding(0,5,0,0)
+                [SNew(SBox).WidthOverride(64).HeightOverride(5)
+                    [SNew(SProgressBar).Style(&ChargeStyle).FillColorAndOpacity(CourierPalette::Gold)
+                        .Percent_Lambda([this]()->TOptional<float>
+                        {return Mode.IsValid()?float(Mode->MoteBank)/ACourierGameMode::MotesPerUse:0.f;})]];
     }
 
     // ---------------------------------------------------------------- live HUD
@@ -747,15 +765,34 @@ private:
                         +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
                             [SNew(SHorizontalBox).Visibility(bDelivery?EVisibility::HitTestInvisible:EVisibility::Collapsed)
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
-                                    [SNew(SBox).WidthOverride(10).HeightOverride(16)[SNew(SBorder).BorderImage(&R4).BorderBackgroundColor(Cyan)]]
+                                    [SNew(SBox).WidthOverride(12).HeightOverride(16)[SNew(SBorder).BorderImage(&R4).BorderBackgroundColor(Gold)]]
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
-                                    [SNew(STextBlock).Font(Typeface(14,EFace::Heavy)).ColorAndOpacity(Cyan)
+                                    [SNew(STextBlock).Font(Typeface(14,EFace::Heavy)).ColorAndOpacity(Gold)
                                         .Text_Lambda([this]()
                                         {
                                             if(!Mode.IsValid())return FText();
-                                            return FText::FromString(Mode->Copy(TEXT("BORROWER CELLS"),TEXT("借时器电池"))+FString::Printf(TEXT("  %d / %d"),
-                                                Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder)));
+                                            return FText::FromString(Mode->Copy(TEXT("HOURGLASSES"),TEXT("金沙漏"))+FString::Printf(TEXT("  %d / %d      "),
+                                                Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder))+
+                                                Mode->Copy(TEXT("SPARKS"),TEXT("光点"))+FString::Printf(TEXT("  %d"),Mode->MotesTaken(Mode->CurrentOrder)));
                                         })]])]];
+
+        // Upper centre: a short pop for pickups and close calls.
+        Overlay->AddSlot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(0,0,0,260)
+            [SNew(STextBlock).Font(Typeface(40,EFace::Display)).Justification(ETextJustify::Center)
+                .ShadowOffset(FVector2D(0,3)).ShadowColorAndOpacity(FLinearColor(.07f,.12f,.13f,.6f))
+                .ColorAndOpacity_Lambda([this]()->FSlateColor
+                {
+                    const float A=Mode.IsValid()?FMath::Clamp(Mode->PopupSeconds/.35f,0.f,1.f):0.f;
+                    return FLinearColor(CourierPalette::Gold.R,CourierPalette::Gold.G,CourierPalette::Gold.B,A);
+                })
+                .RenderTransformPivot(FVector2D(.5f,.5f))
+                .RenderTransform_Lambda([this]()->TOptional<FSlateRenderTransform>
+                {
+                    const float T=Mode.IsValid()?FMath::Clamp((1.2f-Mode->PopupSeconds)/.18f,0.f,1.f):1.f;
+                    const float Rise=Mode.IsValid()?(1.2f-Mode->PopupSeconds)*-40.f:0.f;
+                    return TOptional<FSlateRenderTransform>(FSlateRenderTransform(FScale2D(1.35f-.35f*T),FVector2D(0,Rise)));
+                })
+                .Text_Lambda([this](){return FText::FromString(Mode.IsValid() && Mode->PopupSeconds>0.f?Mode->Popup:FString());})];
 
         // Top centre: delivery clock, then a compass arrow toward the next marker.
         auto Centre=SNew(SVerticalBox);

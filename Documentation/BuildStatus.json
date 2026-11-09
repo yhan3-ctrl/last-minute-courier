@@ -1,18 +1,18 @@
 {
  "engine": "5.8.4",
- "xcode": "27.1",
+ "xcode": "27.2 (via DEVELOPER_DIR)",
  "mac_sdk": "27.0",
  "editor_build": "succeeded",
  "metal_toolchain": "installed_and_version_command_passed",
  "map_generation": "succeeded",
  "visual_material_generation": "succeeded_zero_errors_zero_warnings",
- "runtime_playtest": "v054_real_speed_autoplay_full_run_editor_and_packaged_plus_UI_tour_en_zh_ja_de; three_Editor_and_three_packaged_and_DMG_regression_suites",
+ "runtime_playtest": "v09 packaged real-speed autoplay (player verbs only: move, sprint, jump/climb, slide, Q, E) full run plus UI tour en/zh/de; four Editor, four packaged-from-DMG regression suites (FirstOrderBoundaries, Parkour, PlatformRide, ThreeOrderJourney)",
  "human_playtests": 2,
- "full_delivery_flow": "v054 packaged app: complete real-speed autoplay with player verbs only (no teleport), 0 recoveries, ~3:00 expert wall time. First-time human run still pending.",
+ "full_delivery_flow": "v09 packaged app: complete real-speed scripted run, 0 recoveries, 0 stuck, 2:22 expert wall time (cards 3 s, briefs 5 s); orders 8.0/42.4/56.3 s of 40/120/130. First-time human run of v0.9 still pending.",
  "failure_timeout_and_pause_edge_cases": "engine_regression_passed_and_real_140_second_timeout_retry_passed",
  "comfort_validation": "requires_human_playtest",
  "platform_builds": {
-  "mac": "v08_arm64_Development_DMG sha256 c6afe62845b1fef9c19c238db901fd80ead9f8a5144311ee4b761ec124213587; mounted strict/deep signature valid; DMG app passed three suites; packaged real-speed scripted playthrough complete along the painted line",
+  "mac": "v09_arm64_Development_DMG sha256 65d9acb138ea7af090a24b5dc6fee83a5dcc3e381661eba74832abb09c9195e9; mounted strict/deep signature valid; DMG app passed four suites; packaged real-speed scripted playthrough complete",
   "windows": "not_built_on_mac; Scripts/package_windows.bat + Documentation/BuildOtherPlatforms.md for a Windows PC",
   "linux": "not_built_on_mac; Scripts/package_linux.bat (Windows cross-compile) + Documentation/BuildOtherPlatforms.md"
  },
@@ -27,7 +27,7 @@
   "de"
  ],
  "translation_coverage": {
-  "runtime_strings": 144,
+  "runtime_strings": 156,
   "optional_languages": 6,
   "check": "passed"
  },

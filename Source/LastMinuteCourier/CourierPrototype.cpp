@@ -142,7 +142,9 @@ void ACourierGameMode::BeginPlay()
     BuildRouteGuide();
     BuildPracticeRoute();
     BuildDeliveryDistricts();
+    BuildParkour();
     SpawnTokens();
+    SpawnMotes();
     GetWorld()->SpawnActor<ACourierCampusScene>();
     UpdateCelebration();
     if(auto* Track=LoadObject<USoundBase>(nullptr,TEXT("/Game/Audio/CampusLoop.CampusLoop")))
@@ -244,6 +246,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     QDenied=FMath::Max(0.f,QDenied-DeltaSeconds);
     UpdateGate(DeltaSeconds);
     UpdateTokens(DeltaSeconds);
+    UpdateMotes(DeltaSeconds);
     UpdateFeel(DeltaSeconds);
     UpdateRouteGuide();
     // Optional, read-only QA trace. It never changes play state or appears in UI.
@@ -294,6 +297,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         return;
     }
     CollectTokens(Position);
+    CollectMotes(Position);
     // Walking up to a desk opens its brief, as the counter invites. After the
     // player closes it, it reopens only once they step away and come back.
     if(Phase==ECourierPhase::AwaitPickup)
@@ -314,7 +318,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
             if(bTrainingJumped)
             {
                 Tutorial = 2;
-                Checkpoint = FVector(1200, 0, 120);
+                Checkpoint = FVector(1150, 0, 120);
             }
             else
             {
@@ -323,14 +327,21 @@ void ACourierGameMode::Tick(float DeltaSeconds)
                 return;
             }
         }
-        if (Tutorial == 2 && Position.X > 1900.f)
+        // The low beam spans hedge to hedge: the only way on is to slide under it.
+        if (Tutorial == 2 && Position.X > 1330.f)
+        {
+            Tutorial=3;
+            Checkpoint=FVector(1360,0,120);
+            Notify(TEXT("Nice slide! Sprint, then press Ctrl to slide under anything low."),TEXT("漂亮的滑铲！冲刺时按 Ctrl，就能从低处钻过去。"));
+        }
+        if (Tutorial == 3 && Position.X > 1900.f)
         {
             // Safe timing is valid with or without Q. Teaching never impersonates a collision.
-            Tutorial=3;
+            Tutorial=4;
             Checkpoint=FVector(2000,0,120);
             Notify(TEXT("Safe crossing. Follow the orange arrows to the parcel desk."),TEXT("安全通过！沿橙色箭头走到取件台。"));
         }
-        if (Tutorial == 3 && CanInteractAt(Pickup))
+        if (Tutorial == 4 && CanInteractAt(Pickup))
         {
             // Practice ends at the counter by handing over the first brief.
             Checkpoint = FVector(2400, 0, 120);
@@ -398,8 +409,20 @@ void ACourierGameMode::Tick(float DeltaSeconds)
                 Bump(Cart);
                 break;
             }
+            // Crossing right in front of or behind a moving cart without contact.
+            if(Cart && Cart->NearMissCooldown<=0.f && Cart->OnStreet(Cart->Clock) && !Cart->bTraining==(Phase!=ECourierPhase::Practice) &&
+               (Cart->bTraining || Cart->OrderIndex==CurrentOrder))
+            {
+                const FVector D=Position-Cart->GetActorLocation();
+                if(FMath::Abs(D.X)<110.f && FMath::Abs(D.Y)>140.f && FMath::Abs(D.Y)<300.f && FMath::Abs(D.Z)<140.f)
+                {Cart->NearMissCooldown=2.5f;CloseCall(2);}
+            }
         }
     }
+    // Shutters, sweepers and springboards judge their own contact (and close calls).
+    if(auto* Courier=Cast<ACourierCharacter>(Player))
+        for(const auto& Obstacle:Obstacles)
+            if(Obstacle && Obstacle->Relevant() && Phase!=ECourierPhase::Failed)Obstacle->Check(*this,*Courier,DeltaSeconds);
 }
 
 void ACourierGameMode::Continue()
@@ -464,6 +487,8 @@ void ACourierGameMode::Bump(const ACourierCart* Cart)
     // instead of teleporting them. A short stagger stops steering for a moment.
     auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
     if(!Player || !Cart)return;
+    if(auto* Courier=Cast<ACourierCharacter>(Player))Courier->CancelMoves();
+    MoteChain=0;
     const float Away=Player->GetActorLocation().X<Cart->GetActorLocation().X?-1.f:1.f;
     Player->LaunchCharacter(FVector(Away*620.f,Cart->Direction*320.f,260.f),true,true);
     StunSeconds=.7f;CollisionProtection=1.3f;HitFlash=.55f;
@@ -624,6 +649,7 @@ void ACourierGameMode::RestoreCheckpoint()
 {
     if (auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0))
     {
+        if(auto* Courier=Cast<ACourierCharacter>(Player))Courier->CancelMoves();
         Player->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
         Player->GetCharacterMovement()->StopMovementImmediately();
         Player->StopJumping();
@@ -647,6 +673,8 @@ void ACourierGameMode::ResetDevices()
 {
     for (const auto& Cart : Carts) if (Cart && Cart->OrderIndex==CurrentOrder) Cart->Reset();
     for(const auto& Platform:Platforms)if(Platform && Platform->OrderIndex==CurrentOrder)Platform->Reset();
+    for(const auto& Obstacle:Obstacles)if(Obstacle && Obstacle->OrderIndex==CurrentOrder)Obstacle->Reset();
+    MoteBank=0;MoteChain=0;
     bSlowing = false;
     SlowRemaining = 3.f;
     Cooldown = 0.f;
@@ -760,10 +788,12 @@ void ACourierGameMode::LoadCopy()
     CardBodiesZh = {TEXT("钟楼广场马上开场。咖啡、镜头和胶片还在路上。你是今晚最后一位快递员。"),
                     TEXT("按住 Q，让带蓝色时间标签的装置减速；你照常行动。订单倒计时不会变慢。"),
                     TEXT("沿着包裹与目的地标记前进。送达后在同一地点领取下一单。出错可以重试当前订单。")};
-    TutorialText = {TEXT("WASD to move. Move the mouse to look around. Reach the marked spot."), TEXT("Space to jump. Cross the low step."),
-                    TEXT("Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk and press E to read your first order.")};
-    TutorialTextZh = {TEXT("WASD 移动，鼠标转动视角。走到标记位置。"), TEXT("按空格跳过低台阶。"),
-                      TEXT("等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"), TEXT("走到取件台，按 E 查看第一份订单。")};
+    TutorialText = {TEXT("WASD to move, mouse to look. Hold Shift to sprint to the marked spot."), TEXT("Space to jump. Cross the low step."),
+                    TEXT("Sprint, then press Ctrl to slide under the low beam."),
+                    TEXT("Cross after the cart has passed. Hold Q if you want a longer gap. Both ways are safe."), TEXT("Reach the parcel desk and press E to read your first order.")};
+    TutorialTextZh = {TEXT("WASD 移动，鼠标看方向。按住 Shift 冲刺到标记处。"), TEXT("按空格跳过低台阶。"),
+                      TEXT("先冲刺，再按 Ctrl 从低横梁下滑铲过去。"),
+                      TEXT("等运输车开过去再通过。想延长空隙可以按住 Q，两种方法都可以。"), TEXT("走到取件台，按 E 查看第一份订单。")};
     FString Json;
     if (!FFileHelper::LoadFileToString(Json, *(FPaths::ProjectDir() / TEXT("DesignData/game_content.json"))))
     {
@@ -790,8 +820,8 @@ void ACourierGameMode::LoadCopy()
         }
     }
     const TArray<TSharedPtr<FJsonValue>>* Lessons=nullptr;
-    if(Root->TryGetArrayField(TEXT("tutorial"),Lessons) && Lessons->Num()==4)
-        for(int32 I=0;I<4;++I)
+    if(Root->TryGetArrayField(TEXT("tutorial"),Lessons) && Lessons->Num()==TutorialText.Num())
+        for(int32 I=0;I<TutorialText.Num();++I)
         {
             const auto Text=(*Lessons)[I]->AsObject()->GetObjectField(TEXT("text"));
             TutorialText[I]=Localized(Text,TEXT("en"));TutorialTextZh[I]=Localized(Text,TEXT("zh"));
@@ -977,9 +1007,16 @@ ACourierCharacter::ACourierCharacter()
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0, 600, 0);
-    GetCharacterMovement()->MaxWalkSpeed = 500.f;
-    GetCharacterMovement()->JumpZVelocity = 500.f;
-    GetCharacterMovement()->AirControl = .55f;
+    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+    GetCharacterMovement()->JumpZVelocity = 520.f;
+    GetCharacterMovement()->AirControl = .7f;
+    GetCharacterMovement()->MaxAcceleration = 2600.f;     // parkour: quick to speed up
+    GetCharacterMovement()->BrakingDecelerationWalking = 2400.f;
+    // Sliding uses the engine crouch: the capsule halves so the courier fits under bars.
+    GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+    GetCharacterMovement()->SetCrouchedHalfHeight(44.f);
+    GetCharacterMovement()->MaxWalkSpeedCrouched = 320.f;
+    GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
     GetCharacterMovement()->bImpartBaseVelocityX=false;
     GetCharacterMovement()->bImpartBaseVelocityY=false;
     GetCharacterMovement()->bImpartBaseVelocityZ=false;
@@ -1002,27 +1039,30 @@ ACourierCharacter::ACourierCharacter()
     Camera->PostProcessSettings.bOverride_VignetteIntensity=true;
     Camera->PostProcessSettings.VignetteIntensity=1.25f;
     Camera->PostProcessBlendWeight=0.f;
+    // Every visible part hangs from one pivot so the slide pose can lean the whole body.
+    Visual = CreateDefaultSubobject<USceneComponent>(TEXT("CourierPose"));
+    Visual->SetupAttachment(RootComponent);
     Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GreyboxCourier"));
-    Body->SetupAttachment(RootComponent);
+    Body->SetupAttachment(Visual);
     Body->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder")));
     Body->SetRelativeLocation(FVector(0,0,5));
     Body->SetRelativeScale3D(FVector(.5f,.44f,.72f));
     Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Head = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CourierHead"));
-    Head->SetupAttachment(RootComponent);
+    Head->SetupAttachment(Visual);
     Head->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere")));
     Head->SetRelativeLocation(FVector(0,0,62));
     Head->SetRelativeScale3D(FVector(.42f));
     Head->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Bag = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Parcel"));
-    Bag->SetupAttachment(RootComponent);
+    Bag->SetupAttachment(Visual);
     Bag->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")));
     Bag->SetRelativeLocation(FVector(-35,0,15));
     Bag->SetRelativeScale3D(FVector(.35f,.5f,.5f));
     Bag->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Bag->SetVisibility(false);
     PackageMark=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ParcelSeal"));
-    PackageMark->SetupAttachment(RootComponent);
+    PackageMark->SetupAttachment(Visual);
     PackageMark->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cylinder.Cylinder")));
     PackageMark->SetRelativeRotation(FRotator(90,0,0));
     PackageMark->SetRelativeScale3D(FVector(.18f,.18f,.03f));
@@ -1039,7 +1079,7 @@ void ACourierCharacter::BeginPlay()
     const auto Part=[this](const FVector& Location,const FVector& Size,const FLinearColor& Color,const TCHAR* MeshPath)
     {
         auto* Mesh=NewObject<UStaticMeshComponent>(this);
-        Mesh->SetupAttachment(RootComponent);
+        Mesh->SetupAttachment(Visual);
         Mesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,MeshPath));
         Mesh->SetRelativeLocation(Location);
         Mesh->SetRelativeScale3D(Size/100.f);
@@ -1108,6 +1148,53 @@ void ACourierCharacter::Tick(float DeltaSeconds)
             RecenterFrom.Yaw+FMath::FindDeltaAngleDegrees(RecenterFrom.Yaw,RecenterTo.Yaw)*Alpha,0));
         if(RecenterTime>=1.f)RecenterTime=-1.f;
     }
+    auto* Move=GetCharacterMovement();
+    auto* ParkourMode=Game(this);
+    const bool bFree=ParkourMode && ParkourMode->CanMove() && ParkourMode->RecoverySeconds<=0.f && ParkourMode->StunSeconds<=0.f;
+    // Ledge climb in progress: a short lift then a step forward onto the top.
+    if(MantleTime>=0.f)
+    {
+        MantleTime=FMath::Min(1.f,MantleTime+DeltaSeconds/.34f);
+        const float Up=FMath::Min(1.f,MantleTime/.6f),Over=FMath::Clamp((MantleTime-.35f)/.65f,0.f,1.f);
+        FVector At=MantleFrom;At.Z=FMath::Lerp(MantleFrom.Z,MantleTo.Z,Up*Up*(3.f-2.f*Up));
+        At.X=FMath::Lerp(MantleFrom.X,MantleTo.X,Over);At.Y=FMath::Lerp(MantleFrom.Y,MantleTo.Y,Over);
+        SetActorLocation(At,false,nullptr,ETeleportType::TeleportPhysics);
+        if(MantleTime>=1.f)
+        {
+            MantleTime=-1.f;Move->SetMovementMode(MOVE_Walking);
+            Move->Velocity=MantleForward*(bSprintHeld?SprintSpeed:WalkSpeed)*.8f;
+        }
+    }
+    // Forgiving jumps: a jump just after leaving a ledge still counts, and a jump
+    // pressed just before landing fires on touchdown.
+    CoyoteSeconds=Move->IsMovingOnGround()?.14f:FMath::Max(0.f,CoyoteSeconds-DeltaSeconds);
+    JumpBufferSeconds=FMath::Max(0.f,JumpBufferSeconds-DeltaSeconds);
+    if(JumpBufferSeconds>0.f && bFree && Move->IsMovingOnGround() && !bIsCrouched){JumpBufferSeconds=0.f;Jump();}
+    // A jump or fall into a ledge between knee and reach height climbs it.
+    if(bFree && MantleTime<0.f && Move->IsFalling() && Move->Velocity.Z<320.f && Move->GetCurrentAcceleration().SizeSquared2D()>1.f)TryMantle();
+    // Slide: fast at first, easing off; the capsule stays low until there is headroom.
+    if(SlideSeconds>0.f)
+    {
+        SlideSeconds=FMath::Max(0.f,SlideSeconds-DeltaSeconds);
+        const float Speed=FMath::Lerp(380.f,1050.f,SlideSeconds/SlideTime);
+        Move->MaxWalkSpeedCrouched=Speed;
+        if(bFree)AddMovementInput(SlideDirection,1.f);
+        if(SlideSeconds<=0.f){Move->MaxWalkSpeedCrouched=320.f;UnCrouch();}
+    }
+    if(!bFree && SlideSeconds>0.f){SlideSeconds=0.f;Move->MaxWalkSpeedCrouched=320.f;UnCrouch();}
+    Move->MaxWalkSpeed=bSprintHeld && bFree?SprintSpeed:WalkSpeed;
+    // Speed is felt: the view widens a little at a sprint and in a slide.
+    const float Target=(bIsCrouched?9.f:0.f)+FMath::Clamp((GetVelocity().Size2D()-WalkSpeed)/(SprintSpeed-WalkSpeed),0.f,1.f)*7.f;
+    FovKick=FMath::FInterpTo(FovKick,Target,DeltaSeconds,6.f);
+    Camera->SetFieldOfView(BaseFov+FovKick);
+    // Slide pose: the body leans back from the feet, feet first.
+    Lean=FMath::FInterpTo(Lean,bIsCrouched?1.f:0.f,DeltaSeconds,16.f);
+    {
+        const float Pitch=68.f*Lean;
+        const FVector Feet=FRotator(Pitch,0,0).RotateVector(FVector(0,0,-88));
+        const FVector Floor(0,0,bIsCrouched?-44.f:-88.f);
+        Visual->SetRelativeLocationAndRotation(Floor-Feet,FRotator(Pitch,0,0));
+    }
     const float Speed=GetVelocity().Size2D();
     WalkCycle+=DeltaSeconds*Speed*.025f;
     if(auto* Mode=Game(this);Mode && Mode->CanMove() && GetCharacterMovement()->IsMovingOnGround() && Speed>120.f)
@@ -1126,6 +1213,7 @@ void ACourierCharacter::Tick(float DeltaSeconds)
 void ACourierCharacter::OnJumped_Implementation()
 {
     Super::OnJumped_Implementation();
+    CoyoteSeconds=0.f;JumpBufferSeconds=0.f;
     if(auto* Mode=Game(this);Mode && Mode->Phase==ECourierPhase::Practice && Mode->Tutorial==1)
     {
         const FVector Position=GetActorLocation();
@@ -1142,6 +1230,14 @@ void ACourierCharacter::SetupPlayerInputComponent(UInputComponent* Input)
     Input->BindAxis(TEXT("LookPitch"), this, &ACourierCharacter::Pitch);
     Input->BindAction(TEXT("Jump"), IE_Pressed, this, &ACourierCharacter::JumpPressed);
     Input->BindAction(TEXT("Jump"), IE_Released, this, &ACourierCharacter::JumpReleased);
+    // Bound in code so the packaged build needs no new input config.
+    for(const FKey& Key:{EKeys::LeftShift,EKeys::RightShift})
+    {
+        Input->BindKey(Key,IE_Pressed,this,&ACourierCharacter::SprintPressed);
+        Input->BindKey(Key,IE_Released,this,&ACourierCharacter::SprintReleased);
+    }
+    for(const FKey& Key:{EKeys::LeftControl,EKeys::RightControl,EKeys::LeftCommand})
+        Input->BindKey(Key,IE_Pressed,this,&ACourierCharacter::SlidePressed);
 }
 
 void ACourierCharacter::Forward(float Value)
@@ -1185,8 +1281,83 @@ void ACourierCharacter::RecenterView(float Yaw,float Pitch)
     RecenterTime=0.f;
 }
 
-void ACourierCharacter::SetCameraFov(float Value) { Camera->SetFieldOfView(FMath::Clamp(Value,80.f,100.f)); }
-void ACourierCharacter::JumpPressed() { if (Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f && Game(this)->StunSeconds<=0.f) Jump(); }
+void ACourierCharacter::SetCameraFov(float Value) { BaseFov=FMath::Clamp(Value,80.f,100.f); Camera->SetFieldOfView(BaseFov+FovKick); }
+void ACourierCharacter::JumpPressed()
+{
+    auto* Mode=Game(this);
+    if(!Mode || !Mode->CanMove() || Mode->RecoverySeconds>0.f || Mode->StunSeconds>0.f || MantleTime>=0.f)return;
+    auto* Move=GetCharacterMovement();
+    if(bIsCrouched)
+    {
+        // Jumping out of a slide keeps its speed (if there is headroom to stand).
+        if(SlideSeconds>0.f){SlideSeconds=0.f;Move->MaxWalkSpeedCrouched=320.f;}
+        UnCrouch();JumpBufferSeconds=.2f;return;
+    }
+    if(Move->IsMovingOnGround()){Jump();return;}
+    if(Move->IsFalling() && CoyoteSeconds>0.f)
+    {
+        CoyoteSeconds=0.f;LaunchCharacter(FVector(0,0,Move->JumpZVelocity),false,true);
+        OnJumped();return;
+    }
+    if(Move->IsFalling() && TryMantle())return;
+    JumpBufferSeconds=.16f;
+}
+
+void ACourierCharacter::SetSprint(bool bOn){bSprintHeld=bOn;}
+void ACourierCharacter::CancelMoves()
+{
+    SlideSeconds=0.f;JumpBufferSeconds=0.f;
+    if(MantleTime>=0.f){MantleTime=-1.f;GetCharacterMovement()->SetMovementMode(MOVE_Walking);}
+    GetCharacterMovement()->MaxWalkSpeedCrouched=320.f;UnCrouch();
+    // Stand up now (if there is room) rather than on the next movement update.
+    if(bIsCrouched)GetCharacterMovement()->UnCrouch(false);
+}
+void ACourierCharacter::SprintPressed(){SetSprint(true);}
+void ACourierCharacter::SprintReleased(){SetSprint(false);}
+void ACourierCharacter::SlidePressed(){StartSlide();}
+
+void ACourierCharacter::StartSlide()
+{
+    auto* Mode=Game(this);
+    auto* Move=GetCharacterMovement();
+    if(!Mode || !Mode->CanMove() || Mode->RecoverySeconds>0.f || Mode->StunSeconds>0.f || MantleTime>=0.f)return;
+    if(!Move->IsMovingOnGround() || SlideSeconds>0.f || bIsCrouched)return;
+    FVector Direction=GetVelocity().GetSafeNormal2D();
+    if(Direction.IsNearlyZero())Direction=GetActorForwardVector().GetSafeNormal2D();
+    SlideDirection=Direction;SlideSeconds=SlideTime;
+    Move->MaxWalkSpeedCrouched=1050.f;
+    Crouch();
+    Move->Velocity=FVector(Direction*1050.f)+FVector(0,0,Move->Velocity.Z);
+    Mode->Sound(TEXT("Paper"),.32f,.55f);
+}
+
+bool ACourierCharacter::TryMantle()
+{
+    // Climb only onto walkable campus surfaces (decks, crates, planters), never
+    // onto hedges, sheds or roofs that would lead out of the level.
+    auto* Move=GetCharacterMovement();
+    FVector Forward=Move->GetCurrentAcceleration().GetSafeNormal2D();
+    if(Forward.IsNearlyZero())Forward=GetActorForwardVector().GetSafeNormal2D();
+    const float Half=GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    const FVector P=GetActorLocation();const float Feet=P.Z-Half;
+    FCollisionQueryParams Params(TEXT("CourierMantle"),false,this);
+    FHitResult Wall;
+    if(!GetWorld()->LineTraceSingleByChannel(Wall,P+FVector(0,0,10),P+FVector(0,0,10)+Forward*95.f,ECC_Visibility,Params))
+        if(!GetWorld()->LineTraceSingleByChannel(Wall,FVector(P.X,P.Y,Feet+30.f),FVector(P.X,P.Y,Feet+30.f)+Forward*95.f,ECC_Visibility,Params))return false;
+    const FVector Probe=Wall.ImpactPoint+Forward*45.f;
+    FHitResult Top;
+    if(!GetWorld()->LineTraceSingleByChannel(Top,FVector(Probe.X,Probe.Y,Feet+235.f),FVector(Probe.X,Probe.Y,Feet+20.f),ECC_Visibility,Params))return false;
+    if(!Top.GetActor() || !Top.GetActor()->ActorHasTag(TEXT("CourierWalkable")) || Top.ImpactNormal.Z<.75f)return false;
+    const float Rise=Top.ImpactPoint.Z-Feet;
+    if(Rise<35.f || Rise>230.f)return false;
+    const FVector Stand(Probe.X,Probe.Y,Top.ImpactPoint.Z+88.f+4.f);
+    FCollisionShape Shape=FCollisionShape::MakeCapsule(34.f,88.f);
+    if(GetWorld()->OverlapBlockingTestByChannel(Stand,FQuat::Identity,ECC_Pawn,Shape,Params))return false;
+    MantleFrom=P;MantleTo=Stand;MantleForward=Forward;MantleTime=0.f;
+    Move->StopMovementImmediately();Move->SetMovementMode(MOVE_Flying);
+    if(auto* Mode=Game(this))Mode->Sound(TEXT("Footstep"),.4f,.75f);
+    return true;
+}
 void ACourierCharacter::JumpReleased() { StopJumping(); }
 
 void ACourierController::BeginPlay()
@@ -1267,6 +1438,7 @@ void ACourierCart::Tick(float DeltaSeconds)
     if(!Material) Material=Paint(Mesh,FLinearColor(.02f,.42f,.75f));
     Material->SetVectorParameterValue(TEXT("Color"),bEnabled && Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
     if(!bEnabled) return;
+    NearMissCooldown=FMath::Max(0.f,NearMissCooldown-DeltaSeconds);
     Clock+=DeltaSeconds*Mode->DeviceRate();
     if(ClockHand)ClockHand->SetRelativeRotation(FRotator(0,0,Clock*360.f/Period));
     Place();

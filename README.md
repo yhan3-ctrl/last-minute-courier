@@ -2,12 +2,12 @@
 
 A 3D campus delivery game made in **Unreal Engine 5.8** for CSCI 5999B, Project 3. Theme: **Time**.
 
-The campus movie night is about to start, but the coffee, the projector lens and the final film reel are still on the way. You are the last courier on shift. Hold **Q** to borrow a few seconds from blue clock‑tagged machinery (carts, lifts, a shuttle) and slow it to a quarter speed, while you and your delivery clock keep moving at full speed. Deliver all three parcels and earn a seat at the screening. Each parcel has its own concern: the coffee cools, the fragile lens cracks after three knocks, and the final reel must beat the screening. Borrower cells on the harder lines give Q extra uses, and every delivery is rated up to three stars.
+The campus movie night is about to start, but the coffee, the projector lens and the final film reel are still on the way. You are the last courier on shift. Sprint, slide, climb and jump across campus like a parkour runner, and hold **Q** to borrow a few seconds from blue clock‑tagged machinery (carts, lifts, a shuttle, rolling shutters, turnstiles) and slow it to a quarter speed, while you and your delivery clock keep moving at full speed. Deliver all three parcels and earn a seat at the screening. Each parcel has its own concern: the coffee cools, the fragile lens cracks after three knocks, and the final reel must beat the screening. Gold hourglasses and lines of gold sparks on the bolder lines give Q extra uses, close calls earn more sparks, and every delivery is rated up to three stars.
 
 | | |
 |---|---|
-| ![Opening](Documentation/Previews/V054-Opening.png) | ![Brief](Documentation/Previews/V054-Brief.png) |
-| ![Riding a lift](Documentation/Previews/V054-HUD-Lift.png) | ![Ending](Documentation/Previews/V054-Ending.png) |
+| ![Coffee route: hourglass, spark line, crates and a shutter ahead](Documentation/Previews/V09-Coffee-Route.png) | ![Brief](Documentation/Previews/V09-Brief.png) |
+| ![Turnstile: jump the low arm, slide under the high one](Documentation/Previews/V09-Turnstile.png) | ![Lift ride with the springboard's spark arc](Documentation/Previews/V09-Lift-Sparks.png) |
 
 ## Design documents
 
@@ -19,19 +19,21 @@ The campus movie night is about to start, but the coffee, the projector lens and
 
 Download the release for your platform (see the course Box folder; the Mac build is also attached to the GitHub release). No Unreal Editor is needed.
 
-- **Mac:** open `LastMinuteCourier-0.8-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
+- **Mac:** open `LastMinuteCourier-0.9-Mac-arm64.dmg` and run `LastMinuteCourier.app` (Apple silicon). It is ad‑hoc signed, not notarized: the first time, right‑click the app and choose **Open**.
 - Windows (x86-64) and Linux (x86-64) builds are made on a Windows PC with `Scripts/package_windows.bat` and `Scripts/package_linux.bat`; see [BuildOtherPlatforms.md](Documentation/BuildOtherPlatforms.md). They are published in the course Box folder.
 
 | Key | Action |
 |---|---|
 | W A S D / Mouse | Move / look |
-| Space | Jump |
-| Q (hold) | Slow blue devices for up to 3 s; 3 / 4 / 5 uses per delivery, counted bottom-left |
+| Shift (hold) | Sprint |
+| Space | Jump; jump at a ledge (crates, decks) to climb it |
+| Ctrl | Slide under anything low (beams, closing shutters, a turnstile's high arm) |
+| Q (hold) | Slow blue devices for up to 3 s; 3 / 4 / 5 uses per delivery, +1 per gold hourglass and per 25 sparks, counted bottom-left |
 | E | Walk up to a desk to open its brief; E accepts; E delivers on the orange square |
 | C / H / Esc | Recenter camera / route help / pause and settings |
 | R | Restart the current order (asks first) |
 
-Walk up to the parcel desk to open your first brief; the yard gate opens once you accept. Practice and reading are untimed. Order time limits are 1:00, 2:30 and 2:40. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
+Walk up to the parcel desk to open your first brief; the yard gate opens once you accept. Practice and reading are untimed. Order time limits are 0:40, 2:00 and 2:10. English by default; Chinese, Japanese, Korean, Spanish, French and German are in the language menu.
 
 ## Iterations
 
@@ -51,6 +53,7 @@ Each version below is a git tag. The full reasoning for every change is in [ITER
 | `v0.6` | Nov 8 | First first-time playtest: the player walked past the parcel desk to the coffee stand without an order, saw frozen carts, got no response from E at the counter, and the camera slid inside an NPC. Desks now open their brief on arrival, a yard gate holds until the first order is accepted, the world always moves, E always explains itself, people and props stop the camera, and Q has a visible number of uses per delivery |
 | `v0.7` | Nov 8 | Owner: still less fun than commercial games. Added golden clocks (+5 s each, mostly on the risky lines), a 1–3 star rating per delivery with a total and rank at the end, a blue slow-time screen grade with lowered music pitch for Q, hit flashes, a final-ten-seconds tick and delivery confetti |
 | `v0.8` | Nov 8 | Owner: monotonous, and much did not make sense. Carts became one-way traffic between depot sheds; a cart now knocks you aside instead of teleporting you; the coffee cools and the lens case cracks after three knocks, each judged by its own stars; golden clocks became Borrower cells (+1 Q use); hedges mark the edge; briefs explain who handed over each parcel. The owner also saw the orange line lead to a ramp while the marker led to a lift: only the recommended route is painted now, with arrows riding on the lifts |
+| `v0.9` | Nov 8 | Owner: the Borrower cell looked like a hazard (people avoided it), the game was boring and too easy; suggested parkour games. Added sprint, slide, ledge climb and forgiving jumps; rolling shutters and turnstiles that combine Q with the new moves; a springboard, crate walls and a market roof; gold hourglasses and lines of gold sparks with close-call bonuses; a slide lesson in practice; time limits 40/120/130 s. A full re-check also fixed stale cart hints, overlapping key hints on buttons and 42 unused translations |
 
 ## Build and test (developers)
 
@@ -58,7 +61,7 @@ Requires Unreal Engine 5.8 and Xcode on macOS.
 
 ```bash
 ./Scripts/build_editor.command '/Users/Shared/Epic Games/UE_5.8'      # compile
-./Scripts/audit_game.command '/Users/Shared/Epic Games/UE_5.8' Regression   # 3 engine regression suites
+./Scripts/audit_game.command '/Users/Shared/Epic Games/UE_5.8' Regression   # 4 engine regression suites
 ./Scripts/autoplay.command                                              # real-speed playthrough with screenshots
 python3 Scripts/validate_localization.py                                # 7-language coverage
 ```

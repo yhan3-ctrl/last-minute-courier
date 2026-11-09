@@ -37,7 +37,7 @@ bool FCourierVisualInspection::RunTest(const FString& Name)
         Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);Mode->RecoverySeconds=0;
     };
     while(Mode->Phase==ECourierPhase::Opening)Mode->Continue();
-    Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
+    Mode->Tutorial=4;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
     const int32 Target=Name==TEXT("Coffee")?0:(Name==TEXT("Cinema")?2:1);
     for(int32 I=0;I<=Target;++I)
     {

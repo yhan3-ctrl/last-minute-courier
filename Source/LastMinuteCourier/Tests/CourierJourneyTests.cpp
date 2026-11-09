@@ -112,7 +112,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
         }
     }
     TestEqual(TEXT("Exactly one current route group is shown"),ActiveGuides,1);
-    Mode->Tutorial=3;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
+    Mode->Tutorial=4;Place(Mode->Pickup-FVector(0,0,12));Mode->Tick(.01f);
     TestTrue(TEXT("Finishing practice at the desk opens the first brief"),Mode->Phase==ECourierPhase::Briefing);
     for(int32 Order=0;Order<3;++Order)
     {
@@ -231,7 +231,7 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             TestEqual(TEXT("Retry keeps earlier stamp"),Mode->CompletedOrders,1);
             TestEqual(TEXT("Retry keeps earlier delivery time"),Mode->DeliveryTimes[0],SavedFirst);
             TestEqual(TEXT("Retry remains on order two"),Mode->CurrentOrder,1);
-            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==150 && Mode->Phase==ECourierPhase::Briefing);
+            TestTrue(TEXT("Retry resets second budget without starting"),Mode->Remaining==120 && Mode->Phase==ECourierPhase::Briefing);
             Place(Mode->Pickup-FVector(0,0,12));Mode->Interact();Mode->Continue();
         }
         if(Order==2)

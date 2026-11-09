@@ -20,8 +20,8 @@ Scripts\package_linux.bat "C:\Program Files\Epic Games\UE_5.8"
 
 Each script compiles the game, cooks the content, and writes a self-contained build to:
 
-- `Builds\Windows\Windows\` → zip this folder as `LastMinuteCourier-0.8-Windows-x64.zip`
-- `Builds\Linux\Linux\` → zip this folder as `LastMinuteCourier-0.8-Linux-x64.zip`
+- `Builds\Windows\Windows\` → zip this folder as `LastMinuteCourier-0.9-Windows-x64.zip`
+- `Builds\Linux\Linux\` → zip this folder as `LastMinuteCourier-0.9-Linux-x64.zip`
 
 The first build takes a while because shaders are compiled once.
 

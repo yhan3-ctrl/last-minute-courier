@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-// Borrower cells: spare batteries for the Borrower. Each gives Q one more use
+// Gold hourglasses: each gives Q one more use
 // in the current delivery. Most sit on the riskier line (in a cart lane, at a
 // lift's top, over the shuttle's water, on a planter or stepping stone), so
 // playing the short route well funds the next crossing. Stars rate each
@@ -39,26 +39,32 @@ void ACourierGameMode::SpawnTokens()
     // Floor height of each spot; the clock floats about a body height above it.
     const FSpot Spots[]={
         {-1,FVector(1800,0,0)},                                   // practice: learn that clocks exist
-        {0,FVector(3300,0,0)},{0,FVector(4700,0,85)},{0,FVector(5475,0,0)},{0,FVector(5200,850,0)},
+        {0,FVector(3300,0,0)},{0,FVector(4650,0,150)},{0,FVector(5475,0,0)},{0,FVector(5200,850,0)},
         {1,FVector(12600,0,300)},{1,FVector(15650,0,320)},{1,FVector(19700,0,0)},{1,FVector(23300,0,400)},{1,FVector(19900,-1900,0)},
-        {2,FVector(31150,0,0)},{2,FVector(34900,0,0)},{2,FVector(37900,0,0)},{2,FVector(40300,0,420)},{2,FVector(43780,280,520)},{2,FVector(31300,1450,0)}};
+        {2,FVector(31150,0,0)},{2,FVector(34900,0,0)},{2,FVector(37900,0,0)},{2,FVector(40300,0,420)},{2,FVector(43780,280,520)},{2,FVector(31300,1450,0)},{2,FVector(31450,-800,320)}};
     for(const FSpot& Spot:Spots)
     {
         auto* Actor=GetWorld()->SpawnActor<AActor>();
         auto* Root=NewObject<USceneComponent>(Actor);Actor->SetRootComponent(Root);Root->SetMobility(EComponentMobility::Movable);Root->RegisterComponent();
-        // An upright battery: cyan body, cream label band with the Borrower's
-        // clock mark, dark terminal cap. It matches the blue clock-tagged devices.
-        TokenPart(Actor,Root,TEXT("Cylinder"),FVector::ZeroVector,FVector(46,46,74),TEXT("3CC4D8"));
-        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,4),FVector(48,48,22),TEXT("FFF3D6"));
-        TokenPart(Actor,Root,TEXT("Cube"),FVector(24,0,6),FVector(2,3,14),TEXT("243D43"));
-        TokenPart(Actor,Root,TEXT("Cube"),FVector(24,4,3),FVector(2,9,3),TEXT("243D43"));
-        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,42),FVector(20,20,10),TEXT("243D43"));
+        // A gold hourglass: warm colours that read as treasure, never as the
+        // blue clock-tagged machinery the courier learns to be careful around.
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,52),FVector(74,74,10),TEXT("E9A93A"));
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,-52),FVector(74,74,10),TEXT("E9A93A"));
+        for(int32 I=0;I<3;++I)
+        {
+            const FVector Post=FRotator(0,I*120.f,0).RotateVector(FVector(30,0,0));
+            TokenPart(Actor,Root,TEXT("Cylinder"),Post,FVector(8,8,100),TEXT("B9772A"));
+        }
+        TokenPart(Actor,Root,TEXT("Cone"),FVector(0,0,23),FVector(54,54,46),TEXT("FFF0C9"),FRotator(180,0,0));
+        TokenPart(Actor,Root,TEXT("Cone"),FVector(0,0,-23),FVector(54,54,46),TEXT("FFF0C9"));
+        TokenPart(Actor,Root,TEXT("Cone"),FVector(0,0,-32),FVector(38,38,26),TEXT("E2622C"));
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,8),FVector(10,10,30),TEXT("E2622C"));
         auto* Glow=NewObject<UPointLightComponent>(Actor);Glow->SetupAttachment(Root);Glow->RegisterComponent();
-        Glow->SetIntensity(2200.f);Glow->SetAttenuationRadius(300.f);Glow->SetLightColor(FLinearColor(.45f,.9f,1.f));Glow->SetCastShadows(false);
-        Actor->Tags.Add(TEXT("CourierBorrowerCell"));
-        const FVector Base=Spot.Floor+FVector(0,0,110);
-        Actor->SetActorLocation(Base);
-        Tokens.Add({Actor,Base,Spot.Order,false});
+        Glow->SetIntensity(3200.f);Glow->SetAttenuationRadius(380.f);Glow->SetLightColor(FLinearColor(1.f,.72f,.3f));Glow->SetCastShadows(false);
+        Actor->Tags.Add(TEXT("CourierHourglass"));
+        const FVector Base=Spot.Floor+FVector(0,0,95);
+        Actor->SetActorLocation(Base);Actor->SetActorScale3D(FVector(1.25f));
+        Tokens.Add({Actor,Base,Base,Spot.Order,false});
     }
 }
 
@@ -82,7 +88,8 @@ int32 ACourierGameMode::TokensTaken(int32 Order) const
 
 void ACourierGameMode::ResetTokens(int32 Order)
 {
-    for(auto& Token:Tokens)if(Order==-2 || Token.Order==Order)Token.bTaken=false;
+    for(auto& Token:Tokens)if(Order==-2 || Token.Order==Order){Token.bTaken=false;Token.Base=Token.Home;}
+    ResetMotes(Order);
 }
 
 void ACourierGameMode::UpdateTokens(float DeltaSeconds)
@@ -95,6 +102,13 @@ void ACourierGameMode::UpdateTokens(float DeltaSeconds)
         const bool bVisible=TokenVisible(Token);
         if(Actor->IsHidden()==bVisible)Actor->SetActorHiddenInGame(!bVisible);
         if(!bVisible)continue;
+        // Like any game pickup it comes to you once you are close.
+        if(const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);Player && CanMove())
+        {
+            const FVector P=Player->GetActorLocation();
+            if(FVector::Dist2D(Token.Base,P)<330.f && FMath::Abs(Token.Base.Z-P.Z)<220.f)
+                Token.Base=FMath::VInterpConstantTo(Token.Base,P,DeltaSeconds,1300.f);
+        }
         Actor->SetActorLocationAndRotation(Token.Base+FVector(0,0,FMath::Sin(TokenSpin*2.2f+I)*10.f),FRotator(0,TokenSpin*95.f+I*40.f,0));
     }
 }
@@ -106,13 +120,13 @@ void ACourierGameMode::CollectTokens(const FVector& Position)
         if(!TokenVisible(Token) || FVector::Dist2D(Position,Token.Base)>130.f || FMath::Abs(Position.Z-Token.Base.Z)>120.f)continue;
         Token.bTaken=true;
         if(AActor* Actor=Token.Actor.Get())Actor->SetActorHiddenInGame(true);
-        Sound(TEXT("Pickup"),.38f,1.7f);
+        Sound(TEXT("Pickup"),.45f,1.45f);Sound(TEXT("Borrow"),.25f,1.6f);
         if(Phase==ECourierPhase::Delivery)
         {
             ++Charges;
-            Notify(TEXT("Borrower cell: +1 use of borrowed time."),TEXT("借时器电池：多一次借时间。"));
+            ShowPopup(Copy(TEXT("+1 BORROWED TIME"),TEXT("+1 次借时间")));
         }
-        else Notify(TEXT("A Borrower cell! During a delivery, each one gives Q one more use."),TEXT("借时器电池！配送时，每拿到一个，Q 就多一次使用机会。"));
+        else Notify(TEXT("A gold hourglass! During a delivery, each one gives Q one more use."),TEXT("金沙漏！配送时，每拿到一个，Q 就多一次使用机会。"));
         TokenFlash=.5f;
     }
 }

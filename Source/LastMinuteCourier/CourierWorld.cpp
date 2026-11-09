@@ -149,8 +149,7 @@ void ACourierGameMode::BuildDeliveryDistricts()
     // Routes share stations. All side routes are walkable alternatives, not dead ends.
     Way(W,RailSpans,{FVector(2800,0,0),FVector(3050,850,0),FVector(7400,850,0),FVector(7700,0,0)},450);
     Plaque(W,FVector(2860,440,160),TEXT("ARCADE / WALK"),25);
-    Block(W,FVector(4600,0,25),FVector(110,380,50),TEXT("BB886F"),true);
-    Block(W,FVector(4700,0,42.5f),FVector(90,300,85),TEXT("BB886F"),true);
+    // (v0.9: the two step planters at x 4600-4700 became a climbable crate wall; see BuildParkour.)
 
     // Garden: approach, low boarding dock, upper garden, stepping stones, final lift.
     Block(W,FVector(17000,0,-100),FVector(19000,10500,60),TEXT("8FA17B"));

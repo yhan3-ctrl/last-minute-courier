@@ -56,6 +56,11 @@ private:
     void Drive(ACourierGameMode& Mode,ACourierCharacter& Player,float DeltaSeconds);
     bool DriveLift(ACourierGameMode& Mode,ACourierCharacter& Player,FVector& Direction,bool& bHold);
     bool CartGate(ACourierGameMode& Mode,const FVector& Position,FVector& Direction,bool& bHold);
+    bool ObstacleGate(ACourierGameMode& Mode,ACourierCharacter& Player,FVector& Direction,bool& bHold);
+    float CurrentSpeed=430.f;
+    int32 Slides=0;
+    int32 Climbs=0;
+    bool bWasMantling=false;
     void Face(ACourierCharacter& Player,const FVector& Direction,float DeltaSeconds);
     static FString PhaseName(uint8 Phase);
 };

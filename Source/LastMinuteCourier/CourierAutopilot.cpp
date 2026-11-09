@@ -108,8 +108,12 @@ void FCourierAutopilot::Tick(ACourierGameMode& Mode,float DeltaSeconds)
             const float Wall=float(FPlatformTime::Seconds()-WallStart);
             Log(FString::Printf(TEXT("RESULT: complete. wall %.1f s (%d:%02d), session %.1f s, practice started %.1f s, orders %.1f / %.1f / %.1f s"),
                 Wall,int32(Wall)/60,int32(Wall)%60,Mode.SessionSeconds,PracticeStart,Mode.DeliveryTimes[0],Mode.DeliveryTimes[1],Mode.DeliveryTimes[2]));
-            Log(FString::Printf(TEXT("RESULT: recoveries %d, timeouts %d, retries %d, Q uses %d, jumps %d, stuck %d"),
-                Recoveries,Timeouts,Mode.Retries,QUses,Jumps,Stucks));
+            Log(FString::Printf(TEXT("RESULT: recoveries %d, timeouts %d, retries %d, Q uses %d, jumps %d, slides %d, climbs %d, stuck %d"),
+                Recoveries,Timeouts,Mode.Retries,QUses,Jumps,Slides,Climbs,Stucks));
+            Log(FString::Printf(TEXT("RESULT: stars %d / %d / %d, sparks %d/%d %d/%d %d/%d, hourglasses %d/%d %d/%d %d/%d"),
+                Mode.Stars[0],Mode.Stars[1],Mode.Stars[2],Mode.MotesTaken(0),Mode.MotesTotal(0),Mode.MotesTaken(1),Mode.MotesTotal(1),
+                Mode.MotesTaken(2),Mode.MotesTotal(2),Mode.TokensTaken(0),Mode.TokensTotal(0),Mode.TokensTaken(1),Mode.TokensTotal(1),
+                Mode.TokensTaken(2),Mode.TokensTotal(2)));
         }
         if(Clock-ExitClock>1.f && Clock-ExitClock-DeltaSeconds<=1.f)Shot(TEXT("finale-a"));
         if(Clock-ExitClock>4.f && Clock-ExitClock-DeltaSeconds<=4.f)Shot(TEXT("finale-b"));
@@ -175,6 +179,16 @@ bool FCourierAutopilot::Tour(ACourierGameMode& Mode,float DeltaSeconds)
     case 19:return Step(.6f,[&](){Mode.Continue();});
     case 20:return Step(3.f,[&](){Shot(TEXT("tour-hud-zh"));});
     case 21:return Step(.6f,[&](){Mode.SetLanguage(TEXT("en"));});
+    // The lens order's own failure: one knock (HUD pips), then a cracked case.
+    case 22:if(Mode.Phase!=ECourierPhase::Delivery || Mode.CurrentOrder!=1 || PhaseClock<2.f)return false;
+        return Step(0.f,[&](){Mode.DamageLens(TEXT("Bump! The cart knocked the lens case."),TEXT("砰！运输车撞到了镜头盒。"));});
+    case 23:return Step(1.2f,[&](){Shot(TEXT("tour-lens-knock"));});
+    case 24:return Step(.6f,[&](){Mode.DamageLens(TEXT("x"),TEXT("x"));Mode.DamageLens(TEXT("x"),TEXT("x"));});
+    case 25:if(Mode.Phase!=ECourierPhase::Failed)return TourClock<3.f;
+        return Step(1.2f,[&](){Shot(TEXT("tour-lens-cracked"));});
+    case 26:return Step(.6f,[&](){Mode.Continue();});
+    case 27:return Step(1.6f,[&](){Shot(TEXT("tour-lens-retry"));});
+    case 28:return Step(.6f,[&](){Mode.Continue();});
     default:return false;
     }
 }
@@ -196,8 +210,8 @@ bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector
     Direction=FVector(1.f,FMath::Clamp(-(P.Y-Next->Origin.Y)*.003f,-.4f,.4f),0).GetSafeNormal();
     const auto Safe=[&](float SlowSeconds)
     {
-        const float Begin=FMath::Max(0.f,(Enter-P.X)/WalkSpeed);
-        const float End=(Exit-P.X)/WalkSpeed+.2f;
+        const float Begin=FMath::Max(0.f,(Enter-P.X)/CurrentSpeed);
+        const float End=(Exit-P.X)/CurrentSpeed+.2f;
         for(float T=Begin;T<=End;T+=.04f)
         {
             const float Advance=FMath::Min(T,SlowSeconds)*.25f+FMath::Max(0.f,T-SlowSeconds);
@@ -223,6 +237,75 @@ bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector
     if(Mode.bSlowing)Mode.EndSlow();
     bHold=P.X>Enter-75.f;
     return true;
+}
+
+bool FCourierAutopilot::ObstacleGate(ACourierGameMode& Mode,ACourierCharacter& Player,FVector& Direction,bool& bHold)
+{
+    if(Mode.Phase!=ECourierPhase::Delivery)return false;
+    const FVector P=Player.GetActorLocation();
+    const float Run=FMath::Max(450.f,CurrentSpeed);
+    for(const auto& O:Mode.Obstacles)
+    {
+        if(!O || O->OrderIndex!=Mode.CurrentOrder || FMath::Abs(P.Z-88.f-O->Origin.Z)>160.f)continue;
+        const float DX=P.X-O->Origin.X;
+        if(O->Kind==ECourierObstacleKind::Shutter)
+        {
+            if(DX<-900.f || DX>-40.f || FMath::Abs(P.Y-O->Origin.Y)>O->Width*.5f)continue;
+            if(Player.IsSliding())return true;
+            const auto MinBottom=[&](float From,float To)
+            {
+                float Low=1e6f;
+                for(float T=From;T<=To;T+=.04f)Low=FMath::Min(Low,O->DoorBottom(O->Clock+T));
+                return Low;
+            };
+            const float Arrive=(-DX-50.f)/Run;
+            if(MinBottom(FMath::Max(0.f,Arrive-.1f),Arrive+.3f)>200.f)return false;      // open: run through (carts still checked)
+            if(DX>-340.f && DX<-240.f && MinBottom(.12f,.6f)>112.f && Player.GetCharacterMovement()->IsMovingOnGround())
+            {
+                Player.StartSlide();++Slides;
+                Log(FString::Printf(TEXT("slide under shutter at x=%.0f (door %.0f cm)"),O->Origin.X,O->DoorBottom(O->Clock)));
+                return true;
+            }
+            if(DX<-560.f)return false;                                                     // keep approaching
+            bHold=DX>-420.f;                                                               // wait for the next opening
+            return true;
+        }
+        if(O->Kind==ECourierObstacleKind::Sweeper)
+        {
+            const float Reach=O->ArmLength+70.f;
+            if(DX<-(Reach+700.f) || DX>Reach)continue;
+            // Go round the hub on one side; time the pass between the two arms.
+            const float LaneY=O->Origin.Y+180.f;
+            Direction=FVector(1,FMath::Clamp((LaneY-P.Y)*.006f,-.7f,.7f),0).GetSafeNormal();
+            if(DX<-(Reach+130.f))return true;                                                  // approach
+            // At the turnstile: borrow time if possible, then cross and answer
+            // each arm the way the hint says: jump the low one, slide the high one.
+            if(!Mode.bSlowing && Mode.Cooldown<=0.f && Mode.Charges>0 && DX<-Reach+40.f)
+            {Mode.StartSlow();if(Mode.bSlowing){++QUses;Log(FString::Printf(TEXT("hold Q for turnstile at x=%.0f"),O->Origin.X));}}
+            const float Rate=Mode.bSlowing?.25f:1.f;
+            const FVector Ahead=Direction*Run;
+            auto* Move=Player.GetCharacterMovement();
+            for(float T=.04f;T<=.36f;T+=.04f)
+            {
+                const FVector2D At(P.X+Ahead.X*T-O->Origin.X,P.Y+Ahead.Y*T-O->Origin.Y);
+                if(At.Size()>O->ArmLength+60.f)continue;
+                const float Yaw=FMath::DegreesToRadians(O->ArmYaw(O->Clock+T*Rate));
+                for(int32 Arm=0;Arm<2;++Arm)
+                {
+                    const FVector2D D(FMath::Cos(Yaw+Arm*PI),FMath::Sin(Yaw+Arm*PI));
+                    const float Along=FVector2D::DotProduct(At,D),Perp=FMath::Abs(At.X*D.Y-At.Y*D.X);
+                    if(Along<0.f || Along>O->ArmLength+60.f || Perp>70.f)continue;
+                    if(Arm==0 && T>=.12f && Move->IsMovingOnGround() && !Player.IsSliding())
+                    {Player.JumpPressed();++Jumps;Log(FString::Printf(TEXT("jump the turnstile's low arm at x=%.0f"),O->Origin.X));}
+                    if(Arm==1 && Move->IsMovingOnGround() && !Player.IsSliding())
+                    {Player.StartSlide();++Slides;Log(FString::Printf(TEXT("slide under the turnstile's high arm at x=%.0f"),O->Origin.X));}
+                    return DX<0.f;
+                }
+            }
+            return DX<0.f;
+        }
+    }
+    return false;
 }
 
 bool FCourierAutopilot::DriveLift(ACourierGameMode& Mode,ACourierCharacter& Player,FVector& Direction,bool& bHold)
@@ -316,8 +399,18 @@ void FCourierAutopilot::Drive(ACourierGameMode& Mode,ACourierCharacter& Player,f
     const FVector Target=Mode.NavigationTarget();
     FVector Direction=(Target-P).GetSafeNormal2D();
     bool bHold=false;
+    // Sprint like a player who knows the route, except while handling a lift.
+    const bool bLiftBusy=LiftStep!=ELiftStep::None;
+    Player.SetSprint(!bLiftBusy);
+    CurrentSpeed=Player.GetCharacterMovement()->MaxWalkSpeed*.85f;
     const bool bLift=DriveLift(Mode,Player,Direction,bHold);
-    if(!bLift)CartGate(Mode,P,Direction,bHold);
+    if(!bLift && !ObstacleGate(Mode,Player,Direction,bHold))CartGate(Mode,P,Direction,bHold);
+    // Practice beam: slide under it.
+    if(Mode.Phase==ECourierPhase::Practice && Mode.Tutorial==2 && P.X>1010.f && P.X<1205.f && !Player.IsSliding() &&
+       Player.GetCharacterMovement()->IsMovingOnGround())
+    {Player.StartSlide();++Slides;Log(TEXT("slide under the practice beam"));}
+    if(Player.IsMantling() && !bWasMantling){++Climbs;Log(FString::Printf(TEXT("climb at %s"),*P.ToCompactString()));}
+    bWasMantling=Player.IsMantling();
     if(SidestepClock>0.f)
     {
         SidestepClock-=DeltaSeconds;

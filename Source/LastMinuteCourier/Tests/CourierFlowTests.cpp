@@ -42,7 +42,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Mode->Back();TestEqual(TEXT("Back on first card stays at zero"),Mode->Card,0);
     Mode->StartSlow();Act();Mode->Tick(2.f);
     TestFalse(TEXT("Ability cannot start during opening"),Mode->bSlowing);
-    TestTrue(TEXT("Opening does not start clock"),FMath::IsNearlyEqual(Mode->Remaining,60.f));
+    TestTrue(TEXT("Opening does not start clock"),FMath::IsNearlyEqual(Mode->Remaining,40.f));
     Mode->Continue();Mode->Continue();Mode->Back();
     TestEqual(TEXT("Card back navigation"),Mode->Card,1);
     for(const FString& Code:Mode->Languages())
@@ -70,20 +70,25 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Jump navigation stays ahead until its exit"),Mode->NavigationTarget().X>1100.f);
     Place(FVector(1200,0,88));Mode->Tick(.01f);
     TestEqual(TEXT("Learned jump advances tutorial"),Mode->Tutorial,2);
+    // Slide lesson: the beam only lets a crouched (sliding) courier through.
+    Place(FVector(1200,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Standing before the beam does not pass the slide lesson"),Mode->Tutorial,2);
+    Place(FVector(1400,0,88));Mode->Tick(.01f);
+    TestEqual(TEXT("Past the beam advances to the cart lesson"),Mode->Tutorial,3);
     // A safe crossing is valid without Q. Do not disguise an instruction as a collision.
     Place(FVector(2000,0,88));Mode->Tick(.01f);
-    TestEqual(TEXT("Safe crossing without Q completes the lesson"),Mode->Tutorial,3);
+    TestEqual(TEXT("Safe crossing without Q completes the lesson"),Mode->Tutorial,4);
     TestTrue(TEXT("Safe crossing is never teleported backward"),Player->GetActorLocation().Equals(FVector(2000,0,88)));
     TestEqual(TEXT("Crossing saves forward progress"),Mode->Checkpoint.X,2000.0);
-    Mode->Tutorial=2;Mode->Checkpoint=FVector(1200,0,120);
-    Place(FVector(1300,0,88));Mode->StartSlow();Training->Tick(.1f);Mode->EndSlow();
+    Mode->Tutorial=3;Mode->Checkpoint=FVector(1360,0,120);
+    Place(FVector(1450,0,88));Mode->StartSlow();Training->Tick(.1f);Mode->EndSlow();
     Place(FVector(2000,0,88));Mode->Tick(.01f);
-    TestEqual(TEXT("Early Q release does not invalidate a safe crossing"),Mode->Tutorial,3);
-    Mode->Tutorial=2;Mode->Cooldown=0;Mode->SlowRemaining=3;
-    Place(FVector(1300,0,88));Mode->StartSlow();Training->Tick(.1f);
+    TestEqual(TEXT("Early Q release does not invalidate a safe crossing"),Mode->Tutorial,4);
+    Mode->Tutorial=3;Mode->Cooldown=0;Mode->SlowRemaining=3;
+    Place(FVector(1450,0,88));Mode->StartSlow();Training->Tick(.1f);
     Place(FVector(2000,0,88));Mode->Tick(.01f);
-    TestEqual(TEXT("Crossing with Q is equally accepted"),Mode->Tutorial,3);
-    Mode->EndSlow();Mode->Tutorial=2;Mode->Checkpoint=FVector(1200,0,120);
+    TestEqual(TEXT("Crossing with Q is equally accepted"),Mode->Tutorial,4);
+    Mode->EndSlow();Mode->Tutorial=3;Mode->Checkpoint=FVector(1360,0,120);
     Training->SetActorLocation(FVector(1550,420,55));
     Place(FVector(1550,0,88));Mode->CollisionProtection=0;Mode->Tick(.01f);
     TestTrue(TEXT("A visible cart gap does not cause recovery"),Player->GetActorLocation().Equals(FVector(1550,0,88)));
@@ -104,7 +109,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
         Mode->StunSeconds=0.f;Player->GetCharacterMovement()->PendingLaunchVelocity=FVector::ZeroVector;
     }
     Place(FVector(2000,0,88));Mode->Tick(.01f);
-    TestEqual(TEXT("Can complete the safe crossing after a collision"),Mode->Tutorial,3);
+    TestEqual(TEXT("Can complete the safe crossing after a collision"),Mode->Tutorial,4);
     {
         // The gate holds anyone who skips the desk, with a reason, and the carts
         // beyond it keep moving so the yard never looks frozen.
@@ -124,7 +129,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Mode->Back();Mode->Tick(.01f);
     TestTrue(TEXT("A closed brief does not reopen while standing at the desk"),Mode->Phase==ECourierPhase::AwaitPickup);
     TestTrue(TEXT("Practice reaches pickup"),Mode->Phase==ECourierPhase::AwaitPickup);
-    Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,60.f));
+    Mode->Tick(5.f);TestTrue(TEXT("Pickup waiting has no delivery countdown"),FMath::IsNearlyEqual(Mode->Remaining,40.f));
     Place(FVector(2400,0,-100),false);Act();
     TestTrue(TEXT("Cannot collect a package from under the ground"),Mode->Phase==ECourierPhase::AwaitPickup);
     // Restore a valid pickup state even when running this test against an old build.
@@ -214,7 +219,7 @@ bool FCourierFlowRegression::RunTest(const FString&)
     TestTrue(TEXT("Timeout reaches failure state"),Mode->Phase==ECourierPhase::Failed);
     TestFalse(TEXT("Failure blocks player movement"),Mode->CanMove());
     const int32 RetriesBefore=Mode->Retries;Mode->Retry();
-    TestTrue(TEXT("Retry reopens the brief at the desk without starting timer"),Mode->Phase==ECourierPhase::Briefing && Mode->Remaining==60.f);
+    TestTrue(TEXT("Retry reopens the brief at the desk without starting timer"),Mode->Phase==ECourierPhase::Briefing && Mode->Remaining==40.f);
     TestEqual(TEXT("Retry increments count once"),Mode->Retries,RetriesBefore+1);
     TestFalse(TEXT("Retry hides package"),Player->Bag->IsVisible());
     TestTrue(TEXT("Retry resets ability and all cooldown"),!Mode->bSlowing && Mode->Cooldown==0 && Mode->SlowRemaining==3.f);

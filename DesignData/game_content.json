@@ -45,8 +45,8 @@
       "id": "move",
       "completion": "reach_movement_marker",
       "text": {
-        "en": "WASD to move. Move the mouse to look around. Reach the marked spot.",
-        "zh": "WASD 移动，鼠标转动视角。走到标记位置。"
+        "en": "WASD to move, mouse to look. Hold Shift to sprint to the marked spot.",
+        "zh": "WASD 移动，鼠标看方向。按住 Shift 冲刺到标记处。"
       }
     },
     {
@@ -58,11 +58,19 @@
       }
     },
     {
+      "id": "slide",
+      "completion": "slide_under_practice_beam",
+      "text": {
+        "en": "Sprint, then press Ctrl to slide under the low beam.",
+        "zh": "先冲刺，再按 Ctrl 从低横梁下滑铲过去。"
+      }
+    },
+    {
       "id": "slow",
       "completion": "cross_training_lane_safely_with_or_without_Q",
       "text": {
-        "en": "Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe.",
-        "zh": "等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。"
+        "en": "Cross after the cart has passed. Hold Q if you want a longer gap. Both ways are safe.",
+        "zh": "等运输车开过去再通过。想延长空隙可以按住 Q，两种方法都可以。"
       }
     },
     {
@@ -78,7 +86,7 @@
     {
       "id": "coffee",
       "number": 1,
-      "seconds": 60,
+      "seconds": 40,
       "title": {
         "en": "A Little Warmth",
         "zh": "把暖意送到"
@@ -107,7 +115,7 @@
     {
       "id": "lens",
       "number": 2,
-      "seconds": 150,
+      "seconds": 120,
       "title": {
         "en": "Light Up the Screen",
         "zh": "让银幕亮起来"
@@ -136,7 +144,7 @@
     {
       "id": "reel",
       "number": 3,
-      "seconds": 160,
+      "seconds": 130,
       "title": {
         "en": "The Final Reel",
         "zh": "最后一卷"
@@ -167,7 +175,8 @@
     "slow_factor": 0.25,
     "slow_max_seconds": 3.0,
     "cooldown_seconds": 1.5,
-    "collision_protection_seconds": 1.0,
+    "collision_protection_seconds": 1.3,
+    "cart_bump_stagger_seconds": 0.7,
     "respawn_fade_seconds": 0.3,
     "timer_slowed_by_ability": false,
     "pause_stops_timer": true,

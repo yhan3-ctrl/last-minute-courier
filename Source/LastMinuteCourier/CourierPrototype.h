@@ -24,14 +24,27 @@ struct FCourierOrder
     float Seconds=140.f;
 };
 
-// A golden clock pickup. Order -1 belongs to the practice yard.
+// A gold hourglass pickup (+1 Q use). Order -1 belongs to the practice yard.
 struct FCourierToken
+{
+    TWeakObjectPtr<AActor> Actor;
+    FVector Base=FVector::ZeroVector;
+    FVector Home=FVector::ZeroVector;
+    int32 Order=0;
+    bool bTaken=false;
+};
+
+// A gold time spark: small pickups laid in lines along the routes, like coins.
+// Every MotesPerUse sparks add one use of borrowed time.
+struct FCourierMote
 {
     TWeakObjectPtr<AActor> Actor;
     FVector Base=FVector::ZeroVector;
     int32 Order=0;
     bool bTaken=false;
 };
+
+enum class ECourierObstacleKind : uint8 {Shutter,Sweeper,Spring,Beam};
 
 // Purely visual props never block the courier, but large ones block the camera
 // probe so the chase camera cannot slide inside them.
@@ -153,6 +166,27 @@ public:
     float GateAngle = 0.f;
     float NoticeSeconds = 0.f;
     void ResetDevices();
+    // Parkour rewards and devices.
+    TArray<FCourierMote> Motes;
+    int32 MoteBank=0;                      // sparks toward the next Q use
+    static constexpr int32 MotesPerUse=25;
+    int32 MoteChain=0;
+    float MoteChainSeconds=0.f;
+    FString Popup;
+    float PopupSeconds=0.f;
+    UPROPERTY() TArray<TObjectPtr<class ACourierObstacle>> Obstacles;
+    void ShowPopup(const FString& Text);
+    void Sound(const TCHAR* Name,float Volume=.3f,float Pitch=1.f);
+    void SpawnMotes();
+    void UpdateMotes(float DeltaSeconds);
+    void CollectMotes(const FVector& Position);
+    int32 MotesTotal(int32 Order) const;
+    int32 MotesTaken(int32 Order) const;
+    void AwardMotes(int32 Count);
+    void ResetMotes(int32 Order);
+    void CloseCall(int32 Bonus);
+    void KnockBack(const FVector& Push,const TCHAR* English,const TCHAR* Chinese);
+    void BuildParkour();
 private:
     friend class FCourierAutopilot;
     TSharedPtr<class FCourierAutopilot> Autopilot;
@@ -183,7 +217,6 @@ private:
     void ConfigureOrder(int32 Index);
     void AcceptOrder();
     void OpenBrief();
-    void Sound(const TCHAR* Name,float Volume=.3f,float Pitch=1.f);
     void UpdateCelebration();
     void LoadCopy();
     void LoadTranslations();
@@ -209,7 +242,30 @@ public:
     void ShowPackage(bool bVisible);
     void RecenterView(float Yaw, float Pitch=-22.f);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Bag;
+    // Parkour moves: Shift sprints, Ctrl slides, a jump at a ledge climbs it.
+    static constexpr float WalkSpeed=520.f, SprintSpeed=820.f, SlideTime=.75f;
+    bool bSprintHeld=false;
+    float SlideSeconds=0.f;
+    bool IsSliding() const {return SlideSeconds>0.f;}
+    bool IsMantling() const {return MantleTime>=0.f;}
+    void SetSprint(bool bOn);
+    void CancelMoves();
+    void StartSlide();
+    void JumpPressed();
+    bool TryMantle();
 private:
+    UPROPERTY() TObjectPtr<USceneComponent> Visual;
+    FVector SlideDirection=FVector::ForwardVector;
+    float CoyoteSeconds=0.f;
+    float JumpBufferSeconds=0.f;
+    float MantleTime=-1.f;
+    FVector MantleFrom,MantleTo,MantleForward;
+    float BaseFov=90.f;
+    float FovKick=0.f;
+    float Lean=0.f;
+    void SprintPressed();
+    void SprintReleased();
+    void SlidePressed();
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Head;
     UPROPERTY() TObjectPtr<UStaticMeshComponent> PackageMark;
@@ -225,7 +281,6 @@ private:
     void Right(float Value);
     void Yaw(float Value);
     void Pitch(float Value);
-    void JumpPressed();
     void JumpReleased();
 };
 
@@ -267,6 +322,7 @@ public:
     float Amplitude = 420.f;   // unused legacy field
     float Span = 600.f;        // lane half-width: depot door to depot door
     float Direction = 1.f;     // +1 drives toward +Y, -1 toward -Y
+    float NearMissCooldown = 0.f;
     bool bTraining = false;
     int32 OrderIndex = 0;
     void Reset();
@@ -296,6 +352,41 @@ public:
     float Period=9.f;
     int32 OrderIndex=1;
     void Reset();
+};
+
+// Parkour set pieces. Shutters and sweepers are blue clock-tagged devices that Q
+// slows; springboards and beams are plain campus fixtures.
+UCLASS()
+class LASTMINUTECOURIER_API ACourierObstacle : public AActor
+{
+    GENERATED_BODY()
+public:
+    ACourierObstacle();
+    virtual void Tick(float DeltaSeconds) override;
+    ECourierObstacleKind Kind=ECourierObstacleKind::Shutter;
+    int32 OrderIndex=0;          // -1 practice yard
+    FVector Origin=FVector::ZeroVector;
+    float Width=1000.f;          // shutter / beam span across the path (Y)
+    float ArmLength=450.f;       // sweeper reach
+    float Period=7.f;
+    float InitialPhase=0.f;
+    float Clock=0.f;
+    float SideBefore=0.f;
+    float CloseCallCooldown=0.f;
+    bool bSlowable() const {return Kind==ECourierObstacleKind::Shutter || Kind==ECourierObstacleKind::Sweeper;}
+    void Build();
+    void Reset();
+    bool Relevant() const;
+    float DoorBottom(float ClockValue) const;  // shutter clearance above its floor
+    bool Closing(float ClockValue) const;
+    float ArmYaw(float ClockValue) const;      // sweeper: low arm heading, high arm opposite
+    void Check(ACourierGameMode& Mode,class ACourierCharacter& Player,float DeltaSeconds);
+    UPROPERTY() TObjectPtr<USceneComponent> Root;
+    UPROPERTY() TObjectPtr<USceneComponent> Moving;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Blocker;
+    UPROPERTY() TArray<TObjectPtr<UMaterialInstanceDynamic>> Tinted;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> ClockHand;
+    void Pose();
 };
 
 UCLASS()

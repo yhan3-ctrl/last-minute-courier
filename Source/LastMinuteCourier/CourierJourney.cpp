@@ -40,9 +40,9 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
                     Pair(TEXT("brief"),Order.Brief,Order.BriefZh);
                     Pair(TEXT("label"),Order.Label,Order.LabelZh);
                     Pair(TEXT("delivered"),Order.Delivered,Order.DeliveredZh);
-                    const double Defaults[]={60,150,160};double Seconds=Defaults[I];
+                    const double Defaults[]={40,120,130};double Seconds=Defaults[I];
                     Row->TryGetNumberField(TEXT("seconds"),Seconds);
-                    Order.Seconds=FMath::Clamp(float(Seconds),60.f,600.f);
+                    Order.Seconds=FMath::Clamp(float(Seconds),20.f,600.f);
                 }
             }
         }
@@ -51,7 +51,7 @@ void ACourierGameMode::ConfigureOrder(int32 Index)
         for(int32 I=0;I<3;++I)if(Orders[I].Title.IsEmpty())
         {
             Orders[I].Title=Titles[I];Orders[I].TitleZh=Titles[I];
-            Orders[I].Destination=Titles[I];Orders[I].Seconds=I==0?60.f:(I==1?150.f:160.f);
+            Orders[I].Destination=Titles[I];Orders[I].Seconds=I==0?40.f:(I==1?120.f:130.f);
             Orders[I].Brief=TEXT("Follow the orange route markers. E collects and delivers; Q slows blue-tagged devices.");
             UE_LOG(LogTemp,Warning,TEXT("Courier order data missing: release data check required."));
         }
@@ -90,17 +90,17 @@ FString ACourierGameMode::OrderBrief() const
 
 FString ACourierGameMode::RouteHint() const
 {
-    if(CurrentOrder==0)return Copy(TEXT("Centre: shorter cart crossings. Right arcade: a wider, safer walk. Both reach the coffee stand. You can borrow time 3 times on this delivery."),TEXT("中央路线穿过车道，路程更短；右侧长廊更宽、更稳妥，两条路都能到咖啡摊。这一单可以借 3 次时间。"));
-    if(CurrentOrder==1)return Copy(TEXT("Garden lifts: step aboard while the platform is level, ride up, step off at the top. Holding Q while boarding gives you more time. Wide side ramps avoid every lift and the stepping stones. 4 uses this delivery."),TEXT("花园升降台：平台和地面齐平时走上去，乘到顶后走下来。上台时按住 Q 能多留一点时间。宽阔的侧坡道可以绕开所有升降台和跳石。这一单可借 4 次。"));
-    return Copy(TEXT("The last route has cart lanes, a shuttle and a terrace lift: 6 blue devices, but only 5 uses of borrowed time, so choose where you need them. Side paths are always available."),TEXT("最后一程有车道、摆渡台和露台升降台，共 6 个蓝色装置，但只能借 5 次时间，想好用在哪里。侧路始终可走。"));
+    if(CurrentOrder==0)return Copy(TEXT("Climb the crates (jump at them) or take the right arcade, cross the cart lanes, beat the rolling shutter (slide under before it closes, or wait for it to open) and pass the turnstile (jump the low arm, slide under the high one). 3 uses of borrowed time this delivery."),TEXT("朝箱子跳上去翻过，或走右侧长廊；穿过车道，闯过卷帘门（趁没落下滑铲钻过去，或等它升起），再过旋转栏杆（低的跳、高的滑铲）。这一单可借 3 次时间。"));
+    if(CurrentOrder==1)return Copy(TEXT("Garden lifts: step aboard while the platform is level, ride up, step off at the top; wide side ramps avoid them. Then the stepping stones, a turnstile (jump the low arm, slide under the high one) and the booth shutter. 4 uses this delivery."),TEXT("花园升降台：平台齐平时走上去，到顶再走下来；也可以走两侧宽坡道绕开。之后是跳石、旋转栏杆（低的跳、高的滑铲）和放映室前的卷帘门。这一单可借 4 次。"));
+    return Copy(TEXT("Market lanes and a shutter, a roof run for the bold, the shuttle, a turnstile and two more lanes. Then up to the terrace: ride the lift or run over the springboard. The clocktower gate rolls down on a timer. 5 uses this delivery."),TEXT("市场车道和卷帘门、给大胆的人准备的屋顶跑酷、摆渡台、旋转栏杆和两条车道。然后上露台：坐升降台，或者跑过弹跳板直接弹上去。钟楼大门会定时落下。这一单可借 5 次。"));
 }
 
 FVector ACourierGameMode::NavigationTarget() const
 {
     if(Phase==ECourierPhase::Practice)
     {
-        const FVector Markers[]={FVector(650,0,100),FVector(1200,0,100),FVector(2000,0,100),Pickup};
-        return Markers[FMath::Clamp(Tutorial,0,3)];
+        const FVector Markers[]={FVector(650,0,100),FVector(1150,0,100),FVector(1420,0,100),FVector(2000,0,100),Pickup};
+        return Markers[FMath::Clamp(Tutorial,0,4)];
     }
     if(Phase==ECourierPhase::AwaitPickup || Phase==ECourierPhase::Briefing)return Pickup;
     // Follow a chosen side route to its exit instead of pointing across the water.
@@ -201,9 +201,9 @@ FString ACourierGameMode::ContextHint() const
     if(!InteractionPrompt().IsEmpty())return FString();
     if(Phase==ECourierPhase::Practice)
     {
-        if(Tutorial==2 && Cooldown>0.f)
-            return Copy(TEXT("Q is recharging. You can still cross when the cart moves aside."),TEXT("Q 正在充能。运输车让开时，你仍然可以直接通过。"));
-        const int32 I=FMath::Clamp(Tutorial,0,3);return Copy(*TutorialText[I],*TutorialTextZh[I]);
+        if(Tutorial==3 && Cooldown>0.f)
+            return Copy(TEXT("Q is recharging. You can still cross once the cart has passed."),TEXT("Q 正在充能。运输车开过去后，你仍然可以直接通过。"));
+        const int32 I=FMath::Clamp(Tutorial,0,TutorialText.Num()-1);return Copy(*TutorialText[I],*TutorialTextZh[I]);
     }
     if(Phase==ECourierPhase::AwaitPickup)
         return Copy(TEXT("Your next parcel waits at the marker. Walk there to read the brief; the clock has not started."),TEXT("下一份包裹在标记处。走过去查看简报，倒计时还没开始。"));
@@ -216,17 +216,30 @@ FString ACourierGameMode::ContextHint() const
             return Copy(TEXT("At the landing. Walk forward to step off."),TEXT("到站了。向前走，离开平台。"));
         return Copy(TEXT("You are aboard. Release Q to ride at normal speed; step off at the landing."),TEXT("已经上台。松开 Q 恢复正常速度，到达平台后再走下去。"));
     }
-    if((CurrentOrder==0 && P.X>4260 && P.X<4840 && FMath::Abs(P.Y)<340) ||
-       (CurrentOrder==2 && P.X>42700 && P.X<44700 && FMath::Abs(P.Y)<600 && P.Z>400))
+    if((CurrentOrder==0 && P.X>4100 && P.X<4800 && FMath::Abs(P.Y)<600) || (CurrentOrder==1 && P.X>9250 && P.X<9950 && FMath::Abs(P.Y-1100)<520))
+        return Copy(TEXT("Crates! Jump at them to climb up and over, or walk around."),TEXT("箱子挡路！朝它跳就能爬上去翻过去，也可以绕开。"));
+    if(CurrentOrder==2 && P.X>42900 && P.X<44700 && FMath::Abs(P.Y)<600 && P.Z>400)
         return Copy(TEXT("Space jumps over the planters. You can also walk around them."),TEXT("按空格跳过花箱，也可以从旁边绕过。"));
+    for(const auto& Obstacle:Obstacles)
+    {
+        if(!Obstacle || Obstacle->OrderIndex!=CurrentOrder)continue;
+        const FVector D=P-Obstacle->Origin;
+        if(FMath::Abs(D.Z)>300.f)continue;
+        if(Obstacle->Kind==ECourierObstacleKind::Shutter && D.X>-1000.f && D.X<-60.f && FMath::Abs(D.Y)<Obstacle->Width*.5f+200.f)
+            return Copy(TEXT("Rolling shutter! Sprint and slide under (Ctrl) while it is still up, or wait for it to open. Q slows it."),TEXT("卷帘门！趁它还没落下，冲刺后按 Ctrl 滑铲钻过去，或者等它再升起来。Q 能让它变慢。"));
+        if(Obstacle->Kind==ECourierObstacleKind::Sweeper && FVector2D(D.X,D.Y).Size()<Obstacle->ArmLength+700.f && D.X<Obstacle->ArmLength)
+            return Copy(TEXT("Turnstile! Jump the low arm, slide under the high arm. Q slows it."),TEXT("旋转栏杆！低的一侧跳过去，高的一侧滑铲钻过去。Q 能让它变慢。"));
+        if(Obstacle->Kind==ECourierObstacleKind::Spring && FVector2D(D.X,D.Y).Size()<700.f && D.X<0.f)
+            return Copy(TEXT("Springboard: run across it to leap straight up to the terrace, no lift needed."),TEXT("弹跳板：跑过去就能直接弹上露台，不用等升降台。"));
+    }
     const ACourierCart* NextCart=nullptr;
     for(const auto& Cart:Carts)if(Cart && !Cart->bTraining && Cart->OrderIndex==CurrentOrder &&
         Cart->Origin.X>=P.X-120.f && Cart->Origin.X-P.X<900.f && FMath::Abs(P.Y)<570.f &&
         (!NextCart || Cart->Origin.X<NextCart->Origin.X))NextCart=Cart;
     const bool bOutOfTime=Phase==ECourierPhase::Delivery && Charges<=0;
     if(NextCart)
-        return bOutOfTime?Copy(TEXT("No borrowed time left. Wait for the cart to move aside, then cross."),TEXT("借时间已用完。等运输车让开再通过。")):
-            Copy(TEXT("Wait until the cart moves aside. Hold Q to keep the gap open, then cross."),TEXT("先等运输车让开，再按住 Q 延长空隙，趁机通过。"));
+        return bOutOfTime?Copy(TEXT("No borrowed time left. Wait for the cart to pass, then cross."),TEXT("借时间已用完。等运输车开过去再通过。")):
+            Copy(TEXT("Wait for the cart to pass. Hold Q to keep the gap open, then cross."),TEXT("先等运输车开过去，再按住 Q 延长空隙，趁机通过。"));
     for(const auto& Lift:Platforms)if(Lift && Lift->OrderIndex==CurrentOrder &&
         FVector::Dist2D(P,Lift->Origin)<1100.f && P.X<Lift->Origin.X+700.f)
     {

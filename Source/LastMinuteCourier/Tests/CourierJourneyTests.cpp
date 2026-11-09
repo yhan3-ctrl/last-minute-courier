@@ -57,6 +57,10 @@ bool FCourierJourneyRegression::RunTest(const FString&)
     WalkClear(FVector(43000,2200,510),FVector(43000,0,510),TEXT("Final terrace ramp joins upper walk"));
     WalkClear(FVector(7600,0,90),FVector(8000,0,90),TEXT("Coffee counter approach is clear"));
     WalkClear(FVector(45300,-950,510),FVector(46000,-950,510),TEXT("Cinema side console approach is clear"));
+    // Cart depots stand at lane ends; none may sit on a side path.
+    WalkClear(FVector(30120,250,90),FVector(30190,1300,90),TEXT("Market arcade entry is clear of cart depots"));
+    WalkClear(FVector(36920,250,90),FVector(36990,1300,90),TEXT("Second market arcade entry is clear of cart depots"));
+    WalkClear(FVector(14800,1700,410),FVector(14800,200,410),TEXT("Garden ramp landing is clear of cart depots"));
     for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(TEXT("CourierNextMarker")))
     {
         TArray<AActor*> Parts;It->GetAttachedActors(Parts);
@@ -162,7 +166,26 @@ bool FCourierJourneyRegression::RunTest(const FString&)
             Mode->RouteNode=99;Place(FVector(14800,1900,-200),false);Mode->Tick(.01f);
             TestTrue(TEXT("Recovery rewinds route progress with the courier"),Mode->RouteNode<99);
             TestTrue(TEXT("Recovery guidance follows ramp exit before crossing the water"),Mode->NavigationTarget().Equals(FVector(14800,0,420)));
-            Mode->RecoverySeconds=0.f;Mode->Checkpoint=Mode->Pickup+FVector(0,0,20);
+            Mode->RecoverySeconds=0.f;Mode->Checkpoint=Mode->Pickup+FVector(0,0,20);Mode->LensCondition=3;
+            {
+                // Nov 8 playtest: the paint led onto the side ramp while the marker led to the lift.
+                int32 OnSideRamp=0;
+                for(TActorIterator<AActor> It(World);It;++It)if(It->ActorHasTag(TEXT("CourierRoute1")))
+                {
+                    TArray<UInstancedStaticMeshComponent*> Paint;It->GetComponents(Paint);
+                    for(auto* Mesh:Paint)for(int32 K=0;K<Mesh->GetInstanceCount();++K)
+                    {FTransform T;Mesh->GetInstanceTransform(K,T,true);if(FVector::Dist2D(T.GetLocation(),FVector(13200,1900,0))<500.f)++OnSideRamp;}
+                }
+                TestEqual(TEXT("The painted line does not lead onto the side ramp"),OnSideRamp,0);
+                Mode->RouteNode=6;Place(FVector(18050,-1350,90));
+                TestTrue(TEXT("On the main ramp the marker stays on the painted line"),Mode->NavigationTarget().Y>-1500.f);
+                for(const auto& Leg:Mode->GuideLegs(1))for(const FVector& Point:Leg)
+                {
+                    FHitResult Hit;
+                    const bool Ok=World->LineTraceSingleByChannel(Hit,Point+FVector(0,0,150),Point-FVector(0,0,120),ECC_Visibility,Params);
+                    TestTrue(*FString::Printf(TEXT("Guide point %s lies on a walkable surface"),*Point.ToCompactString()),Ok && FMath::Abs(Hit.ImpactPoint.Z-Point.Z)<35.f);
+                }
+            }
             for(int32 I=0;I<=19;++I)
             {
                 const FVector Floor(12200+I*100,1900,I*320.f/19.f);FHitResult Hit;

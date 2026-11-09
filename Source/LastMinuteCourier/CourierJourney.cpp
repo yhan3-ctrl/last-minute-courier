@@ -107,6 +107,15 @@ FVector ACourierGameMode::NavigationTarget() const
     if(const auto* Player=UGameplayStatics::GetPlayerCharacter(this,0))
     {
         const FVector P=Player->GetActorLocation();FVector DetourTarget;
+        // Distance to the painted recommended line: a side path only takes over the
+        // marker when the courier is clearly on it, not merely beside the main line.
+        float MainBest=TNumericLimits<float>::Max();
+        for(const auto& Leg:GuideLegs(CurrentOrder))for(int32 I=0;I+1<Leg.Num();++I)
+        {
+            const FVector A(Leg[I].X,Leg[I].Y,0),B(Leg[I+1].X,Leg[I+1].Y,0),Flat(P.X,P.Y,0);
+            const float T=FMath::Clamp(FVector::DotProduct(Flat-A,B-A)/FMath::Max(1.f,(B-A).SizeSquared()),0.f,1.f);
+            MainBest=FMath::Min(MainBest,FVector::DistSquared(Flat,FMath::Lerp(A,B,T)));
+        }
         const auto Detour=[&](std::initializer_list<FVector> Points,float Side)
         {
             if(P.Y*Side<650)return false;
@@ -120,7 +129,7 @@ FVector ACourierGameMode::NavigationTarget() const
                 const float Distance=FVector::DistSquared(Flat,FMath::Lerp(A,B,T));
                 if(Distance<Best){Best=Distance;Segment=I;}
             }
-            if(Segment<0 || Best>800.f*800.f)return false;
+            if(Segment<0 || Best>800.f*800.f || Best>MainBest*.5f)return false;
             int32 Next=Segment+1;
             if(FVector::Dist2D(P,Nodes[Next])<240.f && Next+1<Nodes.Num())++Next;
             DetourTarget=Nodes[Next]+FVector(0,0,100);return true;

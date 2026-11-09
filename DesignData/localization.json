@@ -378,14 +378,6 @@
       "fr": "Utilisez Q près du chariot bleu avant de traverser sa voie.",
       "de": "Benutze Q nahe am blauen Wagen, bevor du seine Spur überquerst."
     },
-    "Back on the path. Your checkpoint is safe.": {
-      "zh": "回到路上了。已恢复到检查点。",
-      "ja": "道に戻りました。チェックポイントから再開できます。",
-      "ko": "길로 돌아왔습니다. 체크포인트에서 계속하세요.",
-      "es": "De vuelta al camino, en tu punto de control.",
-      "fr": "De retour sur le chemin, à votre point de contrôle.",
-      "de": "Zurück auf dem Weg, an deinem Kontrollpunkt."
-    },
     "Cart ahead! Back at your checkpoint. Wait for a gap or hold Q.": {
       "zh": "注意运输车！已回到检查点，等待空隙或按住 Q。",
       "ja": "カートに注意！チェックポイントに戻りました。隙間を待つか Q を長押ししよう。",
@@ -706,14 +698,6 @@
       "fr": "Stand de café",
       "de": "Kaffeestand"
     },
-    "Bring the coffee box to the stand before the screening. Watch for delivery carts crossing the square.": {
-      "zh": "把保温箱送到咖啡摊。广场上的运输车正在穿行，留意空隙。",
-      "ja": "上映前にコーヒーボックスをスタンドへ届けよう。広場を横切る台車に注意。",
-      "ko": "상영 전에 커피 상자를 가판대로 가져가세요. 광장을 가로지르는 배달 수레를 조심하세요.",
-      "es": "Lleva el café al puesto antes de la proyección. Cuidado con los carros que cruzan la plaza.",
-      "fr": "Apportez le café au stand avant la séance. Attention aux chariots qui traversent la place.",
-      "de": "Bring die Kaffeebox vor der Vorführung zum Stand. Achte auf die Lieferwagen, die den Platz kreuzen."
-    },
     "Serve warm.": {
       "zh": "趁热。",
       "ja": "温かいうちに。",
@@ -754,14 +738,6 @@
       "fr": "Cabine de projection",
       "de": "Projektionsstand"
     },
-    "Take the lens through the garden. Slow the lift to give yourself more time to board, or follow the longer ramp.": {
-      "zh": "把镜头送过花园。减慢升降台可延长登台时机，也可以走较长的坡道。",
-      "ja": "庭園を通ってレンズを届けよう。リフトを減速して乗る時間を作るか、長めのスロープを通ろう。",
-      "ko": "정원을 지나 렌즈를 배달하세요. 승강기를 느리게 해 탈 시간을 늘리거나 더 긴 경사로를 따라가세요.",
-      "es": "Lleva la lente por el jardín. Ralentiza el elevador para subir con más tiempo o toma la rampa larga.",
-      "fr": "Traversez le jardin avec l'objectif. Ralentissez la plateforme pour embarquer plus facilement, ou prenez la rampe plus longue.",
-      "de": "Bring das Objektiv durch den Garten. Verlangsame den Lift zum Einsteigen oder nimm die längere Rampe."
-    },
     "Handle with care.": {
       "zh": "轻放。",
       "ja": "取扱注意。",
@@ -801,14 +777,6 @@
       "es": "Consola del reloj",
       "fr": "Console de l'horloge",
       "de": "Uhrturmkonsole"
-    },
-    "The whole square is waiting for this reel. Choose your route, cross the cart lanes, and save a charge for the lift.": {
-      "zh": "全场都在等这一卷。选择路线、穿过车道，并为升降台安排好借秒器的使用时机。",
-      "ja": "広場のみんながこのフィルムを待っている。ルートを選び、台車の車線を渡り、リフト用の充電を残そう。",
-      "ko": "광장 모두가 이 필름을 기다립니다. 경로를 선택해 수레 차선을 건너고, 승강기에 쓸 에너지를 남겨 두세요.",
-      "es": "Toda la plaza espera esta película. Elige tu ruta, cruza los carriles y reserva energía para el elevador.",
-      "fr": "Toute la place attend cette bobine. Choisissez votre trajet, traversez les voies des chariots et gardez de l'énergie pour la plateforme.",
-      "de": "Der ganze Platz wartet auf diese Rolle. Wähle deine Route, kreuze die Wagenspuren und spare Energie für den Lift."
     },
     "The whole square is waiting.": {
       "zh": "全场都在等这一卷。",
@@ -993,14 +961,6 @@
       "es": "Has cruzado con seguridad. Sigue las flechas naranjas hasta el mostrador de paquetes.",
       "fr": "Vous avez traversé sans danger. Suivez les flèches orange jusqu’au comptoir des colis.",
       "de": "Sicher überquert. Folge den orangefarbenen Pfeilen zum Paketschalter."
-    },
-    "The cart hit you. Back at the checkpoint. Wait for a clear gap; Q can keep it open longer.": {
-      "zh": "你被运输车撞到了，已回到检查点。等空隙出现再通过；Q 可以让空隙保持更久。",
-      "ja": "カートに当たったためチェックポイントに戻りました。道が空くのを待ちましょう。Qで隙間を長く保てます。",
-      "ko": "수레에 부딪혀 체크포인트로 돌아왔어요. 길이 빌 때까지 기다리세요. Q로 빈틈을 더 오래 유지할 수 있어요.",
-      "es": "El carro te ha golpeado. Has vuelto al punto de control. Espera un hueco libre; Q puede mantenerlo abierto más tiempo.",
-      "fr": "Le chariot vous a heurté. Retour au point de contrôle. Attendez un passage libre ; Q peut le prolonger.",
-      "de": "Der Wagen hat dich getroffen. Zurück am Kontrollpunkt. Warte auf eine freie Lücke; Q hält sie länger offen."
     },
     "Cross when the cart moves aside. Hold Q if you want a longer gap. Both ways are safe.": {
       "zh": "等运输车让开后通过。想延长空隙时可以按住 Q，两种方法都可以。",
@@ -1386,30 +1346,6 @@
       "fr": "UTILISATIONS DE Q",
       "de": "Q-EINSÄTZE"
     },
-    "Golden clock: +5 seconds.": {
-      "zh": "金色时钟：+5 秒。",
-      "ja": "金の時計：+5 秒。",
-      "ko": "황금 시계: +5초.",
-      "es": "Reloj dorado: +5 segundos.",
-      "fr": "Horloge dorée : +5 secondes.",
-      "de": "Goldene Uhr: +5 Sekunden."
-    },
-    "Golden clock! In a delivery, each one adds 5 seconds to your clock.": {
-      "zh": "金色时钟！配送时，每拿到一个，倒计时就多 5 秒。",
-      "ja": "金の時計！配達中は 1 つごとに時計が 5 秒増える。",
-      "ko": "황금 시계! 배달 중에는 하나마다 시계에 5초가 더해진다.",
-      "es": "¡Reloj dorado! En una entrega, cada uno suma 5 segundos a tu reloj.",
-      "fr": "Horloge dorée ! Pendant une livraison, chacune ajoute 5 secondes à ton chrono.",
-      "de": "Goldene Uhr! Bei einer Lieferung bringt jede 5 Sekunden mehr auf der Uhr."
-    },
-    "GOLDEN CLOCKS": {
-      "zh": "金色时钟",
-      "ja": "金の時計",
-      "ko": "황금 시계",
-      "es": "RELOJES DORADOS",
-      "fr": "HORLOGES DORÉES",
-      "de": "GOLDENE UHREN"
-    },
     "Legend of the Last Minute": {
       "zh": "最后一刻传奇",
       "ja": "ラストミニットの伝説",
@@ -1442,13 +1378,173 @@
       "fr": "Coursier en formation",
       "de": "Kurier in Ausbildung"
     },
-    "Golden clocks on this route add 5 seconds each. More time left at the counter earns more stars.": {
-      "zh": "路线上的金色时钟每个 +5 秒。送达时剩余时间越多，星星越多。",
-      "ja": "ルート上の金の時計は 1 つ 5 秒。届けたときに時間が多く残るほど星が増える。",
-      "ko": "경로의 황금 시계는 하나에 5초. 도착했을 때 남은 시간이 많을수록 별이 늘어난다.",
-      "es": "Los relojes dorados de la ruta suman 5 segundos cada uno. Cuanto más tiempo te sobre al entregar, más estrellas.",
-      "fr": "Les horloges dorées du trajet ajoutent 5 secondes chacune. Plus il te reste de temps au comptoir, plus tu gagnes d'étoiles.",
-      "de": "Goldene Uhren auf der Route bringen je 5 Sekunden. Je mehr Zeit bei der Abgabe übrig ist, desto mehr Sterne."
+    "Bring the warm coffee box to the stand before it cools. Delivery carts roll out of the depot doors across the square; wait for a gap.": {
+      "zh": "趁热把保温箱送到咖啡摊。运输车会从车库门开出来穿过广场，等空隙再走。",
+      "ja": "保温箱が冷める前にスタンドへ届けよう。配達カートは車庫の扉から広場を横切って出てくる。すき間を待とう。",
+      "ko": "식기 전에 보온 상자를 스탠드로 가져가자. 배달 카트가 차고 문에서 나와 광장을 가로지른다. 틈을 기다리자.",
+      "es": "Lleva la caja de café al puesto antes de que se enfríe. Los carros salen de las puertas del depósito y cruzan la plaza; espera un hueco.",
+      "fr": "Apporte la caisse de café au stand avant qu'elle refroidisse. Les chariots sortent des portes du dépôt et traversent la place ; attends une ouverture.",
+      "de": "Bring die Kaffeebox zum Stand, bevor sie abkühlt. Lieferwagen rollen aus den Depottoren über den Platz; warte auf eine Lücke."
+    },
+    "The projectionist left the lens case here at the coffee stand. It is fragile: a cart bump or a fall knocks it, and the third knock cracks it. Take it through the garden to the projection booth.": {
+      "zh": "放映员把镜头盒落在了咖啡摊。它很娇贵：被运输车撞到或摔下去都会磕一下，第三次就会裂开。把它穿过花园送到投影台。",
+      "ja": "映写技師がレンズケースをコーヒースタンドに置き忘れた。壊れやすい：カートにぶつかったり落ちたりすると傷つき、3 回目で割れる。庭を通って映写台へ運ぼう。",
+      "ko": "영사 기사가 렌즈 상자를 커피 스탠드에 두고 갔다. 깨지기 쉽다: 카트에 부딪히거나 떨어지면 충격을 받고, 세 번째에 금이 간다. 정원을 지나 영사대로 옮기자.",
+      "es": "El proyeccionista dejó la caja de la lente aquí, en el puesto de café. Es frágil: un golpe de carro o una caída la dañan, y el tercer golpe la rompe. Llévala por el jardín a la cabina de proyección.",
+      "fr": "Le projectionniste a laissé la mallette de l'objectif ici, au stand de café. Elle est fragile : un coup de chariot ou une chute l'abîme, et le troisième choc la fêle. Porte-la à travers le jardin jusqu'à la cabine.",
+      "de": "Der Vorführer hat den Linsenkoffer hier am Kaffeestand vergessen. Er ist zerbrechlich: Ein Wagenstoß oder Sturz beschädigt ihn, der dritte Stoß bricht ihn. Bring ihn durch den Garten zur Vorführkabine."
+    },
+    "The final reel has just reached the projection booth, and the whole square is waiting. Run it to the clocktower console before the screening starts.": {
+      "zh": "最后一卷胶片刚送到投影台，全场都在等。开场前把它送到钟楼控制台。",
+      "ja": "最後のフィルムがたった今映写台に届き、広場じゅうが待っている。上映が始まる前に時計塔のコンソールへ急ごう。",
+      "ko": "마지막 필름이 방금 영사대에 도착했고, 광장 전체가 기다린다. 상영 전에 시계탑 콘솔로 가져가자.",
+      "es": "El último rollo acaba de llegar a la cabina y toda la plaza espera. Llévalo a la consola de la torre del reloj antes de que empiece la proyección.",
+      "fr": "La dernière bobine vient d'arriver à la cabine et toute la place attend. Apporte-la à la console de la tour de l'horloge avant le début de la séance.",
+      "de": "Die letzte Filmrolle ist gerade an der Kabine angekommen, der ganze Platz wartet. Bring sie vor Vorstellungsbeginn zur Uhrturm-Konsole."
+    },
+    "Bumped by a cart! Wait for it to pass; Q keeps the gap open longer.": {
+      "zh": "被运输车撞开了！等它开过去；Q 能让空隙保持更久。",
+      "ja": "カートにぶつかった！通り過ぎるのを待とう。Q ですき間が長く続く。",
+      "ko": "카트에 부딪혔다! 지나갈 때까지 기다리자. Q로 틈을 더 오래 유지할 수 있다.",
+      "es": "¡Un carro te golpeó! Espera a que pase; Q mantiene el hueco más tiempo.",
+      "fr": "Bousculé par un chariot ! Attends qu'il passe ; Q garde l'ouverture plus longtemps.",
+      "de": "Vom Wagen angerempelt! Warte, bis er vorbei ist; Q hält die Lücke länger offen."
+    },
+    "Bump! The cart knocked the lens case.": {
+      "zh": "砰！运输车撞到了镜头盒。",
+      "ja": "ドン！カートがレンズケースにぶつかった。",
+      "ko": "쾅! 카트가 렌즈 상자를 쳤다.",
+      "es": "¡Golpe! El carro dio contra la caja de la lente.",
+      "fr": "Boum ! Le chariot a heurté la mallette de l'objectif.",
+      "de": "Rums! Der Wagen hat den Linsenkoffer erwischt."
+    },
+    "The fall knocked the lens case. Careful!": {
+      "zh": "这一摔磕到了镜头盒，小心！",
+      "ja": "落ちた衝撃でレンズケースが傷ついた。気をつけて！",
+      "ko": "떨어지면서 렌즈 상자가 충격을 받았다. 조심!",
+      "es": "La caída golpeó la caja de la lente. ¡Cuidado!",
+      "fr": "La chute a secoué la mallette de l'objectif. Attention !",
+      "de": "Der Sturz hat den Linsenkoffer erschüttert. Vorsicht!"
+    },
+    "Splash! You climb out of the pond at your last checkpoint.": {
+      "zh": "扑通！你从池塘里爬出来，回到了上一个检查点。",
+      "ja": "バシャン！池から上がって、前のチェックポイントに戻った。",
+      "ko": "풍덩! 연못에서 나와 마지막 체크포인트로 돌아왔다.",
+      "es": "¡Chof! Sales del estanque en tu último punto de control.",
+      "fr": "Plouf ! Tu sors de la mare à ton dernier point de contrôle.",
+      "de": "Platsch! Du kletterst am letzten Kontrollpunkt aus dem Teich."
+    },
+    "You dropped off the walkway. Back up at your last checkpoint.": {
+      "zh": "你从步道上掉了下去，回到了上一个检查点。",
+      "ja": "通路から落ちた。前のチェックポイントに戻った。",
+      "ko": "보행로에서 떨어졌다. 마지막 체크포인트로 돌아왔다.",
+      "es": "Te caíste de la pasarela. Vuelves a tu último punto de control.",
+      "fr": "Tu es tombé de la passerelle. Retour au dernier point de contrôle.",
+      "de": "Du bist vom Steg gefallen. Zurück zum letzten Kontrollpunkt."
+    },
+    "That is outside this delivery's area. Back to your last checkpoint.": {
+      "zh": "那里超出了这一单的范围，回到上一个检查点。",
+      "ja": "そこはこの配達の範囲外。前のチェックポイントに戻った。",
+      "ko": "그곳은 이번 배달 범위 밖이다. 마지막 체크포인트로 돌아왔다.",
+      "es": "Eso está fuera de la zona de esta entrega. Vuelves a tu último punto de control.",
+      "fr": "C'est hors de la zone de cette livraison. Retour au dernier point de contrôle.",
+      "de": "Das liegt außerhalb dieser Lieferung. Zurück zum letzten Kontrollpunkt."
+    },
+    "Borrower cell: +1 use of borrowed time.": {
+      "zh": "借时器电池：多一次借时间。",
+      "ja": "借時器の電池：時間を借りる回数 +1。",
+      "ko": "보로어 전지: 시간 빌리기 1회 추가.",
+      "es": "Celda del Prestador: +1 uso de tiempo prestado.",
+      "fr": "Pile de l'Emprunteur : +1 utilisation.",
+      "de": "Leiher-Zelle: +1 Einsatz geliehene Zeit."
+    },
+    "A Borrower cell! During a delivery, each one gives Q one more use.": {
+      "zh": "借时器电池！配送时，每拿到一个，Q 就多一次使用机会。",
+      "ja": "借時器の電池！配達中は 1 つごとに Q を 1 回多く使える。",
+      "ko": "보로어 전지! 배달 중에는 하나마다 Q를 한 번 더 쓸 수 있다.",
+      "es": "¡Una celda del Prestador! En una entrega, cada una da a Q un uso más.",
+      "fr": "Une pile de l'Emprunteur ! Pendant une livraison, chacune donne une utilisation de plus à Q.",
+      "de": "Eine Leiher-Zelle! Bei einer Lieferung gibt jede Q einen Einsatz mehr."
+    },
+    "BORROWER CELLS": {
+      "zh": "借时器电池",
+      "ja": "借時器の電池",
+      "ko": "보로어 전지",
+      "es": "CELDAS",
+      "fr": "PILES",
+      "de": "LEIHER-ZELLEN"
+    },
+    "LENS CASE": {
+      "zh": "镜头盒",
+      "ja": "レンズケース",
+      "ko": "렌즈 상자",
+      "es": "CAJA DE LENTE",
+      "fr": "MALLETTE",
+      "de": "LINSENKOFFER"
+    },
+    "COFFEE WARMTH": {
+      "zh": "咖啡温度",
+      "ja": "コーヒーの温かさ",
+      "ko": "커피 온도",
+      "es": "CALOR DEL CAFÉ",
+      "fr": "CHALEUR DU CAFÉ",
+      "de": "KAFFEEWÄRME"
+    },
+    "THE SQUARE IS WAITING": {
+      "zh": "全场都在等",
+      "ja": "広場が待っている",
+      "ko": "광장이 기다린다",
+      "es": "LA PLAZA ESPERA",
+      "fr": "LA PLACE ATTEND",
+      "de": "DER PLATZ WARTET"
+    },
+    "The lens cracked.": {
+      "zh": "镜头裂了。",
+      "ja": "レンズが割れた。",
+      "ko": "렌즈에 금이 갔다.",
+      "es": "La lente se rompió.",
+      "fr": "L'objectif est fêlé.",
+      "de": "Die Linse ist gesprungen."
+    },
+    "Three knocks were too many for the lens case. Your earlier deliveries are safe. Try again and keep clear of the carts and the water.": {
+      "zh": "镜头盒经不起第三次磕碰。之前的交付已经保留。再来一次，避开运输车和水面。",
+      "ja": "レンズケースに 3 回目の衝撃は耐えられなかった。前の配達はそのまま。カートと水を避けてもう一度。",
+      "ko": "렌즈 상자는 세 번째 충격을 견디지 못했다. 이전 배달은 그대로다. 카트와 물을 피해서 다시 해 보자.",
+      "es": "Tres golpes fueron demasiados para la caja. Tus entregas anteriores se conservan. Inténtalo de nuevo lejos de los carros y del agua.",
+      "fr": "Trois chocs, c'était trop pour la mallette. Tes livraisons précédentes sont conservées. Réessaie en évitant les chariots et l'eau.",
+      "de": "Drei Stöße waren zu viel für den Koffer. Frühere Lieferungen bleiben erhalten. Versuch es nochmal, weg von Wagen und Wasser."
+    },
+    "Borrower cells on this route give Q one more use each.": {
+      "zh": "路线上的借时器电池每个让 Q 多用一次。",
+      "ja": "ルート上の借時器の電池 1 つにつき Q を 1 回多く使える。",
+      "ko": "경로의 보로어 전지 하나마다 Q를 한 번 더 쓸 수 있다.",
+      "es": "Cada celda del Prestador de la ruta da a Q un uso más.",
+      "fr": "Chaque pile de l'Emprunteur du trajet donne une utilisation de plus à Q.",
+      "de": "Jede Leiher-Zelle auf der Route gibt Q einen Einsatz mehr."
+    },
+    "Stars: how warm the coffee is when it arrives.": {
+      "zh": "星级：送到时咖啡还有多热。",
+      "ja": "星：届いたときのコーヒーの温かさ。",
+      "ko": "별: 도착했을 때 커피가 얼마나 따뜻한지.",
+      "es": "Estrellas: lo caliente que llega el café.",
+      "fr": "Étoiles : la chaleur du café à l'arrivée.",
+      "de": "Sterne: wie warm der Kaffee ankommt."
+    },
+    "Stars: how few knocks the lens takes. Carts and falls knock it; the third knock cracks it.": {
+      "zh": "星级：镜头被磕的次数越少越好。被车撞、摔下去都会磕到，第三次就裂了。",
+      "ja": "星：レンズへの衝撃が少ないほど良い。カートと落下で傷つき、3 回目で割れる。",
+      "ko": "별: 렌즈가 충격을 덜 받을수록 좋다. 카트와 추락이 충격을 주고, 세 번째에 금이 간다.",
+      "es": "Estrellas: cuantos menos golpes reciba la lente, mejor. Los carros y las caídas la golpean; el tercer golpe la rompe.",
+      "fr": "Étoiles : moins l'objectif subit de chocs, mieux c'est. Chariots et chutes le heurtent ; le troisième choc le fêle.",
+      "de": "Sterne: je weniger Stöße die Linse abbekommt, desto besser. Wagen und Stürze stoßen sie; der dritte Stoß bricht sie."
+    },
+    "Stars: how much time is left before the screening.": {
+      "zh": "星级：开场前还剩多少时间。",
+      "ja": "星：上映までに残った時間。",
+      "ko": "별: 상영 전까지 남은 시간.",
+      "es": "Estrellas: el tiempo que queda antes de la proyección.",
+      "fr": "Étoiles : le temps restant avant la séance.",
+      "de": "Sterne: wie viel Zeit vor der Vorstellung bleibt."
     }
   }
 }

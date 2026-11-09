@@ -92,8 +92,8 @@
         "zh": "咖啡摊"
       },
       "brief": {
-        "en": "Bring the coffee box to the stand before the screening. Watch for delivery carts crossing the square.",
-        "zh": "把保温箱送到咖啡摊。广场上的运输车正在穿行，留意空隙。"
+        "en": "Bring the warm coffee box to the stand before it cools. Delivery carts roll out of the depot doors across the square; wait for a gap.",
+        "zh": "趁热把保温箱送到咖啡摊。运输车会从车库门开出来穿过广场，等空隙再走。"
       },
       "label": {
         "en": "Serve warm.",
@@ -121,8 +121,8 @@
         "zh": "投影台"
       },
       "brief": {
-        "en": "Take the lens through the garden. Slow the lift to give yourself more time to board, or follow the longer ramp.",
-        "zh": "把镜头送过花园。减慢升降台可延长登台时机，也可以走较长的坡道。"
+        "en": "The projectionist left the lens case here at the coffee stand. It is fragile: a cart bump or a fall knocks it, and the third knock cracks it. Take it through the garden to the projection booth.",
+        "zh": "放映员把镜头盒落在了咖啡摊。它很娇贵：被运输车撞到或摔下去都会磕一下，第三次就会裂开。把它穿过花园送到投影台。"
       },
       "label": {
         "en": "Handle with care.",
@@ -150,8 +150,8 @@
         "zh": "钟楼控制台"
       },
       "brief": {
-        "en": "The whole square is waiting for this reel. Choose your route, cross the cart lanes, and save a charge for the lift.",
-        "zh": "全场都在等这一卷。选择路线、穿过车道，并为升降台安排好借秒器的使用时机。"
+        "en": "The final reel has just reached the projection booth, and the whole square is waiting. Run it to the clocktower console before the screening starts.",
+        "zh": "最后一卷胶片刚送到投影台，全场都在等。开场前把它送到钟楼控制台。"
       },
       "label": {
         "en": "The whole square is waiting.",
@@ -177,7 +177,13 @@
       3,
       4,
       5
-    ]
+    ],
+    "borrower_cells": "+1 Q use each",
+    "stars": {
+      "coffee": "warmth = time left; >=45% 3, >=20% 2",
+      "lens": "knocks left (3 knocks crack it)",
+      "reel": "time left; >=45% 3, >=20% 2"
+    }
   },
   "ui": {
     "continue": {

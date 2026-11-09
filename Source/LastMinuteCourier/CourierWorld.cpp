@@ -184,6 +184,26 @@ void ACourierGameMode::BuildDeliveryDistricts()
     {
         auto* P=W->SpawnActor<ACourierLift>(Origin,FRotator::ZeroRotator);
         P->Origin=Origin;P->Travel=Travel;P->OrderIndex=Order;P->Period=Period;P->Reset();Platforms.Add(P);
+        // The route continues on the platform itself: orange chevrons that ride
+        // with it say "board here, travel this way".
+        for(float X:{-170.f,60.f})
+        {
+            const FVector At=Origin+FVector(X,0,24);
+            const auto Bar=[&](FVector Offset,FVector Size,float Yaw,const TCHAR* Hex,float Lift)
+            {
+                auto* Piece=Block(W,At+FRotator(0,Yaw,0).RotateVector(FVector::ZeroVector)+Offset+FVector(0,0,Lift),Size,Hex);
+                Piece->SetActorRotation(FRotator(0,Yaw,0));
+                Piece->GetStaticMeshComponent()->SetCastShadow(false);
+                Piece->AttachToActor(P,FAttachmentTransformRules::KeepWorldTransform);
+            };
+            for(int32 Layer=0;Layer<2;++Layer)
+            {
+                const TCHAR* Hex=Layer?TEXT("D45B20"):TEXT("FFF0CB");const float Grow=Layer?0.f:12.f;const float Z=Layer?1.5f:0.f;
+                Bar(FVector(-10,0,0),FVector(110+Grow,26+Grow,3),0,Hex,Z);
+                Bar(FVector(30,30,0),FVector(90+Grow,26+Grow,3),-40,Hex,Z);
+                Bar(FVector(30,-30,0),FVector(90+Grow,26+Grow,3),40,Hex,Z);
+            }
+        }
         if(auto* Player=UGameplayStatics::GetPlayerCharacter(this,0))
             Player->GetCharacterMovement()->AddTickPrerequisiteActor(P);
     };
@@ -222,18 +242,28 @@ void ACourierGameMode::BuildDeliveryDistricts()
     Plaque(W,FVector(46110,-950,690),TEXT("CLOCKTOWER CONSOLE"),26);
     Block(W,FVector(46000,-950,425),FVector(250,250,10),TEXT("C86C43"));
 
-    const auto Cart=[this,W](FVector At,int32 Order,float CartPhase,float Period)
+    const auto Cart=[this,W](FVector At,int32 Order,float CartPhase,float Period,float Span,float Direction)
     {
         auto* C=W->SpawnActor<ACourierCart>(At,FRotator::ZeroRotator);C->Origin=At;
-        C->OrderIndex=Order;C->InitialPhase=CartPhase;C->Period=Period;C->Reset();Carts.Add(C);
-        Block(W,At-FVector(0,0,52),FVector(250,1000,6),TEXT("829C99"));
+        C->OrderIndex=Order;C->InitialPhase=CartPhase;C->Period=Period;C->Span=Span;C->Direction=Direction;
+        C->Reset();Carts.Add(C);
+        Block(W,At-FVector(0,0,52),FVector(250,2*Span,6),TEXT("829C99"));
+        // Depot sheds rise from the ground so raised lanes still read as buildings.
+        const float Floor=At.Z-55.f;
+        for(float Side:{-1.f,1.f})
+        {
+            Block(W,FVector(At.X,Side*(Span+100),(Floor+230.f)*.5f),FVector(320,150,Floor+230.f),TEXT("E5D7BB"),true);
+            Block(W,FVector(At.X,Side*(Span+100),Floor+245.f),FVector(350,185,26),TEXT("C86C43"));
+            Block(W,FVector(At.X,Side*(Span+22),Floor+80.f),FVector(250,8,150),TEXT("1E3036"));
+        }
     };
-    Cart(FVector(14800,0,375),1,.4f,6);
-    Cart(FVector(15700,0,375),1,2.2f,7);
-    Cart(FVector(30700,0,55),2,.2f,6);
-    Cart(FVector(31600,0,55),2,2.f,7);
-    Cart(FVector(37400,0,55),2,.7f,5);
-    Cart(FVector(38300,0,55),2,2.5f,6);
+    // Kept clear of the garden ramp's landing at x 14475-15125.
+    Cart(FVector(15350,0,375),1,.4f,6,430,1);
+    Cart(FVector(15950,0,375),1,2.2f,7,430,-1);
+    Cart(FVector(30700,0,55),2,.2f,6,520,1);
+    Cart(FVector(31600,0,55),2,2.f,7,520,-1);
+    Cart(FVector(37500,0,55),2,.7f,5,520,-1);
+    Cart(FVector(38300,0,55),2,2.5f,6,520,1);
 
     // Distinct districts share a quiet, restrained material palette.
     for(int32 I=0;I<16;++I)
@@ -287,6 +317,22 @@ void ACourierGameMode::BuildDeliveryDistricts()
     for(const auto& Actor:ProjectionActors)if(Actor)Actor->Tags.Add(TEXT("CourierProjection"));
     for(const auto& Actor:FinaleActors)if(Actor)Actor->Tags.Add(TEXT("CourierFinale"));
 
+    // Visible hedges mark the edge of the campus, so the limit is something you
+    // bump into instead of an invisible reset.
+    const auto Hedge=[W](FVector2D A,FVector2D B)
+    {
+        const FVector2D Mid=(A+B)*.5f;const FVector2D D=B-A;
+        Block(W,FVector(Mid.X,Mid.Y,70),FVector(FMath::Max(FMath::Abs(D.X),110.f),FMath::Max(FMath::Abs(D.Y),110.f),140),TEXT("5E7F55"),true);
+        Block(W,FVector(Mid.X,Mid.Y,150),FVector(FMath::Max(FMath::Abs(D.X),110.f)-20.f,FMath::Max(FMath::Abs(D.Y),110.f)-20.f,30),TEXT("6E9463"));
+    };
+    for(float Side:{-1.f,1.f})
+    {
+        Hedge(FVector2D(-320,Side*1250),FVector2D(7600,Side*1250));
+        Hedge(FVector2D(7600,Side*1250),FVector2D(7600,Side*3450));
+        Hedge(FVector2D(7600,Side*3450),FVector2D(47150,Side*3450));
+    }
+    Hedge(FVector2D(-320,-1250),FVector2D(-320,1250));
+    Hedge(FVector2D(47150,-3450),FVector2D(47150,3450));
     TArray<FBox2D> KeepClear;
     for(const auto& Platform:Platforms)if(Platform)
     {
@@ -295,12 +341,15 @@ void ACourierGameMode::BuildDeliveryDistricts()
             FVector2D(FMath::Max(A.X,B.X)+LiftHalfX+120.f,FMath::Max(A.Y,B.Y)+LiftHalfY+120.f)));
     }
     KeepClear.Add(FBox2D(FVector2D(18300,-450),FVector2D(21100,450)));
+    for(const auto& Lane:Carts)if(Lane) // carts drive across; their depots close the walk edge
+        KeepClear.Add(FBox2D(FVector2D(Lane->Origin.X-170.f,-Lane->Span-260.f),FVector2D(Lane->Origin.X+170.f,Lane->Span+260.f)));
     AddGuardrails(W,RailSpans,KeepClear);
-    for(const auto& Span:RailSpans)
-    {
-        const float X=(Span.A.X+Span.B.X)*.5f;
-        AddRouteGuideSpan(X<7900.f?0:(X<25999.f?1:2),Span.A,Span.B);
-    }
+    // Only the recommended line is painted. Side paths keep their signs and the
+    // marker follows them once you are on one, but they no longer compete with
+    // the main line (the old paint led to the ramp while the marker led to the lift).
+    for(int32 Order=1;Order<=2;++Order)
+        for(const auto& Leg:GuideLegs(Order))
+            for(int32 I=0;I+1<Leg.Num();++I)AddRouteGuideSpan(Order,Leg[I],Leg[I+1]);
 
     const auto Atmosphere=[W](FVector At,FVector Size,const TCHAR* MaterialName,const TCHAR* Tint=nullptr)
     {
@@ -333,6 +382,21 @@ void ACourierGameMode::BuildDeliveryDistricts()
         Fog->SetVolumetricFog(false);Fog->SetFogDensity(.0008f);Fog->SetStartDistance(8000.f);
         Fog->SetFogMaxOpacity(.18f);Fog->SetFogInscatteringColor(Color(TEXT("DBC7BF")));
     }
+}
+
+TArray<TArray<FVector>> ACourierGameMode::GuideLegs(int32 Order) const
+{
+    if(Order==0)return {{FVector(2400,0,0),FVector(8000,0,0)}};
+    if(Order==1)return {
+        {FVector(8000,0,0),FVector(8000,1100,0),FVector(9200,1100,0),FVector(10500,1100,0),FVector(11700,0,0),FVector(12230,0,0)},   // to the first lift
+        {FVector(12950,0,320),FVector(14000,0,320),FVector(16400,0,320),FVector(18100,-1400,0),FVector(18300,0,0),FVector(18580,0,0)}, // raised walk, ramp down
+        {FVector(18800,0,0),FVector(19200,0,0)},{FVector(19500,0,0),FVector(19900,0,0)},{FVector(20200,0,0),FVector(20600,0,0)},       // stepping stones
+        {FVector(20680,0,0),FVector(21100,0,0),FVector(22500,0,0),FVector(22930,0,0)},                                                    // to the second lift
+        {FVector(23650,0,400),FVector(24800,0,400),FVector(26000,0,400)}};                                                                // terrace to the booth
+    return {
+        {FVector(26000,0,400),FVector(26000,1100,400),FVector(27400,1100,400),FVector(28900,1100,0),FVector(30000,0,0),FVector(32700,0,0),FVector(33900,0,0),FVector(34100,0,0)},
+        {FVector(35700,0,0),FVector(36300,0,0),FVector(38900,0,0),FVector(39600,-1100,0),FVector(39800,0,0),FVector(39950,0,0)},
+        {FVector(40660,0,420),FVector(41400,0,420),FVector(42000,0,420),FVector(46000,0,420),FVector(46000,-950,420)}};
 }
 
 void ACourierGameMode::BuildRouteGuide()

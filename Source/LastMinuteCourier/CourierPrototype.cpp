@@ -265,6 +265,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     auto* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
     if (!Player) return;
     CollisionProtection = FMath::Max(0.f, CollisionProtection - DeltaSeconds);
+    StunSeconds = FMath::Max(0.f, StunSeconds - DeltaSeconds);
     NoticeSeconds=FMath::Max(0.f,NoticeSeconds-DeltaSeconds);
     SessionSeconds+=DeltaSeconds;
     if(RecoverySeconds>0.f)
@@ -366,7 +367,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         }
         if (Remaining <= 0.f)
         {
-            EndSlow();
+            EndSlow();FailReason=0;
             Phase = ECourierPhase::Failed;
             RefreshInput();
             return;
@@ -375,12 +376,17 @@ void ACourierGameMode::Tick(float DeltaSeconds)
     const bool UnderRaisedRoute=(CurrentOrder==1 && ((Position.X>12900 && Position.X<16400 && Position.Z<140) ||
         (Position.X>23700 && Position.Z<220))) || (CurrentOrder==2 && ((Position.X<27400 && Position.Z<220) ||
         (Position.X>40850 && Position.Z<240)));
-    if (Position.Z < -180.f || UnderRaisedRoute || FMath::Abs(Position.Y) > (CurrentOrder==0?1200.f:3400.f) || Position.X>(CurrentOrder==0?8650.f:(CurrentOrder==1?26800.f:47000.f)) || Position.X<(CurrentOrder==0?-250.f:(CurrentOrder==1?7600.f:25500.f)))
+    if (Position.Z < -180.f || UnderRaisedRoute || FMath::Abs(Position.Y) > (CurrentOrder==0?1320.f:3520.f) || Position.X>(CurrentOrder==0?8650.f:(CurrentOrder==1?26800.f:47000.f)) || Position.X<(CurrentOrder==0?-250.f:(CurrentOrder==1?7600.f:25500.f)))
     {
         if(FParse::Param(FCommandLine::Get(),TEXT("CourierTelemetry")))UE_LOG(LogTemp,Display,TEXT("CourierQA recovery position=%s checkpoint=%s underRaised=%d"),*Position.ToString(),*Checkpoint.ToString(),UnderRaisedRoute);
-        Notify(TEXT("Back on the path. Your checkpoint is safe."),TEXT("回到路上了。已恢复到检查点。"));
+        const bool bWater=Position.Z<-180.f,bDrop=UnderRaisedRoute && !bWater;
+        if(bWater)Notify(TEXT("Splash! You climb out of the pond at your last checkpoint."),TEXT("扑通！你从池塘里爬出来，回到了上一个检查点。"));
+        else if(bDrop)Notify(TEXT("You dropped off the walkway. Back up at your last checkpoint."),TEXT("你从步道上掉了下去，回到了上一个检查点。"));
+        else Notify(TEXT("That is outside this delivery's area. Back to your last checkpoint."),TEXT("那里超出了这一单的范围，回到上一个检查点。"));
         HitFlash=.45f;Sound(TEXT("Stamp"),.3f,.6f);
         RestoreCheckpoint();
+        if((bWater || bDrop) && Phase==ECourierPhase::Delivery && CurrentOrder==1)
+            DamageLens(TEXT("The fall knocked the lens case. Careful!"),TEXT("这一摔磕到了镜头盒，小心！"));
         return;
     }
     if (CollisionProtection <= 0.f)
@@ -389,9 +395,7 @@ void ACourierGameMode::Tick(float DeltaSeconds)
         {
             if (Cart && Cart->Touching(Position))
             {
-                Notify(TEXT("The cart hit you. Back at the checkpoint. Wait for a clear gap; Q can keep it open longer."),TEXT("你被运输车撞到了，已回到检查点。等空隙出现再通过；Q 可以让空隙保持更久。"));
-                HitFlash=.55f;Sound(TEXT("Stamp"),.38f,.5f);
-                RestoreCheckpoint();
+                Bump(Cart);
                 break;
             }
         }
@@ -451,6 +455,34 @@ void ACourierGameMode::Interact()
         Sound(CurrentOrder==2?TEXT("Finale"):TEXT("Stamp"),.4f);
         if(CurrentOrder==2)Player->RecenterView((FVector(47400,0,1350)-Player->GetActorLocation()).Rotation().Yaw,5.f);
     }
+    RefreshInput();
+}
+
+void ACourierGameMode::Bump(const ACourierCart* Cart)
+{
+    // A cart knocks the courier aside and back out of its lane, like a real bump,
+    // instead of teleporting them. A short stagger stops steering for a moment.
+    auto* Player=UGameplayStatics::GetPlayerCharacter(this,0);
+    if(!Player || !Cart)return;
+    const float Away=Player->GetActorLocation().X<Cart->GetActorLocation().X?-1.f:1.f;
+    Player->LaunchCharacter(FVector(Away*620.f,Cart->Direction*320.f,260.f),true,true);
+    StunSeconds=.7f;CollisionProtection=1.3f;HitFlash=.55f;
+    Sound(TEXT("Stamp"),.4f,.5f);
+    if(Phase==ECourierPhase::Delivery && CurrentOrder==1)
+    {
+        DamageLens(TEXT("Bump! The cart knocked the lens case."),TEXT("砰！运输车撞到了镜头盒。"));
+        return;
+    }
+    Notify(TEXT("Bumped by a cart! Wait for it to pass; Q keeps the gap open longer."),TEXT("被运输车撞开了！等它开过去；Q 能让空隙保持更久。"));
+}
+
+void ACourierGameMode::DamageLens(const TCHAR* English,const TCHAR* Chinese)
+{
+    LensCondition=FMath::Max(0,LensCondition-1);
+    if(LensCondition>0){Notify(English,Chinese);return;}
+    // Third knock: the lens is cracked and this delivery has to be redone.
+    EndSlow();FailReason=1;Phase=ECourierPhase::Failed;
+    Sound(TEXT("Stamp"),.5f,.35f);
     RefreshInput();
 }
 
@@ -619,6 +651,7 @@ void ACourierGameMode::ResetDevices()
     SlowRemaining = 3.f;
     Cooldown = 0.f;
     Charges = OrderCharges();
+    LensCondition = 3;
 }
 
 void ACourierGameMode::Retry()
@@ -628,6 +661,7 @@ void ACourierGameMode::Retry()
     if (Phase == ECourierPhase::Paused)
         if (auto* PC = UGameplayStatics::GetPlayerController(this, 0)) PC->SetPause(false);
     Phase = ECourierPhase::Briefing; // Back at the desk with the brief open.
+    FailReason=0;
     bHelp = false;bConfirmRetry=false;
     NoticeSeconds=0;
     ++Retries;
@@ -858,15 +892,17 @@ void ACourierGameMode::BuildPracticeRoute()
         const float Periods[]={5.8f,5.8f,6.4f,6.4f};
         const float Phases[]={1.25f,.9f,.45f,2.5f};
         Cart->Period=Periods[I];Cart->InitialPhase=Phases[I];
+        Cart->Span=600.f;Cart->Direction=I%2?-1.f:1.f;
         Cart->Reset();
         Carts.Add(Cart);
-        Box(World,FVector(Lanes[I],0,3),FVector(250,1090,6),Swatch(TEXT("829C99")),false);
+        // Depot sheds at both lane ends: carts drive out of one and into the other.
         for(float Side:{-1.f,1.f})
         {
-            Box(World,FVector(Lanes[I],Side*505,17),FVector(240,26,28),Teal,false);
-            Box(World,FVector(Lanes[I],Side*520,85),FVector(18,18,130),Ink,false);
-            Shape(World,TEXT("/Engine/BasicShapes/Sphere.Sphere"),FVector(Lanes[I],Side*520,165),FVector(35),Teal);
+            Box(World,FVector(Lanes[I],Side*(600+100),115),FVector(320,150,230),Cream);
+            Box(World,FVector(Lanes[I],Side*(600+100),245),FVector(350,185,26),Orange,false);
+            Box(World,FVector(Lanes[I],Side*(600+22),80),FVector(250,8,150),Swatch(TEXT("1E3036")),false);
         }
+        Box(World,FVector(Lanes[I],0,3),FVector(250,1200,6),Swatch(TEXT("829C99")),false);
     }
     // A restrained campus kit: plaster, brick, recessed windows, trees and seating.
     for(int32 I=0;I<8;++I)
@@ -1110,12 +1146,12 @@ void ACourierCharacter::SetupPlayerInputComponent(UInputComponent* Input)
 
 void ACourierCharacter::Forward(float Value)
 {
-    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f)
+    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f && Game(this)->StunSeconds<=0.f)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::X),Value);
 }
 void ACourierCharacter::Right(float Value)
 {
-    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f)
+    if (Controller && Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f && Game(this)->StunSeconds<=0.f)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);
 }
 void ACourierCharacter::Yaw(float Value)
@@ -1150,7 +1186,7 @@ void ACourierCharacter::RecenterView(float Yaw,float Pitch)
 }
 
 void ACourierCharacter::SetCameraFov(float Value) { Camera->SetFieldOfView(FMath::Clamp(Value,80.f,100.f)); }
-void ACourierCharacter::JumpPressed() { if (Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f) Jump(); }
+void ACourierCharacter::JumpPressed() { if (Game(this) && Game(this)->CanMove() && Game(this)->RecoverySeconds<=0.f && Game(this)->StunSeconds<=0.f) Jump(); }
 void ACourierCharacter::JumpReleased() { StopJumping(); }
 
 void ACourierController::BeginPlay()
@@ -1233,18 +1269,49 @@ void ACourierCart::Tick(float DeltaSeconds)
     if(!bEnabled) return;
     Clock+=DeltaSeconds*Mode->DeviceRate();
     if(ClockHand)ClockHand->SetRelativeRotation(FRotator(0,0,Clock*360.f/Period));
-    SetActorLocation(Origin+FVector(0,FMath::Sin(Clock*2.f*PI/Period+InitialPhase)*Amplitude,0));
+    Place();
     Material->SetVectorParameterValue(TEXT("Color"),Mode->bSlowing?FLinearColor(.15f,.95f,1.f):FLinearColor(.02f,.42f,.75f));
 }
 void ACourierCart::Reset()
 {
     Clock=0.f;
-    SetActorLocation(Origin+FVector(0,FMath::Sin(InitialPhase)*Amplitude,0));
+    Place();
+}
+
+namespace
+{
+    constexpr float CartOnStreetShare=.62f;
+    float CartCycleTime(const ACourierCart& Cart,float ClockValue)
+    {
+        const float Cycle=Cart.CycleSeconds();
+        float T=FMath::Fmod(ClockValue+Cart.InitialPhase/(2.f*PI)*Cycle,Cycle);
+        return T<0.f?T+Cycle:T;
+    }
+}
+
+bool ACourierCart::OnStreet(float ClockValue) const
+{
+    return CartCycleTime(*this,ClockValue)<=CycleSeconds()*CartOnStreetShare;
+}
+
+float ACourierCart::YAt(float ClockValue) const
+{
+    const float Drive=CycleSeconds()*CartOnStreetShare;
+    const float T=CartCycleTime(*this,ClockValue);
+    if(T>Drive)return Direction*(Span+1000.f); // parked inside the far depot
+    return Direction*(-Span+2.f*Span*T/Drive);
+}
+
+void ACourierCart::Place()
+{
+    const bool bOn=OnStreet(Clock);
+    SetActorHiddenInGame(!bOn);
+    SetActorLocation(Origin+FVector(0,bOn?YAt(Clock):Direction*(Span+400.f),0));
 }
 bool ACourierCart::Touching(const FVector& Player) const
 {
     const auto* Mode=Game(this);
-    if(!Mode || !Mode->CanMove()) return false;
+    if(!Mode || !Mode->CanMove() || !OnStreet(Clock)) return false;
     const FVector D=Player-GetActorLocation();
     return FMath::Abs(D.X)<112.f && FMath::Abs(D.Y)<137.f && D.Z<132.f && D.Z>-120.f;
 }

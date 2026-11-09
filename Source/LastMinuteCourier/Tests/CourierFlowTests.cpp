@@ -87,9 +87,22 @@ bool FCourierFlowRegression::RunTest(const FString&)
     Training->SetActorLocation(FVector(1550,420,55));
     Place(FVector(1550,0,88));Mode->CollisionProtection=0;Mode->Tick(.01f);
     TestTrue(TEXT("A visible cart gap does not cause recovery"),Player->GetActorLocation().Equals(FVector(1550,0,88)));
-    Place(Training->GetActorLocation()+FVector(0,0,33));Mode->CollisionProtection=0;Mode->Tick(.01f);
-    TestTrue(TEXT("An actual cart hit still returns to the checkpoint"),Player->GetActorLocation().Equals(Mode->Checkpoint));
-    TestTrue(TEXT("Collision recovery explicitly names the cart hit"),Mode->StatusNotice().Contains(TEXT("hit you")));
+    {
+        // Traffic: carts drive out of one depot and into the other, never swing back.
+        float OnLane=-1.f;
+        for(float C=0.f;C<Training->CycleSeconds();C+=.02f)if(Training->OnStreet(C) && FMath::Abs(Training->YAt(C))<25.f){OnLane=C;break;}
+        TestTrue(TEXT("The training cart crosses the lane centre"),OnLane>=0.f);
+        float Previous=Training->YAt(0.f)*Training->Direction;bool bOneWay=true;
+        for(float C=.02f;C<Training->CycleSeconds();C+=.02f)
+            if(Training->OnStreet(C) && Training->OnStreet(C-.02f)){const float Y=Training->YAt(C)*Training->Direction;if(Y<Previous)bOneWay=false;Previous=Y;}
+            else Previous=-1e6f;
+        TestTrue(TEXT("Carts drive one way, depot to depot"),bOneWay);
+        Training->Clock=OnLane;Training->Place();
+        Place(Training->GetActorLocation()+FVector(0,0,33));Mode->CollisionProtection=0;Mode->Tick(.01f);
+        TestTrue(TEXT("A cart knocks the courier aside instead of teleporting"),Player->GetCharacterMovement()->PendingLaunchVelocity.Size()>300.f && Mode->StunSeconds>0.f);
+        TestTrue(TEXT("The bump is explained"),Mode->StatusNotice().Contains(TEXT("Bumped")));
+        Mode->StunSeconds=0.f;Player->GetCharacterMovement()->PendingLaunchVelocity=FVector::ZeroVector;
+    }
     Place(FVector(2000,0,88));Mode->Tick(.01f);
     TestEqual(TEXT("Can complete the safe crossing after a collision"),Mode->Tutorial,3);
     {
@@ -143,18 +156,27 @@ bool FCourierFlowRegression::RunTest(const FString&)
         TestTrue(TEXT("Every delivery has golden clocks"),Mode->TokensTotal(0)>=3 && Mode->TokensTotal(1)>=4 && Mode->TokensTotal(2)>=5);
         FVector Spot=FVector::ZeroVector;
         for(const auto& Token:Mode->Tokens)if(Token.Order==0){Spot=Token.Base;break;}
-        const float Before=Mode->Remaining;
+        const float Before=Mode->Remaining;const int32 Uses=Mode->Charges;
         Place(Spot-FVector(0,0,22));Mode->CollectTokens(Player->GetActorLocation());
-        TestTrue(TEXT("A golden clock adds five seconds"),FMath::IsNearlyEqual(Mode->Remaining,Before+ACourierGameMode::TokenSeconds));
+        TestTrue(TEXT("A Borrower cell adds one Q use"),Mode->Charges==Uses+1 && FMath::IsNearlyEqual(Mode->Remaining,Before));
         TestEqual(TEXT("The clock is counted"),Mode->TokensTaken(0),1);
         Mode->CollectTokens(Player->GetActorLocation());
-        TestTrue(TEXT("A collected clock cannot be taken twice"),FMath::IsNearlyEqual(Mode->Remaining,Before+ACourierGameMode::TokenSeconds));
+        TestTrue(TEXT("A collected cell cannot be taken twice"),Mode->Charges==Uses+1);
         Mode->ResetTokens(0);TestEqual(TEXT("Restarting an order restores its clocks"),Mode->TokensTaken(0),0);
         const float Budget=Mode->OrderBudget();
         Mode->Remaining=Budget*.5f;TestEqual(TEXT("Half the clock left earns three stars"),Mode->RateDelivery(),3);
         Mode->Remaining=Budget*.3f;TestEqual(TEXT("A third left earns two stars"),Mode->RateDelivery(),2);
         Mode->Remaining=Budget*.05f;TestEqual(TEXT("Any on-time delivery earns a star"),Mode->RateDelivery(),1);
-        Mode->Remaining=Before;Mode->NoticeSeconds=0.f;
+        Mode->Remaining=Before;Mode->NoticeSeconds=0.f;Mode->Charges=Uses;
+        // The lens is judged by care: two knocks leave one star, the third cracks it.
+        Mode->CurrentOrder=1;Mode->LensCondition=3;
+        TestEqual(TEXT("An unknocked lens earns three stars"),Mode->RateDelivery(),3);
+        Mode->DamageLens(TEXT("test"),TEXT("test"));Mode->DamageLens(TEXT("test"),TEXT("test"));
+        TestEqual(TEXT("Two knocks leave one star"),Mode->RateDelivery(),1);
+        TestTrue(TEXT("The lens survives two knocks"),Mode->Phase==ECourierPhase::Delivery);
+        Mode->DamageLens(TEXT("test"),TEXT("test"));
+        TestTrue(TEXT("The third knock cracks the lens and fails the order"),Mode->Phase==ECourierPhase::Failed && Mode->FailReason==1);
+        Mode->Phase=ECourierPhase::Delivery;Mode->FailReason=0;Mode->CurrentOrder=0;Mode->LensCondition=3;Mode->NoticeSeconds=0.f;
     }
     TestTrue(TEXT("Collection reveals package"),Player->Bag->IsVisible());
     Place(FVector(2600,0,88));

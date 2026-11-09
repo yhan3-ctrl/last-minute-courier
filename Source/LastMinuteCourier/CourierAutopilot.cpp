@@ -129,7 +129,7 @@ void FCourierAutopilot::Tick(ACourierGameMode& Mode,float DeltaSeconds)
     }
     PreviousRecovery=Mode.RecoverySeconds;
     LastPosition=Player->GetActorLocation();
-    if(Mode.RecoverySeconds>0.f)return;
+    if(Mode.RecoverySeconds>0.f || Mode.StunSeconds>0.f)return; // staggered like a player
     if(ShotClock>15.f){ShotClock=0.f;Shot(FString::Printf(TEXT("play-%s-%d"),*PhaseName(Phase),Mode.CurrentOrder+1));}
     if(SlowShotAt>0.f && Clock>=SlowShotAt){SlowShotAt=-1.f;Shot(TEXT("borrowed-time"));}
     Drive(Mode,*Player,DeltaSeconds);
@@ -201,7 +201,8 @@ bool FCourierAutopilot::CartGate(ACourierGameMode& Mode,const FVector& P,FVector
         for(float T=Begin;T<=End;T+=.04f)
         {
             const float Advance=FMath::Min(T,SlowSeconds)*.25f+FMath::Max(0.f,T-SlowSeconds);
-            const float Y=Next->Origin.Y+FMath::Sin((Next->Clock+Advance)*2.f*PI/Next->Period+Next->InitialPhase)*Next->Amplitude;
+            if(!Next->OnStreet(Next->Clock+Advance))continue;
+            const float Y=Next->Origin.Y+Next->YAt(Next->Clock+Advance);
             if(FMath::Abs(Y-P.Y)<137.f+35.f)return false;
         }
         return true;

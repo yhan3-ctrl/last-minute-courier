@@ -8,10 +8,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-// Golden clocks: optional pickups that add time to the current delivery. Most
-// sit on the riskier line (in a cart lane, at a lift's top, over the shuttle's
-// water, on a planter or stepping stone), so the short route pays off when it
-// is played well. Stars rate each delivery by the time left at the counter.
+// Borrower cells: spare batteries for the Borrower. Each gives Q one more use
+// in the current delivery. Most sit on the riskier line (in a cart lane, at a
+// lift's top, over the shuttle's water, on a planter or stepping stone), so
+// playing the short route well funds the next crossing. Stars rate each
+// delivery by its own concern: coffee warmth, lens condition, reel time.
 namespace
 {
     UStaticMeshComponent* TokenPart(AActor* Owner,USceneComponent* Parent,const TCHAR* Shape,const FVector& At,const FVector& Size,
@@ -39,21 +40,22 @@ void ACourierGameMode::SpawnTokens()
     const FSpot Spots[]={
         {-1,FVector(1800,0,0)},                                   // practice: learn that clocks exist
         {0,FVector(3300,0,0)},{0,FVector(4700,0,85)},{0,FVector(5475,0,0)},{0,FVector(5200,850,0)},
-        {1,FVector(12600,0,300)},{1,FVector(15250,0,320)},{1,FVector(19700,0,0)},{1,FVector(23300,0,400)},{1,FVector(19900,-1900,0)},
-        {2,FVector(31150,0,0)},{2,FVector(34900,0,0)},{2,FVector(37850,0,0)},{2,FVector(40300,0,420)},{2,FVector(43780,280,520)},{2,FVector(31300,1450,0)}};
+        {1,FVector(12600,0,300)},{1,FVector(15650,0,320)},{1,FVector(19700,0,0)},{1,FVector(23300,0,400)},{1,FVector(19900,-1900,0)},
+        {2,FVector(31150,0,0)},{2,FVector(34900,0,0)},{2,FVector(37900,0,0)},{2,FVector(40300,0,420)},{2,FVector(43780,280,520)},{2,FVector(31300,1450,0)}};
     for(const FSpot& Spot:Spots)
     {
         auto* Actor=GetWorld()->SpawnActor<AActor>();
         auto* Root=NewObject<USceneComponent>(Actor);Actor->SetRootComponent(Root);Root->SetMobility(EComponentMobility::Movable);Root->RegisterComponent();
-        const FRotator Face(90,0,0);
-        TokenPart(Actor,Root,TEXT("Cylinder"),FVector::ZeroVector,FVector(104,104,18),TEXT("E9A93A"),Face);
-        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(10,0,0),FVector(80,80,4),TEXT("FFF3D6"),Face);
-        TokenPart(Actor,Root,TEXT("Cube"),FVector(13,0,12),FVector(3,6,30),TEXT("243D43"));
-        TokenPart(Actor,Root,TEXT("Cube"),FVector(13,8,0),FVector(3,20,6),TEXT("243D43"));
-        TokenPart(Actor,Root,TEXT("Sphere"),FVector(0,0,60),FVector(24),TEXT("E9A93A"));
+        // An upright battery: cyan body, cream label band with the Borrower's
+        // clock mark, dark terminal cap. It matches the blue clock-tagged devices.
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector::ZeroVector,FVector(46,46,74),TEXT("3CC4D8"));
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,4),FVector(48,48,22),TEXT("FFF3D6"));
+        TokenPart(Actor,Root,TEXT("Cube"),FVector(24,0,6),FVector(2,3,14),TEXT("243D43"));
+        TokenPart(Actor,Root,TEXT("Cube"),FVector(24,4,3),FVector(2,9,3),TEXT("243D43"));
+        TokenPart(Actor,Root,TEXT("Cylinder"),FVector(0,0,42),FVector(20,20,10),TEXT("243D43"));
         auto* Glow=NewObject<UPointLightComponent>(Actor);Glow->SetupAttachment(Root);Glow->RegisterComponent();
-        Glow->SetIntensity(2600.f);Glow->SetAttenuationRadius(320.f);Glow->SetLightColor(FLinearColor(1.f,.78f,.35f));Glow->SetCastShadows(false);
-        Actor->Tags.Add(TEXT("CourierGoldenClock"));
+        Glow->SetIntensity(2200.f);Glow->SetAttenuationRadius(300.f);Glow->SetLightColor(FLinearColor(.45f,.9f,1.f));Glow->SetCastShadows(false);
+        Actor->Tags.Add(TEXT("CourierBorrowerCell"));
         const FVector Base=Spot.Floor+FVector(0,0,110);
         Actor->SetActorLocation(Base);
         Tokens.Add({Actor,Base,Spot.Order,false});
@@ -107,18 +109,20 @@ void ACourierGameMode::CollectTokens(const FVector& Position)
         Sound(TEXT("Pickup"),.38f,1.7f);
         if(Phase==ECourierPhase::Delivery)
         {
-            Remaining+=TokenSeconds;
-            Notify(TEXT("Golden clock: +5 seconds."),TEXT("金色时钟：+5 秒。"));
+            ++Charges;
+            Notify(TEXT("Borrower cell: +1 use of borrowed time."),TEXT("借时器电池：多一次借时间。"));
         }
-        else Notify(TEXT("Golden clock! In a delivery, each one adds 5 seconds to your clock."),TEXT("金色时钟！配送时，每拿到一个，倒计时就多 5 秒。"));
+        else Notify(TEXT("A Borrower cell! During a delivery, each one gives Q one more use."),TEXT("借时器电池！配送时，每拿到一个，Q 就多一次使用机会。"));
         TokenFlash=.5f;
     }
 }
 
 int32 ACourierGameMode::RateDelivery() const
 {
+    // Each parcel is judged by what its customer cares about.
+    if(CurrentOrder==1)return FMath::Clamp(LensCondition,1,3);       // handle with care
     const float Left=FMath::Clamp(Remaining/FMath::Max(1.f,OrderBudget()),0.f,1.f);
-    return Left>=.45f?3:(Left>=.2f?2:1);
+    return Left>=.45f?3:(Left>=.2f?2:1);                             // serve warm / start on time
 }
 
 int32 ACourierGameMode::TotalStars() const

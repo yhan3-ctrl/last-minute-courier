@@ -424,6 +424,24 @@ private:
         return Row;
     }
 
+    FString StarRule() const
+    {
+        if(Mode->CurrentOrder==0)return Mode->Copy(TEXT("Stars: how warm the coffee is when it arrives."),TEXT("星级：送到时咖啡还有多热。"));
+        if(Mode->CurrentOrder==1)return Mode->Copy(TEXT("Stars: how few knocks the lens takes. Carts and falls knock it; the third knock cracks it."),TEXT("星级：镜头被磕的次数越少越好。被车撞、摔下去都会磕到，第三次就裂了。"));
+        return Mode->Copy(TEXT("Stars: how much time is left before the screening."),TEXT("星级：开场前还剩多少时间。"));
+    }
+
+    FString ResultLine() const
+    {
+        FString Line;
+        const float Share=FMath::Clamp(Mode->Remaining/FMath::Max(1.f,Mode->OrderBudget()),0.f,1.f);
+        if(Mode->CurrentOrder==0)Line=Mode->Copy(TEXT("COFFEE WARMTH"),TEXT("咖啡温度"))+FString::Printf(TEXT("  %d%%"),FMath::RoundToInt(Share*100.f));
+        else if(Mode->CurrentOrder==1)Line=Mode->Copy(TEXT("LENS CASE"),TEXT("镜头盒"))+FString::Printf(TEXT("  %d / 3"),Mode->LensCondition);
+        else Line=Mode->Copy(TEXT("TIME LEFT"),TEXT("剩余时间"))+TEXT("  ")+Clock(Mode->Remaining);
+        return Line+TEXT("     ")+Mode->Copy(TEXT("BORROWER CELLS"),TEXT("借时器电池"))+
+            FString::Printf(TEXT("  %d / %d"),Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder));
+    }
+
     static FString Clock(float Seconds)
     {
         const int32 S=FMath::Max(0,FMath::CeilToInt(Seconds));
@@ -492,7 +510,7 @@ private:
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
                                     [SNew(SBox).WidthOverride(12).HeightOverride(12)[SNew(SBorder).BorderImage(&R6).BorderBackgroundColor(Gold)]]
                                 +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
-                                    [Body(FText::FromString(Mode->Copy(TEXT("Golden clocks on this route add 5 seconds each. More time left at the counter earns more stars."),TEXT("路线上的金色时钟每个 +5 秒。送达时剩余时间越多，星星越多。"))+FString::Printf(TEXT("  (%d)"),Mode->TokensTotal(Mode->CurrentOrder))),16,CourierPalette::Ink,640.f)]])]
+                                    [Body(FText::FromString(Mode->Copy(TEXT("Borrower cells on this route give Q one more use each."),TEXT("路线上的借时器电池每个让 Q 多用一次。"))+FString::Printf(TEXT("  (%d)  "),Mode->TokensTotal(Mode->CurrentOrder))+StarRule()),16,CourierPalette::Ink,640.f)]])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)
                 [Text(Copy(TEXT("The clock starts when you accept."),TEXT("确认接单后才开始计时。")),15,EFace::Heavy,Teal)];
         auto Footer=SNew(SHorizontalBox)
@@ -539,10 +557,13 @@ private:
     TSharedRef<SWidget> Failed()
     {
         auto Content=SNew(SVerticalBox)
-            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,16)[Title(Copy(TEXT("Time is up."),TEXT("配送时间到了。")))]
-            +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->bHelp?Mode->RouteHint():
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,16)
+                [Title(Mode->FailReason==1?Copy(TEXT("The lens cracked."),TEXT("镜头裂了。")):Copy(TEXT("Time is up."),TEXT("配送时间到了。")))]
+            +SVerticalBox::Slot().AutoHeight()[Body(FText::FromString(Mode->bHelp?Mode->RouteHint():(Mode->FailReason==1?
+                Mode->Copy(TEXT("Three knocks were too many for the lens case. Your earlier deliveries are safe. Try again and keep clear of the carts and the water."),
+                    TEXT("镜头盒经不起第三次磕碰。之前的交付已经保留。再来一次，避开运输车和水面。")):
                 Mode->Copy(TEXT("The delivery clock ran out. Your earlier deliveries are safe. Try this order again; the clock starts after you accept the brief."),
-                    TEXT("本单配送超时。之前的交付已经保留。再试一次吧，确认简报后才开始计时。"))))];
+                    TEXT("本单配送超时。之前的交付已经保留。再试一次吧，确认简报后才开始计时。")))))];
         auto Footer=SNew(SHorizontalBox)
             +SHorizontalBox::Slot().FillWidth(1)[SNew(SSpacer)]
             +SHorizontalBox::Slot().AutoWidth().Padding(0,0,12,0)[Action(Copy(TEXT("Show route hint"),TEXT("查看路线提示")),3,EButton::Quiet,TEXT("H"))]
@@ -565,9 +586,7 @@ private:
                         +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Text(FText::FromString(Mode->ProgressText()),14,EFace::Heavy,Gold)]]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[StarRow(Mode->Stars[Mode->CurrentOrder],34,FLinearColor(1,1,1,.25f))]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,14)
-                    [Text(FText::FromString(Mode->Copy(TEXT("TIME LEFT"),TEXT("剩余时间"))+TEXT("  ")+Clock(Mode->Remaining)+TEXT("     ")+
-                        Mode->Copy(TEXT("GOLDEN CLOCKS"),TEXT("金色时钟"))+FString::Printf(TEXT("  %d / %d"),Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder))),
-                        14,EFace::Heavy,CreamMuted)]
+                    [Text(FText::FromString(ResultLine()),14,EFace::Heavy,CreamMuted,520)]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)[Text(FText::FromString(Mode->OrderOutcome()),22,EFace::Black,Cream,520)]
                 +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)
                     [Action(Copy(TEXT("Read next delivery"),TEXT("阅读下一单")),0,EButton::Primary,TEXT("Enter"))]);
@@ -632,6 +651,40 @@ private:
                 [SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[TicketCard]];
     }
 
+    // What this customer cares about, live: the coffee cools, the lens can crack,
+    // the square waits for the reel.
+    TSharedRef<SWidget> OrderMeter()
+    {
+        using namespace CourierPalette;
+        if(Mode->CurrentOrder==1)
+        {
+            auto Row=SNew(SHorizontalBox)
+                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)
+                    [Text(Copy(TEXT("LENS CASE"),TEXT("镜头盒")),14,EFace::Heavy,CreamMuted)];
+            for(int32 I=0;I<3;++I)
+                Row->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)
+                    [SNew(SBox).WidthOverride(22).HeightOverride(14)
+                        [SNew(SBorder).BorderImage(&R4).BorderBackgroundColor_Lambda([this,I]()->FSlateColor
+                        {return Mode.IsValid() && I<Mode->LensCondition?CourierPalette::Cream:CourierPalette::Red;})]];
+            return Row;
+        }
+        const bool bCoffee=Mode->CurrentOrder==0;
+        return SNew(SVerticalBox)
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,5)
+                [Text(bCoffee?Copy(TEXT("COFFEE WARMTH"),TEXT("咖啡温度")):Copy(TEXT("THE SQUARE IS WAITING"),TEXT("全场都在等")),14,EFace::Heavy,CreamMuted)]
+            +SVerticalBox::Slot().AutoHeight()
+                [SNew(SBox).WidthOverride(240).HeightOverride(8)
+                    [SNew(SProgressBar).Style(&ChargeStyle)
+                        .FillColorAndOpacity_Lambda([this,bCoffee]()->FSlateColor
+                        {
+                            if(!Mode.IsValid())return CourierPalette::Orange;
+                            const float Share=FMath::Clamp(Mode->Remaining/FMath::Max(1.f,Mode->OrderBudget()),0.f,1.f);
+                            return bCoffee?FLinearColor::LerpUsingHSV(CourierPalette::Cyan,CourierPalette::Orange,Share):CourierPalette::Gold;
+                        })
+                        .Percent_Lambda([this]()->TOptional<float>
+                        {return Mode.IsValid()?FMath::Clamp(Mode->Remaining/FMath::Max(1.f,Mode->OrderBudget()),0.f,1.f):0.f;})]];
+    }
+
     // Remaining borrowed-time uses: one pip per use and a count. Practice is free.
     TSharedRef<SWidget> Uses()
     {
@@ -640,7 +693,7 @@ private:
             return Text(Copy(TEXT("FREE IN PRACTICE"),TEXT("练习中不限次数")),13,EFace::Heavy,Cyan,120);
         if(Mode->Phase!=ECourierPhase::Delivery)return SNullWidget::NullWidget;
         auto Pips=SNew(SHorizontalBox);
-        for(int32 I=0;I<Mode->OrderCharges();++I)
+        for(int32 I=0;I<FMath::Max(Mode->OrderCharges(),Mode->Charges);++I)
             Pips->AddSlot().AutoWidth().Padding(0,0,5,0)
                 [SNew(SBox).WidthOverride(12).HeightOverride(12)
                     [SNew(SBorder).BorderImage(&R6).BorderBackgroundColor_Lambda([this,I]()->FSlateColor
@@ -690,16 +743,17 @@ private:
                                     [SNew(SBox).WidthOverride(9).HeightOverride(9)[SNew(SBorder).BorderImage(&R4).BorderBackgroundColor(Orange)]]
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
                                     [Text(bDelivery?FText::FromString(Mode->OrderDestination()):Copy(TEXT("Parcel desk"),TEXT("取件台")),17,EFace::Heavy,CreamMuted,330)]]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,0)[bDelivery?OrderMeter():SNullWidget::NullWidget]
                         +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
                             [SNew(SHorizontalBox).Visibility(bDelivery?EVisibility::HitTestInvisible:EVisibility::Collapsed)
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
-                                    [SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&R6).BorderBackgroundColor(Gold)]]
+                                    [SNew(SBox).WidthOverride(10).HeightOverride(16)[SNew(SBorder).BorderImage(&R4).BorderBackgroundColor(Cyan)]]
                                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
-                                    [SNew(STextBlock).Font(Typeface(15,EFace::Heavy)).ColorAndOpacity(Gold)
+                                    [SNew(STextBlock).Font(Typeface(14,EFace::Heavy)).ColorAndOpacity(Cyan)
                                         .Text_Lambda([this]()
                                         {
                                             if(!Mode.IsValid())return FText();
-                                            return FText::FromString(Mode->Copy(TEXT("GOLDEN CLOCKS"),TEXT("金色时钟"))+FString::Printf(TEXT("  %d / %d"),
+                                            return FText::FromString(Mode->Copy(TEXT("BORROWER CELLS"),TEXT("借时器电池"))+FString::Printf(TEXT("  %d / %d"),
                                                 Mode->TokensTaken(Mode->CurrentOrder),Mode->TokensTotal(Mode->CurrentOrder)));
                                         })]])]];
 
@@ -710,7 +764,6 @@ private:
                 [SNew(SBorder).BorderImage(&R16).Padding(FMargin(26,2,26,6))
                     .BorderBackgroundColor_Lambda([this]()->FSlateColor
                     {
-                        if(Mode.IsValid() && Mode->TokenFlash>0.f)return FLinearColor::LerpUsingHSV(CourierPalette::Plate,CourierPalette::Gold,FMath::Clamp(Mode->TokenFlash*2.f,0.f,1.f));
                         if(!Mode.IsValid() || Mode->Remaining>20.f)return CourierPalette::Plate;
                         const float Pulse=.5f+.5f*FMath::Sin(float(FPlatformTime::Seconds())*7.f);
                         return FLinearColor::LerpUsingHSV(CourierPalette::Red,CourierPalette::Hex(TEXT("8E2416")),Pulse);
@@ -776,6 +829,7 @@ private:
                         {
                             if(!Mode.IsValid())return CourierPalette::Paper;
                             if(Mode->QDenied>0.f)return CourierPalette::Red;
+                            if(Mode->TokenFlash>0.f)return FLinearColor::White;
                             if(Mode->bSlowing)return FLinearColor(.55f,.95f,1.f);
                             return Mode->Cooldown>0.f?CourierPalette::KeyEdge:CourierPalette::Cyan;
                         }))]

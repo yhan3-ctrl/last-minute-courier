@@ -77,6 +77,11 @@ public:
     TArray<int32> Stars = {0,0,0};
     float SlowFx = 0.f, HitFlash = 0.f, TokenFlash = 0.f, TokenSpin = 0.f;
     int32 LastTickSecond = -1;
+    float StunSeconds = 0.f;   // stagger after a cart bump: no steering
+    int32 LensCondition = 3;   // the lens case survives two knocks
+    int32 FailReason = 0;      // 0 time ran out, 1 lens cracked
+    void Bump(const class ACourierCart* Cart);
+    void DamageLens(const TCHAR* English,const TCHAR* Chinese);
     void SpawnTokens();
     bool TokenVisible(const FCourierToken& Token) const;
     int32 TokensTotal(int32 Order) const;
@@ -166,6 +171,11 @@ private:
     void UpdateGate(float DeltaSeconds);
     TArray<FVector> Route;
     void BuildRouteGuide();
+public:
+    // The recommended line for an order, on real walking surfaces (floor Z).
+    // Gaps between legs are where you ride a platform or jump between stones.
+    TArray<TArray<FVector>> GuideLegs(int32 Order) const;
+private:
     void AddRouteGuideSpan(int32 Order,const FVector& A,const FVector& B);
     void UpdateRouteGuide();
     void BuildPracticeRoute();
@@ -254,11 +264,19 @@ public:
     float Clock = 0.f;
     float InitialPhase = 0.f;
     float Period = 5.f;
-    float Amplitude = 420.f;
+    float Amplitude = 420.f;   // unused legacy field
+    float Span = 600.f;        // lane half-width: depot door to depot door
+    float Direction = 1.f;     // +1 drives toward +Y, -1 toward -Y
     bool bTraining = false;
     int32 OrderIndex = 0;
     void Reset();
     bool Touching(const FVector& Player) const;
+    // Traffic: each cycle a cart leaves one depot, crosses the lane and parks in
+    // the other. Q slows its clock, so it stays in the depot longer.
+    float CycleSeconds() const {return Period*.5f;}
+    bool OnStreet(float ClockValue) const;
+    float YAt(float ClockValue) const;
+    void Place();
 };
 
 UCLASS()

@@ -184,3 +184,20 @@ Changes. Golden clocks: 16 floating clocks (1 practice, then 4/5/6 per route) ea
 Rubric review at the same time: Windows and Linux releases cannot be built with Unreal on macOS. `Documentation/BuildOtherPlatforms.md` and `Scripts/package_windows.bat` / `Scripts/package_linux.bat` give a one-command build on a Windows PC; those releases are still to be produced.
 
 Verification: new checks (practice clock exists, every route has clocks, +5 s once per clock, retry restores clocks, star thresholds) and all earlier checks pass in all three suites; the packaged app passes them too and completes a real-speed scripted playthrough collecting 11 of 15 delivery clocks for 9/9 stars, with screenshots of the slow-time grade, the rated delivery card and the finale ticket. Whether these changes make the game more fun is for the owner's next playthrough to say.
+
+
+## v0.8 - November 8, 2026: make the world make sense, and give each parcel its own rule
+
+The project owner found v0.7 still monotonous and said many things did not match common sense; while playing they also asked why, at the lifts, the orange line led somewhere other than where they had to go. Reviewing the game as a first-time player found these causes:
+
+- Carts swung back and forth on a short track like pendulums. They are now traffic: each lane has a depot shed at both ends, and carts drive out of one, across and into the other, one way. Q slows a cart's clock, so it waits in its depot longer.
+- A cart hit faded to black and teleported the courier. It now knocks them aside with a 0.7 s stagger.
+- "Serve warm" and "Handle with care" were only labels, and all three deliveries played the same way. The coffee now cools (the HUD shows its warmth and the stars measure it); the lens case shows three condition marks, each cart knock or fall cracks one, and the third fails the order; the reel is rated by time before the screening.
+- A golden clock adding 5 seconds to a film's start time made no sense. It is now a Borrower cell: a spare battery for the Q device worth one more use.
+- Leaving the area or falling hit an invisible reset. Hedges now mark the campus edge, and every reset names its cause (pond, dropped off a walkway, outside this delivery's area).
+- Nobody explained why the lens waited at the coffee stand or the reel at the booth. The briefs now say who left each parcel there.
+- The orange paint covered every walkway, so at the lift it ran off along the side ramp while the marker pointed to the lift; nothing was painted across the lift itself; and on the main ramp down the marker jumped to the side garden walk. Now only the recommended route is painted, chevrons ride on each lift and on the shuttle, and the marker follows a side path only when the courier is clearly on it.
+
+Placing depot sheds also showed that one shed would have stood on the garden ramp's landing; those lanes moved, and capsule sweeps now check that no shed blocks a side path.
+
+Verification: all three suites pass, with new checks for one-way traffic, the knock-back, Borrower cells, lens knocks and failure, per-parcel stars, depot clearance, the painted line staying off the side ramp, the marker staying on the line on the main ramp, and every painted point lying on walkable ground. The packaged app passes them and completes a real-speed scripted playthrough that now follows the painted line across the stepping stones (four jumps), with 0 recoveries.
